@@ -1,1 +1,149 @@
 @import "tailwindcss";
+
+@layer base {
+  :root {
+    --mm-primary: #1f3c88;
+    --mm-primary-hover: #2d4eaa;
+    --mm-primary-active: #17316d;
+    --mm-primary-contrast: #ffffff;
+    --mm-accent: #e8f1ff;
+    --mm-paper: #ffffff;
+    --mm-bg: #11243f;
+    --mm-ink: #1b1f24;
+    --mm-muted: #5b6470;
+    --mm-border: #d4dbe6;
+    --mm-radius: 1.25rem;
+    --mm-transition: 160ms ease;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--mm-paper);
+    color: var(--mm-ink);
+    font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont,
+      "Helvetica Neue", sans-serif;
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--mm-primary) 18%, transparent);
+  }
+}
+
+@layer components {
+  .mm-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    padding: 0.625rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.2;
+    border: 1px solid transparent;
+    transition: transform var(--mm-transition), box-shadow var(--mm-transition),
+      background-color var(--mm-transition), color var(--mm-transition),
+      border-color var(--mm-transition);
+    text-decoration: none;
+  }
+
+  .mm-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 16px 24px -20px rgba(17, 24, 39, 0.8);
+  }
+
+  .mm-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
+  .mm-btn:focus-visible {
+    outline: 2px solid var(--mm-primary);
+    outline-offset: 2px;
+  }
+
+  .mm-btn-primary {
+    background: linear-gradient(140deg, var(--mm-primary), var(--mm-primary-hover));
+    color: var(--mm-primary-contrast);
+    border-color: var(--mm-primary);
+  }
+
+  .mm-btn-primary:hover {
+    background: linear-gradient(140deg, var(--mm-primary-hover), var(--mm-primary));
+  }
+
+  .mm-btn-primary:active {
+    background-color: var(--mm-primary-active);
+    border-color: var(--mm-primary-active);
+  }
+
+  .mm-btn-ghost {
+    color: var(--mm-primary-contrast);
+    border-color: rgba(255, 255, 255, 0.6);
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .mm-btn-ghost:hover {
+    background-color: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.8);
+  }
+
+  .mm-btn-ghost:active {
+    background-color: rgba(255, 255, 255, 0.24);
+  }
+
+  .mm-card {
+    border-radius: var(--mm-radius);
+    background-color: var(--mm-paper);
+    border: 1px solid color-mix(in srgb, var(--mm-border) 85%, transparent);
+    box-shadow: 0 24px 40px -32px rgba(15, 23, 42, 0.5);
+    transition: box-shadow var(--mm-transition), transform var(--mm-transition);
+  }
+
+  .mm-card:hover {
+    box-shadow: 0 28px 48px -30px rgba(15, 23, 42, 0.55);
+    transform: translateY(-2px);
+  }
+
+  .mm-card:focus-within {
+    outline: 2px solid var(--mm-primary);
+    outline-offset: 2px;
+  }
+
+  .mm-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background-color: rgba(31, 60, 136, 0.08);
+    color: var(--mm-primary);
+    border: 1px solid rgba(31, 60, 136, 0.12);
+  }
+
+  .mm-chip:focus-visible {
+    outline: 2px solid var(--mm-primary);
+    outline-offset: 2px;
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 320ms ease, transform 320ms ease;
+  }
+
+  .reveal.in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

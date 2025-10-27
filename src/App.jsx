@@ -58,9 +58,10 @@ function useReveal(){
   }, []);
 }
 
-function Feature({ Icon, title, text }) {
+function Feature({ Icon: IconProp, title, text }) {
+  const Icon = IconProp;
   return (
-     <div className="reveal mm-card p-5">
+    <div className="reveal mm-card p-5">
       <div className="flex gap-4">
         <Icon className="h-6 w-6 text-[var(--mm-primary)]" />
         <div>
@@ -136,7 +137,7 @@ function Areas(){
   useReveal();
   return (
     <section id="areas" className="-mt-8">
-      <div className="mx-auto max-w-5xl rounded-3xl bg-[var(--mm-paper)] p-8 shadow-xl ring-1 ring-black/5"></div>
+      <div className="mx-auto max-w-5xl rounded-3xl bg-[var(--mm-paper)] p-8 shadow-xl ring-1 ring-black/5">
         <div className="text-center">
           <p className="mm-chip bg-[var(--mm-accent)] text-[var(--mm-primary)]">Áreas de atuação</p>
         </div>
