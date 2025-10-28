@@ -2,20 +2,20 @@ import { useEffect } from "react";
 
 export function useReveal(options = {}) {
   const { containerRef, deps } = options;
-  const containerEl = containerRef?.current ?? null;
 
   useEffect(() => {
-    if (containerRef && !containerEl) return undefined;
-
     const isBrowser =
       typeof window !== "undefined" && typeof document !== "undefined";
 
     if (!isBrowser) return undefined;
 
-    const rootNode = containerEl ?? document;
+    if (containerRef && !containerRef.current) return undefined;
+
+    const rootElement = containerRef?.current ?? document;
+
 
     if (typeof IntersectionObserver === "undefined") {
-      const elements = Array.from(rootNode.querySelectorAll(".reveal"));
+      const elements = Array.from(rootElement.querySelectorAll(".reveal"));
       elements.forEach((element) => element.classList.add("in"));
       return undefined;
     }
@@ -29,13 +29,12 @@ export function useReveal(options = {}) {
       { threshold: 0.12 },
     );
 
-    const root = containerEl ?? document;
-    const elements = Array.from(rootNode.querySelectorAll(".reveal"));
+    const elements = Array.from(rootElement.querySelectorAll(".reveal"));
     elements.forEach((element) => observer.observe(element));
 
     return () => {
       elements.forEach((element) => observer.unobserve(element));
       observer.disconnect();
     };
-  }, [containerRef, containerEl, deps]);
+  }, [containerRef?.current, deps]);
 }
