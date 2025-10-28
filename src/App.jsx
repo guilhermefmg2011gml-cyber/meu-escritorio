@@ -44,11 +44,36 @@ const SITE = {
 
 const formattedWhatsappNumber = formatPhoneNumber(SITE.whatsappNumber);
 const whatsappDigits = getDigitsOnly(SITE.whatsappNumber);
-const waUrl = `https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(
+const waUrl = `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(
   SITE.whatsappMsg,
 )}`;
 const mailtoLarissa = `mailto:${SITE.emails[0]}`;
 const mailtoGuilherme = `mailto:${SITE.emails[1]}`;
+
+function useReveal(){
+  React.useEffect(() => {
+    if (
+      typeof window === "undefined" ||
+      typeof document === "undefined" ||
+      typeof IntersectionObserver === "undefined"
+    ) {
+      return undefined;
+    }
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) entry.target.classList.add("in");
+      });
+    }, { threshold: 0.12 });
+    const elements = document.querySelectorAll(".reveal");
+    elements.forEach((el) => io.observe(el));
+
+    return () => {
+      elements.forEach((el) => io.unobserve(el));
+      io.disconnect();
+    };
+  }, []);
+}
 
 function Feature({ Icon: IconProp, title, text }) {
   const Icon = IconProp;
@@ -67,13 +92,19 @@ function Feature({ Icon: IconProp, title, text }) {
 
 function Header(){
   React.useEffect(() => {
+    if (typeof window === "undefined" || typeof document === "undefined") {
+      return undefined;
+    }
+
     const h = document.getElementById("mm-header");
     const onScroll = () => {
       if (window.scrollY > 10) h?.classList.add("shadow-md", "backdrop-blur");
       else h?.classList.remove("shadow-md", "backdrop-blur");
     };
+
     onScroll();
     window.addEventListener("scroll", onScroll);
+
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
@@ -215,7 +246,7 @@ function Footer(){
           <ul className="mt-3 space-y-2 text-sm text-[var(--mm-muted)]">
             <li className="flex items-center gap-2">
               <Phone className="h-4 w-4" />
-              <a href={`tel:${whatsappDigits}`} className="hover:underline">
+              <a href={`tel:+${whatsappDigits}`} className="hover:underline">
                 {formattedWhatsappNumber}
               </a>
             </li>
