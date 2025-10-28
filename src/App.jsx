@@ -11,6 +11,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { formatPhoneNumber, getDigitsOnly } from "./utils/phone";
+import { useReveal } from "./hooks/useReveal";
 
 const SITE = {
   nome: "Moura Martins Advogados",
@@ -48,18 +49,6 @@ const waUrl = `https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(
 )}`;
 const mailtoLarissa = `mailto:${SITE.emails[0]}`;
 const mailtoGuilherme = `mailto:${SITE.emails[1]}`;
-
-function useReveal(){
-  React.useEffect(() => {
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) entry.target.classList.add("in");
-      });
-    }, { threshold: 0.12 });
-    document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
-    return () => io.disconnect();
-  }, []);
-}
 
 function Feature({ Icon: IconProp, title, text }) {
   const Icon = IconProp;
@@ -137,9 +126,10 @@ function Hero(){
 }
 
 function Areas(){
-  useReveal();
+  const containerRef = React.useRef(null);
+  useReveal({ containerRef });
   return (
-    <section id="areas" className="-mt-8">
+    <section ref={containerRef} id="areas" className="-mt-8">
       <div className="mx-auto max-w-5xl rounded-3xl bg-[var(--mm-paper)] p-8 shadow-xl ring-1 ring-black/5">
         <div className="text-center">
           <p className="mm-chip bg-[var(--mm-accent)] text-[var(--mm-primary)]">Áreas de atuação</p>
@@ -157,10 +147,11 @@ function Areas(){
   );
 }
 
-function Socios({ socios }){
-  useReveal();
+function Socios({ socios, onAddDevSocio }){
+  const containerRef = React.useRef(null);
+  useReveal({ containerRef, deps: socios });
   return (
-    <section id="socios" className="mx-auto mt-20 max-w-6xl px-6">
+    <section ref={containerRef} id="socios" className="mx-auto mt-20 max-w-6xl px-6">
       <div className="text-center">
         <p className="mm-chip bg-[var(--mm-accent)] text-[var(--mm-primary)]">Nosso escritório</p>
         <h2 className="mt-3 text-3xl font-bold text-[var(--mm-ink)]">Sócios</h2>
@@ -188,6 +179,13 @@ function Socios({ socios }){
           </article>
         ))}
       </div>
+      {onAddDevSocio ? (
+        <div className="mt-6 text-right">
+          <button type="button" className="mm-btn mm-btn-ghost text-xs" onClick={onAddDevSocio}>
+            Adicionar sócio de teste
+          </button>
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -253,13 +251,28 @@ function WhatsAppFloat(){
 }
 
 export default function App(){
+  const [socios, setSocios] = React.useState(SITE.socios);
+  const handleAddDevSocio = React.useCallback(() => {
+    setSocios((prev) => [
+      ...prev,
+      {
+        nome: "Sócio(a) Teste",
+        cargo: "Demonstração (dev)",
+        oab: "OAB/XX 00.000",
+        bio: "Entrada adicionada em desenvolvimento para validar animações de revelação.",
+        imagem:
+          "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=480&q=80",
+      },
+    ]);
+  }, []);
+  const onAddDevSocio = import.meta.env?.DEV ? handleAddDevSocio : undefined;
   return (
     <div className="bg-[color:var(--mm-accent)] text-[var(--mm-ink)]">
       <Header />
       <main className="pt-[64px]">
         <Hero />
         <Areas />
-        <Socios socios={SITE.socios} />
+        <Socios socios={socios} onAddDevSocio={onAddDevSocio} />
         <Cta />
       </main>
       <Footer />
