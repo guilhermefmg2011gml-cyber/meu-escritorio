@@ -12,10 +12,10 @@ export function useReveal(options = {}) {
 
     if (!isBrowser) return undefined;
 
-    const root = containerEl ?? document;
+    const rootNode = containerEl ?? document;
 
     if (typeof IntersectionObserver === "undefined") {
-      const elements = Array.from(root.querySelectorAll(".reveal"));
+      const elements = Array.from(rootNode.querySelectorAll(".reveal"));
       elements.forEach((element) => element.classList.add("in"));
       return undefined;
     }
@@ -30,7 +30,7 @@ export function useReveal(options = {}) {
     );
 
     const root = containerEl ?? document;
-    const elements = Array.from(root.querySelectorAll(".reveal"));
+    const elements = Array.from(rootNode.querySelectorAll(".reveal"));
     elements.forEach((element) => observer.observe(element));
 
     return () => {
