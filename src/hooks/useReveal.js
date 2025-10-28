@@ -2,6 +2,7 @@ import { useEffect } from "react";
 
 export function useReveal(options = {}) {
   const { containerRef, deps } = options;
+  const dependencyList = Array.isArray(deps) ? deps : [];
 
   useEffect(() => {
     const isBrowser =
@@ -9,9 +10,11 @@ export function useReveal(options = {}) {
 
     if (!isBrowser) return undefined;
 
-    if (containerRef && !containerRef.current) return undefined;
+    const container = containerRef?.current;
 
-    const rootElement = containerRef?.current ?? document;
+    if (containerRef && !container) return undefined;
+
+    const rootElement = container ?? document;
 
 
     if (typeof IntersectionObserver === "undefined") {
@@ -36,5 +39,6 @@ export function useReveal(options = {}) {
       elements.forEach((element) => observer.unobserve(element));
       observer.disconnect();
     };
-  }, [containerRef?.current, deps]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [containerRef, ...dependencyList]);
 }
