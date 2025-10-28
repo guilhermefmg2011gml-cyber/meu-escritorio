@@ -44,7 +44,6 @@
     border-radius: 9999px;
     padding: 0.625rem 1.5rem;
     font-size: 0.95rem;
-@@ -50,100 +50,101 @@
     transition: transform var(--mm-transition), box-shadow var(--mm-transition),
       background-color var(--mm-transition), color var(--mm-transition),
       border-color var(--mm-transition);
