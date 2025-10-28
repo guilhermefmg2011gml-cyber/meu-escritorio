@@ -241,7 +241,7 @@ function WhatsAppFloat(){
 
 export default function App(){
   return (
-    <div className="bg-[color:#f6f8f7] text-[var(--mm-ink)]">
+    <div className="bg-[color:var(--mm-accent)] text-[var(--mm-ink)]">
       <Header />
       <main className="pt-[64px]">
         <Hero />

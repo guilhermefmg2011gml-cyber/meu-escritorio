@@ -2,23 +2,23 @@
 
 @layer base {
   :root {
-    --mm-primary: #1f3c88;
-    --mm-primary-hover: #2d4eaa;
-    --mm-primary-active: #17316d;
+    --mm-bg: #0d3124;
+    --mm-primary: #166149;
+    --mm-primary-hover: #1c7456;
+    --mm-primary-active: #0f4a36;
     --mm-primary-contrast: #ffffff;
-    --mm-accent: #e8f1ff;
+    --mm-accent: #eae6dc;
     --mm-paper: #ffffff;
-    --mm-bg: #11243f;
-    --mm-ink: #1b1f24;
-    --mm-muted: #5b6470;
-    --mm-border: #d4dbe6;
+    --mm-ink: #0e1a16;
+    --mm-muted: #5b6b65;
+    --mm-border: #d7dcd6;
     --mm-radius: 1.25rem;
-    --mm-transition: 160ms ease;
+    --mm-transition: 200ms ease;
   }
 
   body {
     margin: 0;
-    background-color: var(--mm-paper);
+    background-color: var(--mm-accent);
     color: var(--mm-ink);
     font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont,
       "Helvetica Neue", sans-serif;
@@ -44,9 +44,7 @@
     border-radius: 9999px;
     padding: 0.625rem 1.5rem;
     font-size: 0.95rem;
-    font-weight: 600;
-    line-height: 1.2;
-    border: 1px solid transparent;
+@@ -50,100 +50,101 @@
     transition: transform var(--mm-transition), box-shadow var(--mm-transition),
       background-color var(--mm-transition), color var(--mm-transition),
       border-color var(--mm-transition);
@@ -72,6 +70,7 @@
     background: linear-gradient(140deg, var(--mm-primary), var(--mm-primary-hover));
     color: var(--mm-primary-contrast);
     border-color: var(--mm-primary);
+    @apply transition-transform hover:-translate-y-0.5 hover:shadow-lg;
   }
 
   .mm-btn-primary:hover {
@@ -103,7 +102,7 @@
     background-color: var(--mm-paper);
     border: 1px solid color-mix(in srgb, var(--mm-border) 85%, transparent);
     box-shadow: 0 24px 40px -32px rgba(15, 23, 42, 0.5);
-    transition: box-shadow var(--mm-transition), transform var(--mm-transition);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
 
   .mm-card:hover {
@@ -126,9 +125,9 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    background-color: rgba(31, 60, 136, 0.08);
+    background-color: color-mix(in srgb, var(--mm-primary) 12%, transparent);
     color: var(--mm-primary);
-    border: 1px solid rgba(31, 60, 136, 0.12);
+    border: 1px solid color-mix(in srgb, var(--mm-primary) 18%, transparent);
   }
 
   .mm-chip:focus-visible {
