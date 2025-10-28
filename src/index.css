@@ -2,18 +2,19 @@
 
 @layer base {
   :root {
-    --mm-bg: #0d3124;
-    --mm-primary: #166149;
-    --mm-primary-hover: #1c7456;
-    --mm-primary-active: #0f4a36;
-    --mm-primary-contrast: #ffffff;
-    --mm-accent: #eae6dc;
-    --mm-paper: #ffffff;
-    --mm-ink: #0e1a16;
-    --mm-muted: #5b6b65;
-    --mm-border: #d7dcd6;
-    --mm-radius: 1.25rem;
-    --mm-transition: 200ms ease;
+    --mm-bg: #2c0d0d;
+    --mm-primary: #c8a676;
+    --mm-primary-hover: #d4b78f;
+    --mm-primary-active: #ad8b54;
+    --mm-primary-contrast: #2c0d0d;
+    --mm-accent: #fafaf9;
+    --mm-paper: #fffaf0;
+    --mm-ink: #2c0d0d;
+    --mm-muted: #6f5a49;
+    --mm-border: #e7d5b0;
+    --mm-radius: 1.5rem;
+    --mm-transition: 220ms ease;
+    --mm-serif: "Playfair Display", "Cormorant Garamond", serif;
   }
 
   body {
@@ -41,9 +42,11 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    border: 1px solid transparent;
     border-radius: 9999px;
     padding: 0.625rem 1.5rem;
     font-size: 0.95rem;
+    font-weight: 600;
     transition: transform var(--mm-transition), box-shadow var(--mm-transition),
       background-color var(--mm-transition), color var(--mm-transition),
       border-color var(--mm-transition);
@@ -61,19 +64,19 @@
   }
 
   .mm-btn:focus-visible {
-    outline: 2px solid var(--mm-primary);
-    outline-offset: 2px;
+    outline: 2px solid color-mix(in srgb, var(--mm-primary) 70%, transparent);
+    outline-offset: 3px;
   }
 
   .mm-btn-primary {
-    background: linear-gradient(140deg, var(--mm-primary), var(--mm-primary-hover));
+    background: linear-gradient(135deg, var(--mm-primary), color-mix(in srgb, var(--mm-primary-hover) 80%, white 20%));
     color: var(--mm-primary-contrast);
-    border-color: var(--mm-primary);
-    @apply transition-transform hover:-translate-y-0.5 hover:shadow-lg;
+    border-color: color-mix(in srgb, var(--mm-primary) 70%, transparent);
+    box-shadow: 0 22px 32px -26px rgba(44, 13, 13, 0.55);
   }
 
   .mm-btn-primary:hover {
-    background: linear-gradient(140deg, var(--mm-primary-hover), var(--mm-primary));
+    background: linear-gradient(135deg, var(--mm-primary-hover), var(--mm-primary));
   }
 
   .mm-btn-primary:active {
@@ -82,36 +85,56 @@
   }
 
   .mm-btn-ghost {
-    color: var(--mm-primary-contrast);
-    border-color: rgba(255, 255, 255, 0.6);
-    background-color: rgba(255, 255, 255, 0.08);
+    color: var(--mm-bg);
+    border-color: color-mix(in srgb, var(--mm-primary) 50%, transparent);
+    background-color: transparent;
   }
 
   .mm-btn-ghost:hover {
-    background-color: rgba(255, 255, 255, 0.16);
-    border-color: rgba(255, 255, 255, 0.8);
+    background-color: color-mix(in srgb, var(--mm-primary) 16%, transparent);
+    border-color: color-mix(in srgb, var(--mm-primary) 70%, transparent);
   }
 
   .mm-btn-ghost:active {
-    background-color: rgba(255, 255, 255, 0.24);
+    background-color: color-mix(in srgb, var(--mm-primary) 22%, transparent);
+  }
+
+  .mm-btn-ghost--on-dark {
+    color: var(--mm-accent);
+    border-color: color-mix(in srgb, var(--mm-accent) 70%, transparent);
+  }
+
+  .mm-btn-ghost--on-dark:hover {
+    color: var(--mm-bg);
+    background-color: color-mix(in srgb, var(--mm-accent) 14%, transparent);
+    border-color: color-mix(in srgb, var(--mm-accent) 80%, transparent);
+  }
+
+  .mm-btn-ghost--on-dark:active {
+    background-color: color-mix(in srgb, var(--mm-accent) 20%, transparent);
   }
 
   .mm-card {
     border-radius: var(--mm-radius);
     background-color: var(--mm-paper);
-    border: 1px solid color-mix(in srgb, var(--mm-border) 85%, transparent);
-    box-shadow: 0 24px 40px -32px rgba(15, 23, 42, 0.5);
+    border: 1px solid color-mix(in srgb, var(--mm-border) 70%, transparent);
+    box-shadow: 0 22px 45px -32px rgba(44, 13, 13, 0.35);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
 
   .mm-card:hover {
-    box-shadow: 0 28px 48px -30px rgba(15, 23, 42, 0.55);
+    box-shadow: 0 26px 56px -34px rgba(44, 13, 13, 0.38);
     transform: translateY(-2px);
   }
 
   .mm-card:focus-within {
     outline: 2px solid var(--mm-primary);
     outline-offset: 2px;
+  }
+
+  .mm-card--warm {
+    background-color: #faf8f6;
+    border-color: color-mix(in srgb, var(--mm-border) 60%, transparent);
   }
 
   .mm-chip {
@@ -124,9 +147,9 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    background-color: color-mix(in srgb, var(--mm-primary) 12%, transparent);
+    background-color: color-mix(in srgb, var(--mm-primary) 18%, transparent);
     color: var(--mm-primary);
-    border: 1px solid color-mix(in srgb, var(--mm-primary) 18%, transparent);
+    border: 1px solid color-mix(in srgb, var(--mm-primary) 24%, transparent);
   }
 
   .mm-chip:focus-visible {

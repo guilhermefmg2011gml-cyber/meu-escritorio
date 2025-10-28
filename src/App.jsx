@@ -90,12 +90,11 @@ function Header(){
           <img src="/logo-moura.svg" alt="Moura Martins" className="h-8 w-auto" />
           <span className="sr-only">Moura Martins Advogados</span>
         </a>
-        <nav className="hidden gap-6 text-sm font-medium text-[var(--mm-ink)] sm:flex">
-          <a href="#areas" className="hover:opacity-80">Áreas</a>
-          <a href="#socios" className="hover:opacity-80">Sócios</a>
-          <a href="#contato" className="hover:opacity-80">Contato</a>
+        <nav className="hidden items-center gap-8 text-sm font-semibold text-[var(--mm-ink)] sm:flex">
+          <a href="#areas" className="transition-colors hover:text-[var(--mm-primary)]">Áreas</a>
+          <a href="#socios" className="transition-colors hover:text-[var(--mm-primary)]">Sócios</a>
+          <a href="#contato" className="transition-colors hover:text-[var(--mm-primary)]">Contato</a>
         </nav>
-        <a href={waUrl} className="mm-btn mm-btn-primary">WhatsApp</a>
       </div>
     </header>
   );
@@ -105,28 +104,38 @@ function Hero(){
   return (
     <section
       id="top"
-      className="relative flex min-h-[80vh] items-center justify-center"
-      style={{
-        backgroundImage: 'url("/hero.jpg")',
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
+      className="relative flex min-h-[82vh] flex-col items-center justify-center overflow-hidden bg-[var(--mm-accent)]"
     >
-      <div className="absolute inset-0 bg-[color:rgba(0,0,0,.35)]" />
-      <div className="relative z-10 mt-20 px-6 text-center text-white">
-        <span className="mm-chip border border-white/30">Atendimento empresarial personalizado</span>
-        <h1 className="mx-auto mt-5 max-w-3xl text-4xl font-bold sm:text-5xl">
-          Soluções jurídicas <span className="opacity-90">artesanais</span> e <span className="opacity-90">ágeis</span>
-        </h1>
-        <p className="mx-auto mt-3 max-w-2xl text-white/90">
-          Direito Empresarial, Societário e Contratos — estratégia de negócio com proximidade.
+      <div
+        className="absolute inset-0"
+        aria-hidden
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at top, rgba(200,166,118,0.12), transparent 55%)," +
+            "linear-gradient(180deg, rgba(233,220,196,0.45), transparent)",
+        }}
+      />
+      <div className="relative z-10 mt-24 flex w-full max-w-4xl flex-col items-center px-6 text-center text-[var(--mm-ink)]">
+        <img src="/logo-moura.svg" alt="Moura Martins" className="h-20 w-auto" />
+        <p className="mt-6 text-xs font-semibold uppercase tracking-[0.45em] text-[var(--mm-muted)]">
+          Atendimento empresarial personalizado
         </p>
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <span className="mt-6 block h-[2px] w-20 rounded-full bg-[var(--mm-primary)]" />
+        <h1
+          className="mx-auto mt-8 max-w-3xl text-4xl font-semibold leading-snug text-[var(--mm-ink)] sm:text-5xl"
+          style={{ fontFamily: "var(--mm-serif)" }}
+        >
+          Soluções jurídicas artesanais e ágeis
+        </h1>
+        <p className="mx-auto mt-5 max-w-2xl text-base text-[var(--mm-muted)] sm:text-lg">
+          Direito Empresarial, Societário e Contratos com estratégia de negócio, sofisticação e proximidade.
+        </p>
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
           <a href={waUrl} className="mm-btn mm-btn-primary">Entre em contato</a>
           <a href={mailtoLarissa} className="mm-btn mm-btn-ghost">Enviar e-mail</a>
         </div>
       </div>
-      <div className="absolute bottom-[-24px] left-0 right-0 h-6 rounded-t-[40px] bg-[var(--mm-paper)]" />
+      <div className="absolute bottom-0 left-0 right-0 h-12 rounded-t-[48px] bg-[var(--mm-paper)]" />
     </section>
   );
 }
@@ -136,9 +145,9 @@ function Areas(){
   useReveal({ containerRef });
   return (
     <section ref={containerRef} id="areas" className="-mt-8">
-      <div className="mx-auto max-w-5xl rounded-3xl bg-[var(--mm-paper)] p-8 shadow-xl ring-1 ring-black/5">
+      <div className="mx-auto max-w-5xl rounded-[2.5rem] bg-[var(--mm-paper)] p-8 shadow-xl ring-1 ring-black/5">
         <div className="text-center">
-          <p className="mm-chip bg-[var(--mm-accent)] text-[var(--mm-primary)]">Áreas de atuação</p>
+          <p className="mm-chip bg-[color:rgba(200,166,118,0.12)] text-[var(--mm-primary)]">Áreas de atuação</p>
         </div>
         <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
           <Feature Icon={BriefcaseBusiness} title="Direito Empresarial" text="Contratos, concorrência, responsabilidade de sócios e estruturação." />
@@ -167,7 +176,7 @@ function Socios({ socios, onAddDevSocio }){
       </div>
       <div className="mt-10 grid gap-8 md:grid-cols-2">
         {socios.map((s) => (
-          <article key={s.nome} className="reveal mm-card p-6">
+          <article key={s.nome} className="reveal mm-card mm-card--warm p-6">
             <div className="flex flex-col items-center gap-6 text-center md:flex-row md:text-left">
               <img
                 src={s.imagem}
@@ -197,15 +206,17 @@ function Socios({ socios, onAddDevSocio }){
 }
 function Cta(){
   return (
-    <section className="mt-20 bg-[var(--mm-bg)]">
-      <div className="mx-auto max-w-5xl px-6 py-16 text-center text-white">
-        <h2 className="text-3xl font-bold">Pronto para conversar?</h2>
-        <p className="mx-auto mt-3 max-w-2xl text-white/90">
+    <section className="mt-24 bg-[var(--mm-bg)]">
+      <div className="mx-auto max-w-5xl px-6 py-16 text-center text-[var(--mm-accent)]">
+        <h2 className="text-3xl font-semibold" style={{ fontFamily: "var(--mm-serif)" }}>
+          Pronto para conversar?
+        </h2>
+        <p className="mx-auto mt-4 max-w-2xl text-sm text-[color:rgba(250,250,249,0.75)] sm:text-base">
           Atendimento ágil e personalizado. Fale conosco pelo WhatsApp ou e-mail.
         </p>
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
           <a href={waUrl} className="mm-btn mm-btn-primary">WhatsApp</a>
-          <a href={mailtoGuilherme} className="mm-btn mm-btn-ghost">{SITE.emails[1]}</a>
+          <a href={mailtoGuilherme} className="mm-btn mm-btn-ghost mm-btn-ghost--on-dark">{SITE.emails[1]}</a>
         </div>
       </div>
     </section>
@@ -214,29 +225,38 @@ function Cta(){
 
 function Footer(){
   return (
-    <footer id="contato" className="bg-[var(--mm-paper)]">
+    <footer id="contato" className="bg-[var(--mm-bg)] text-[var(--mm-accent)]">
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-12 md:grid-cols-2">
         <div>
-          <h3 className="text-lg font-semibold text-[var(--mm-ink)]">Contatos</h3>
-          <ul className="mt-3 space-y-2 text-sm text-[var(--mm-muted)]">
+          <h3 className="text-lg font-semibold">Contatos</h3>
+          <ul className="mt-4 space-y-3 text-sm text-[color:rgba(248,244,236,0.85)]">
             <li className="flex items-center gap-2">
-              <Phone className="h-4 w-4" />
-              <a href={`tel:+${whatsappDigits}`} className="hover:underline">
+              <Phone className="h-4 w-4 text-[var(--mm-primary)]" />
+              <a href={`tel:+${whatsappDigits}`} className="transition-colors hover:text-[var(--mm-primary)]">
                 {formattedWhatsappNumber}
               </a>
             </li>
-            <li className="flex items-center gap-2"><Mail className="h-4 w-4" /><a href={mailtoLarissa} className="hover:underline">{SITE.emails[0]}</a></li>
-            <li className="flex items-center gap-2"><Mail className="h-4 w-4" /><a href={mailtoGuilherme} className="hover:underline">{SITE.emails[1]}</a></li>
-            <li className="flex items-center gap-2"><MapPin className="h-4 w-4" />{SITE.enderecoCurto}</li>
-            <li className="mt-2">Documentação societária em registro.</li>
+            <li className="flex items-center gap-2">
+              <Mail className="h-4 w-4 text-[var(--mm-primary)]" />
+              <a href={mailtoLarissa} className="transition-colors hover:text-[var(--mm-primary)]">{SITE.emails[0]}</a>
+            </li>
+            <li className="flex items-center gap-2">
+              <Mail className="h-4 w-4 text-[var(--mm-primary)]" />
+              <a href={mailtoGuilherme} className="transition-colors hover:text-[var(--mm-primary)]">{SITE.emails[1]}</a>
+            </li>
+            <li className="flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-[var(--mm-primary)]" />
+              <span>{SITE.enderecoCurto}</span>
+            </li>
+            <li className="pt-1 text-[color:rgba(248,244,236,0.7)]">Documentação societária em registro.</li>
           </ul>
         </div>
-        <div className="text-sm text-[var(--mm-muted)]">
+        <div className="text-sm text-[color:rgba(248,244,236,0.78)]">
           <p>Atendimento remoto em todo o Brasil e presença dedicada em Goiânia e região.</p>
           <p className="mt-2">Horário: segunda a sexta, 9h às 18h.</p>
         </div>
       </div>
-      <p className="border-t border-slate-200 py-6 text-center text-xs text-[var(--mm-muted)]">
+      <p className="border-t border-[color:rgba(248,244,236,0.18)] py-6 text-center text-xs text-[color:rgba(248,244,236,0.6)]">
         © {new Date().getFullYear()} {SITE.nome}. Todos os direitos reservados.
       </p>
     </footer>
