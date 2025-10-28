@@ -10,6 +10,7 @@ import {
   Mail,
   MapPin,
 } from "lucide-react";
+import { formatPhoneNumber, getDigitsOnly } from "./utils/phone";
 
 const SITE = {
   nome: "Moura Martins Advogados",
@@ -40,6 +41,8 @@ const SITE = {
   ],
 };
 
+const formattedWhatsappNumber = formatPhoneNumber(SITE.whatsappNumber);
+const whatsappDigits = getDigitsOnly(SITE.whatsappNumber);
 const waUrl = `https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(
   SITE.whatsappMsg,
 )}`;
@@ -212,7 +215,12 @@ function Footer(){
         <div>
           <h3 className="text-lg font-semibold text-[var(--mm-ink)]">Contatos</h3>
           <ul className="mt-3 space-y-2 text-sm text-[var(--mm-muted)]">
-            <li className="flex items-center gap-2"><Phone className="h-4 w-4" /> (62) 9397-3568</li>
+            <li className="flex items-center gap-2">
+              <Phone className="h-4 w-4" />
+              <a href={`tel:${whatsappDigits}`} className="hover:underline">
+                {formattedWhatsappNumber}
+              </a>
+            </li>
             <li className="flex items-center gap-2"><Mail className="h-4 w-4" /><a href={mailtoLarissa} className="hover:underline">{SITE.emails[0]}</a></li>
             <li className="flex items-center gap-2"><Mail className="h-4 w-4" /><a href={mailtoGuilherme} className="hover:underline">{SITE.emails[1]}</a></li>
             <li className="flex items-center gap-2"><MapPin className="h-4 w-4" />{SITE.enderecoCurto}</li>
