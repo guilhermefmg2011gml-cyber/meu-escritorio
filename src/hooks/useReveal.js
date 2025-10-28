@@ -7,6 +7,19 @@ export function useReveal(options = {}) {
   useEffect(() => {
     if (containerRef && !containerEl) return undefined;
 
+    const isBrowser =
+      typeof window !== "undefined" && typeof document !== "undefined";
+
+    if (!isBrowser) return undefined;
+
+    const root = containerEl ?? document;
+
+    if (typeof IntersectionObserver === "undefined") {
+      const elements = Array.from(root.querySelectorAll(".reveal"));
+      elements.forEach((element) => element.classList.add("in"));
+      return undefined;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {

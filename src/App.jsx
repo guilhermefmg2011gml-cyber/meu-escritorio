@@ -50,31 +50,6 @@ const waUrl = `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(
 const mailtoLarissa = `mailto:${SITE.emails[0]}`;
 const mailtoGuilherme = `mailto:${SITE.emails[1]}`;
 
-function useReveal(){
-  React.useEffect(() => {
-    if (
-      typeof window === "undefined" ||
-      typeof document === "undefined" ||
-      typeof IntersectionObserver === "undefined"
-    ) {
-      return undefined;
-    }
-
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) entry.target.classList.add("in");
-      });
-    }, { threshold: 0.12 });
-    const elements = document.querySelectorAll(".reveal");
-    elements.forEach((el) => io.observe(el));
-
-    return () => {
-      elements.forEach((el) => io.unobserve(el));
-      io.disconnect();
-    };
-  }, []);
-}
-
 function Feature({ Icon: IconProp, title, text }) {
   const Icon = IconProp;
   return (
