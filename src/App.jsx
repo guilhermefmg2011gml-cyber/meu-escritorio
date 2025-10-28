@@ -241,7 +241,12 @@ function Footer(){
 
 function WhatsAppFloat(){
   return (
-    <a href={waUrl} target="_blank" rel="noopener" className="fixed bottom-5 right-5 z-40 mm-btn mm-btn-primary shadow-lg">
+    <a
+      href={waUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="fixed bottom-5 right-5 z-40 mm-btn mm-btn-primary shadow-lg"
+    >
       WhatsApp
     </a>
   );
