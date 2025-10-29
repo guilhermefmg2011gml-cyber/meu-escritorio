@@ -237,24 +237,6 @@ function Socios({ socios, onAddDevSocio }){
     </section>
   );
 }
-function Cta(){
-  return (
-    <section className="mt-24 bg-[var(--mm-bg)]">
-      <div className="mx-auto max-w-5xl px-6 py-16 text-center text-[var(--mm-accent)]">
-        <h2 className="text-3xl font-semibold" style={{ fontFamily: "var(--mm-serif)" }}>
-          Pronto para conversar?
-        </h2>
-        <p className="mx-auto mt-4 max-w-2xl text-sm text-[color:rgba(250,250,249,0.75)] sm:text-base">
-          Atendimento ágil e personalizado. Fale conosco pelo WhatsApp ou e-mail.
-        </p>
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-          <a href={waUrl} className="mm-btn mm-btn-primary">WhatsApp</a>
-          <a href={mailtoGuilherme} className="mm-btn mm-btn-ghost mm-btn-ghost--on-dark">{SITE.emails[1]}</a>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 function Footer(){
   return (
@@ -367,7 +349,6 @@ export default function App(){
         <InstitutionalIntro />
         <Areas />
         <Socios socios={socios} onAddDevSocio={onAddDevSocio} />
-        <Cta />
       </main>
       <Footer />
       <WhatsAppFloat />
