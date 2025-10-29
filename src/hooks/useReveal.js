@@ -1,8 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 export function useReveal(options = {}) {
   const { containerRef, deps } = options;
-  const dependencyList = Array.isArray(deps) ? deps : [];
+  const dependencyList = useMemo(() => {
+    if (deps == null) return [];
+    return Array.isArray(deps) ? deps : [deps];
+  }, [deps]);
 
   useEffect(() => {
     const isBrowser =
@@ -10,11 +13,11 @@ export function useReveal(options = {}) {
 
     if (!isBrowser) return undefined;
 
-    const container = containerRef?.current;
+    const containerElement = containerRef?.current ?? null;
 
-    if (containerRef && !container) return undefined;
+    if (containerRef && !containerElement) return undefined;
 
-    const rootElement = container ?? document;
+    const rootElement = containerElement ?? document;
 
 
     if (typeof IntersectionObserver === "undefined") {
@@ -40,5 +43,5 @@ export function useReveal(options = {}) {
       observer.disconnect();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [containerRef, ...dependencyList]);
+  }, [containerRef, dependencyList]);
 }
