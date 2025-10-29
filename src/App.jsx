@@ -102,11 +102,11 @@ function Header(){
 
 function HeroLogo(){
   return (
-    <div className="w-full">
+    <div className="w-full -mt-1 sm:-mt-2">
       <img
         src="/hero.jpg"
         alt="Moura Martins Advogados"
-        className="mx-auto block h-48 w-full max-w-none object-cover object-center shadow-[0_18px_60px_rgba(38,12,8,0.35)] ring-1 ring-[rgba(45,10,7,0.35)] sm:h-56 lg:h-64"
+        className="mx-auto block h-60 w-full max-w-none object-cover object-center shadow-[0_18px_60px_rgba(38,12,8,0.35)] ring-1 ring-[rgba(45,10,7,0.35)] sm:h-72 lg:h-80"
       />
     </div>
   );
@@ -116,7 +116,7 @@ function Hero(){
   return (
     <section
       id="top"
-      className="relative flex min-h-[82vh] flex-col items-center justify-center overflow-hidden bg-[var(--mm-accent)]"
+      className="relative flex min-h-[82vh] flex-col items-center justify-start overflow-hidden bg-[var(--mm-accent)] pt-[4.5rem] pb-20 sm:pt-[5.25rem] sm:pb-24"
     >
       <div
         className="absolute inset-0"
