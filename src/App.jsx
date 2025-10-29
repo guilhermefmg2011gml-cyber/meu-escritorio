@@ -6,9 +6,6 @@ import {
   ShieldCheck,
   Building2,
   BookOpenCheck,
-  Phone,
-  Mail,
-  MapPin,
 } from "lucide-react";
 import { formatPhoneNumber, getDigitsOnly } from "./utils/phone";
 import { useReveal } from "./hooks/useReveal";
@@ -261,40 +258,74 @@ function Cta(){
 
 function Footer(){
   return (
-    <footer id="contato" className="scroll-mt-28 bg-[var(--mm-bg)] text-[var(--mm-accent)] sm:scroll-mt-32">
-      <div className="mx-auto grid max-w-6xl gap-10 px-6 py-12 md:grid-cols-2">
+    <footer
+      id="contato"
+      className="scroll-mt-28 bg-[#2b0f0f] text-white py-16 px-6 md:px-10 sm:scroll-mt-32"
+    >
+      <div className="max-w-5xl mx-auto text-center mb-12">
+        <h2 className="text-2xl font-serif font-semibold mb-4">Pronto para conversar?</h2>
+        <p className="text-[0.95rem] text-[#e8e0d9] max-w-xl mx-auto leading-relaxed mb-6">
+          Atendimento ágil e personalizado. Fale conosco pelo WhatsApp ou e-mail.
+        </p>
+
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-3">
+          <a
+            href={waUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-[#c3a574] text-[#2b0f0f] font-semibold px-5 py-2.5 rounded-full shadow hover:bg-[#b59565] transition"
+          >
+            WhatsApp
+          </a>
+
+          <div className="flex flex-col sm:flex-row gap-2 text-sm font-medium">
+            <a href={mailtoGuilherme} className="hover:underline text-[#f7ede3]">
+              {SITE.emails[1]}
+            </a>
+            <span className="hidden sm:block text-[#bcaea0]">•</span>
+            <a href={mailtoLarissa} className="hover:underline text-[#f7ede3]">
+              {SITE.emails[0]}
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div className="border-t border-[#4b2d2d] mb-10 opacity-40" />
+
+      <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-[#e6dad0]">
         <div>
-          <h3 className="text-lg font-semibold">Contatos</h3>
-          <ul className="mt-4 space-y-3 text-sm text-[color:rgba(248,244,236,0.85)]">
+          <h3 className="text-base font-semibold mb-4 text-white">Contatos</h3>
+          <ul className="space-y-2">
             <li className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-[var(--mm-primary)]" />
-              <a href={`tel:+${whatsappDigits}`} className="transition-colors hover:text-[var(--mm-primary)]">
+              <span className="text-[#c3a574]">📞</span>
+              <a href={`tel:+${whatsappDigits}`} className="hover:underline text-[#f7ede3]">
                 {formattedWhatsappNumber}
               </a>
             </li>
-            <li className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-[var(--mm-primary)]" />
-              <a href={mailtoLarissa} className="transition-colors hover:text-[var(--mm-primary)]">{SITE.emails[0]}</a>
+            <li className="flex items-start gap-2">
+              <span className="text-[#c3a574]">📍</span>
+              <span>
+                Órion Business &amp; Health Complex
+                <br />
+                Av. Portugal, nº 1148 - St. Marista, Goiânia - GO
+              </span>
             </li>
             <li className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-[var(--mm-primary)]" />
-              <a href={mailtoGuilherme} className="transition-colors hover:text-[var(--mm-primary)]">{SITE.emails[1]}</a>
+              <span className="text-[#c3a574]">🗂️</span>
+              Documentação societária em registro.
             </li>
-            <li className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-[var(--mm-primary)]" />
-              <span>{SITE.enderecoCurto}</span>
-            </li>
-            <li className="pt-1 text-[color:rgba(248,244,236,0.7)]">Documentação societária em registro.</li>
           </ul>
         </div>
-        <div className="text-sm text-[color:rgba(248,244,236,0.78)]">
-          <p>Atendimento remoto em todo o Brasil e presença dedicada em Goiânia e região.</p>
-          <p className="mt-2">Horário: segunda a sexta, 9h às 18h.</p>
+        <div className="md:text-right">
+          <p className="mb-2">
+            Atendimento remoto em todo o Brasil e presença dedicada em Goiânia e região.
+          </p>
+          <p>Horário: segunda a sexta, 8h às 18h.</p>
         </div>
       </div>
-      <p className="border-t border-[color:rgba(248,244,236,0.18)] py-6 text-center text-xs text-[color:rgba(248,244,236,0.6)]">
+      <div className="border-t border-[#4b2d2d] mt-10 pt-6 text-center text-xs text-[#bcaea0]">
         © {new Date().getFullYear()} {SITE.nome}. Todos os direitos reservados.
-      </p>
+      </div>
     </footer>
   );
 }
