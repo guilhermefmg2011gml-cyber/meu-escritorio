@@ -239,73 +239,117 @@ function Socios({ socios, onAddDevSocio }){
 }
 
 function Footer(){
+  const ctaButtonClass =
+    "inline-flex items-center justify-center rounded-full bg-[#c3a574] px-5 py-2.5 font-semibold text-[#2b0f0f] shadow transition hover:bg-[#b59565]";
+  const contactIconClass =
+    "flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#c3a574]/15 text-base text-[#c3a574]";
   return (
     <footer
       id="contato"
-      className="scroll-mt-28 bg-[#2b0f0f] text-white py-16 px-6 md:px-10 sm:scroll-mt-32"
+      className="scroll-mt-28 bg-[#2b0f0f] py-16 px-6 text-white sm:scroll-mt-32 md:px-10"
     >
-      <div className="max-w-5xl mx-auto text-center mb-12">
-        <h2 className="text-2xl font-serif font-semibold mb-4">Pronto para conversar?</h2>
-        <p className="text-[0.95rem] text-[#e8e0d9] max-w-xl mx-auto leading-relaxed mb-6">
+      <div className="mx-auto mb-12 max-w-5xl text-center">
+        <h2 className="mb-4 font-serif text-2xl font-semibold">Pronto para conversar?</h2>
+        <p className="mx-auto mb-6 max-w-xl text-[0.95rem] leading-relaxed text-[#e8e0d9]">
           Atendimento ágil e personalizado. Fale conosco pelo WhatsApp ou e-mail.
         </p>
 
-        <div className="flex flex-col sm:flex-row justify-center items-center gap-3">
-          <a
-            href={waUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-[#c3a574] text-[#2b0f0f] font-semibold px-5 py-2.5 rounded-full shadow hover:bg-[#b59565] transition"
-          >
+        <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+          <a href={waUrl} target="_blank" rel="noopener noreferrer" className={ctaButtonClass}>
             WhatsApp
           </a>
 
           <div className="flex flex-col sm:flex-row gap-2 text-sm font-medium">
-            <a href={mailtoGuilherme} className="hover:underline text-[#f7ede3]">
+            <a href={mailtoGuilherme} className={ctaButtonClass}>
               {SITE.emails[1]}
             </a>
             <span className="hidden sm:block text-[#bcaea0]">•</span>
-            <a href={mailtoLarissa} className="hover:underline text-[#f7ede3]">
+            <a href={mailtoLarissa} className={ctaButtonClass}>
               {SITE.emails[0]}
             </a>
           </div>
         </div>
       </div>
 
-      <div className="border-t border-[#4b2d2d] mb-10 opacity-40" />
+      <div className="mb-10 border-t border-[#4b2d2d] opacity-40" />
 
-      <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-[#e6dad0]">
+      <div className="mx-auto grid max-w-5xl grid-cols-1 gap-8 text-sm text-[#e6dad0] md:grid-cols-2">
         <div>
-          <h3 className="text-base font-semibold mb-4 text-white">Contatos</h3>
-          <ul className="space-y-2">
-            <li className="flex items-center gap-2">
-              <span className="text-[#c3a574]">📞</span>
-              <a href={`tel:+${whatsappDigits}`} className="hover:underline text-[#f7ede3]">
+          <h3 className="mb-4 text-base font-semibold text-white">Contatos</h3>
+          <ul className="space-y-3">
+            <li className="flex items-center gap-3">
+              <span className={contactIconClass} aria-hidden>
+                📞
+              </span>
+              <a href={`tel:+${whatsappDigits}`} className="text-[#f7ede3] transition hover:underline">
                 {formattedWhatsappNumber}
               </a>
             </li>
-            <li className="flex items-start gap-2">
-              <span className="text-[#c3a574]">📍</span>
+
+            <li className="flex items-center gap-3">
+              <span className={contactIconClass}>
+                <img
+                  src={instagramIcon}
+                  alt=""
+                  aria-hidden="true"
+                  className="h-4 w-4"
+                />
+              </span>
+              <a
+                href="https://www.instagram.com/mouramartinsadvogados"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#f7ede3] transition hover:underline"
+              >
+                @mouramartinsadvogados
+              </a>
+            </li>
+            
+            <li className="flex items-center gap-3">
+              <span className={contactIconClass}>
+                <img
+                  src={tiktokIcon}
+                  alt=""
+                  aria-hidden="true"
+                  className="h-4 w-4"
+                />
+              </span>
+              <a
+                href="https://www.tiktok.com/@mouramartinsadvogados"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#f7ede3] transition hover:underline"
+              >
+                @mouramartinsadvogados
+              </a>
+            </li>
+
+            <li className="flex items-start gap-3">
+              <span className={contactIconClass} aria-hidden>
+                📍
+              </span>
               <span>
                 Órion Business &amp; Health Complex
                 <br />
                 Av. Portugal, nº 1148 - St. Marista, Goiânia - GO
               </span>
             </li>
-            <li className="flex items-center gap-2">
-              <span className="text-[#c3a574]">🗂️</span>
+            <li className="flex items-center gap-3">
+              <span className={contactIconClass} aria-hidden>
+                🗂️
+              </span>
               Documentação societária em registro.
             </li>
           </ul>
         </div>
-        <div className="md:text-right">
+        <div className="text-center md:ml-auto md:max-w-[32rem] md:text-right">
           <p className="mb-2">
             Atendimento remoto em todo o Brasil e presença dedicada em Goiânia e região.
           </p>
           <p>Horário: segunda a sexta, 8h às 18h.</p>
         </div>
       </div>
-      <div className="border-t border-[#4b2d2d] mt-10 pt-6 text-center text-xs text-[#bcaea0]">
+      <div className="mt-10 border-t border-[#4b2d2d] pt-6 text-center text-xs text-[#bcaea0]">
         © {new Date().getFullYear()} {SITE.nome}. Todos os direitos reservados.
       </div>
     </footer>
