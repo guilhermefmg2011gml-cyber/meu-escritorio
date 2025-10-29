@@ -102,7 +102,7 @@ function Header(){
 
 function HeroLogo(){
   return (
-    <div className="w-full -mt-1 sm:-mt-2">
+    <div className="w-full">
       <img
         src="/hero.jpg"
         alt="Moura Martins Advogados"
@@ -112,11 +112,33 @@ function HeroLogo(){
   );
 }
 
+function HeroBanner(){
+  return (
+    <section
+      aria-labelledby="hero-heading"
+      className="relative flex flex-col items-center justify-end overflow-hidden bg-[var(--mm-bg)] pt-[4.5rem] pb-10 sm:pt-[5.25rem]"
+    >
+      <div
+        className="absolute inset-0"
+        aria-hidden
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at top, rgba(180,140,96,0.22), transparent 55%)," +
+            "linear-gradient(180deg, rgba(120,60,40,0.18), transparent)",
+        }}
+      />
+      <div className="relative z-10 w-full max-w-4xl px-6">
+        <HeroLogo />
+      </div>
+    </section>
+  );
+}
+
 function Hero(){
   return (
     <section
       id="top"
-      className="relative flex min-h-[82vh] flex-col items-center justify-start overflow-hidden bg-[var(--mm-accent)] pt-[4.5rem] pb-20 sm:pt-[5.25rem] sm:pb-24"
+      className="relative flex flex-col items-center justify-start overflow-hidden bg-[var(--mm-accent)] pb-20 pt-14 sm:pb-24"
     >
       <div
         className="absolute inset-0"
@@ -127,22 +149,21 @@ function Hero(){
             "linear-gradient(180deg, rgba(233,220,196,0.45), transparent)",
         }}
       />
-      <div className="relative z-10 mt-24 flex w-full flex-col items-center text-[var(--mm-ink)]">
-        <HeroLogo />
-        <div className="flex w-full max-w-4xl flex-col items-center px-6 text-center">
-          <h1
-            className="mx-auto mt-10 max-w-3xl text-4xl font-semibold leading-snug text-[var(--mm-ink)] sm:text-5xl"
-            style={{ fontFamily: "var(--mm-serif)" }}
-          >
-            Soluções jurídicas artesanais e ágeis
-          </h1>
-          <p className="mx-auto max-w-2xl pt-6 text-base text-[var(--mm-muted)] sm:text-lg">
-            Advocacia full service com atuação consultiva e contenciosa. Atendemos empresas e pessoas físicas em todas as áreas do Direito — com estratégia, técnica e discrição.
-          </p>
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-            <a href={waUrl} className="mm-btn mm-btn-primary">Entre em contato</a>
-            <a href={mailtoLarissa} className="mm-btn mm-btn-ghost">Enviar e-mail</a>
-          </div>
+      <div className="absolute -top-8 left-0 right-0 h-12 rounded-b-[48px] bg-[var(--mm-paper)] sm:-top-10" />
+      <div className="relative z-10 flex w-full max-w-4xl flex-col items-center px-6 text-center text-[var(--mm-ink)]">
+        <h1
+          id="hero-heading"
+          className="mx-auto max-w-3xl text-4xl font-semibold leading-snug text-[var(--mm-ink)] sm:text-5xl"
+          style={{ fontFamily: "var(--mm-serif)" }}
+        >
+          Soluções jurídicas artesanais e ágeis
+        </h1>
+        <p className="mx-auto mt-6 max-w-2xl text-base text-[var(--mm-muted)] sm:text-lg">
+          Advocacia full service com atuação consultiva e contenciosa. Atendemos empresas e pessoas físicas em todas as áreas do Direito — com estratégia, técnica e discrição.
+        </p>
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+          <a href={waUrl} className="mm-btn mm-btn-primary">Entre em contato</a>
+          <a href={mailtoLarissa} className="mm-btn mm-btn-ghost">Enviar e-mail</a>
         </div>
       </div>
       <div className="absolute bottom-0 left-0 right-0 h-12 rounded-t-[48px] bg-[var(--mm-paper)]" />
@@ -164,7 +185,7 @@ function Areas(){
   const containerRef = React.useRef(null);
   useReveal({ containerRef });
   return (
-    <section ref={containerRef} id="areas" className="-mt-8">
+    <section ref={containerRef} id="areas" className="-mt-8 scroll-mt-28 sm:scroll-mt-32">
       <div className="mx-auto max-w-5xl rounded-[2.5rem] bg-[var(--mm-paper)] p-8 shadow-xl ring-1 ring-black/5">
         <div className="text-center">
           <p className="mm-chip bg-[color:rgba(200,166,118,0.12)] text-[var(--mm-primary)]">Full service premium</p>
@@ -216,7 +237,7 @@ function Socios({ socios, onAddDevSocio }){
   const containerRef = React.useRef(null);
   useReveal({ containerRef, deps: socios });
   return (
-    <section ref={containerRef} id="socios" className="mx-auto mt-20 max-w-6xl px-6">
+    <section ref={containerRef} id="socios" className="mx-auto mt-20 max-w-6xl scroll-mt-28 px-6 sm:scroll-mt-32">
       <div className="text-center">
         <p className="mm-chip bg-[var(--mm-accent)] text-[var(--mm-primary)]">Nosso escritório</p>
         <h2 className="mt-3 text-3xl font-bold text-[var(--mm-ink)]">Sócios</h2>
@@ -275,7 +296,7 @@ function Cta(){
 
 function Footer(){
   return (
-    <footer id="contato" className="bg-[var(--mm-bg)] text-[var(--mm-accent)]">
+    <footer id="contato" className="scroll-mt-28 bg-[var(--mm-bg)] text-[var(--mm-accent)] sm:scroll-mt-32">
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-12 md:grid-cols-2">
         <div>
           <h3 className="text-lg font-semibold">Contatos</h3>
@@ -345,7 +366,8 @@ export default function App(){
   return (
     <div className="bg-[color:var(--mm-accent)] text-[var(--mm-ink)]">
       <Header />
-      <main className="pt-[64px]">
+      <main>
+        <HeroBanner />
         <Hero />
         <InstitutionalIntro />
         <Areas />
