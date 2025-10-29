@@ -128,7 +128,7 @@ function Hero(){
           Soluções jurídicas artesanais e ágeis
         </h1>
         <p className="mx-auto mt-5 max-w-2xl text-base text-[var(--mm-muted)] sm:text-lg">
-          Direito Empresarial, Societário e Contratos com estratégia de negócio, sofisticação e proximidade.
+          Advocacia full service com atuação consultiva e contenciosa. Atendemos empresas e pessoas físicas em todas as principais áreas do Direito — com estratégia, técnica e discrição.
         </p>
         <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
           <a href={waUrl} className="mm-btn mm-btn-primary">Entre em contato</a>
@@ -150,12 +150,36 @@ function Areas(){
           <p className="mm-chip bg-[color:rgba(200,166,118,0.12)] text-[var(--mm-primary)]">Áreas de atuação</p>
         </div>
         <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
-          <Feature Icon={BriefcaseBusiness} title="Direito Empresarial" text="Contratos, concorrência, responsabilidade de sócios e estruturação." />
-          <Feature Icon={Landmark} title="Direito Administrativo" text="Licitações, PADs, improbidade, MS e atuação nos Tribunais Superiores." />
-          <Feature Icon={Gavel} title="Direito Sucessório" text="Inventários judiciais/extrajudiciais, partilhas e prevenção de conflitos familiares." />
-          <Feature Icon={Building2} title="Direito Imobiliário" text="Regularização, due diligence de imóveis, contratos e resolução de disputas." />
-          <Feature Icon={ShieldCheck} title="Penal Empresarial" text="Defesa em crimes econômicos e compliance, com atuação estratégica e sigilosa." />
-          <Feature Icon={BookOpenCheck} title="Tribunais Superiores" text="Recursos especiais/extraordinários, memoriais e sustentações orais." />
+          <Feature
+            Icon={BriefcaseBusiness}
+            title="Direito Empresarial"
+            text="Consultivo e contencioso empresarial: contratos, concorrência, responsabilidade de sócios, governança e estruturação de negócios."
+          />
+          <Feature
+            Icon={Landmark}
+            title="Direito Administrativo"
+            text="Licitações, PADs e improbidade. Defesa técnica em processos disciplinares e atuação perante órgãos de controle e Tribunais Superiores."
+          />
+          <Feature
+            Icon={Building2}
+            title="Direito Imobiliário"
+            text="Due diligence e regularização de imóveis; contratos de compra, locação e incorporação; gestão e resolução de disputas patrimoniais."
+          />
+          <Feature
+            Icon={Gavel}
+            title="Direito Sucessório e Patrimonial"
+            text="Planejamento sucessório, acordos familiares, blindagem patrimonial e condução de inventários judiciais e extrajudiciais."
+          />
+          <Feature
+            Icon={ShieldCheck}
+            title="Penal Empresarial / Penal Econômico"
+            text="Defesa em crimes econômicos, compliance e investigações internas. Atuação estratégica e sigilosa em casos de alta complexidade."
+          />
+          <Feature
+            Icon={BookOpenCheck}
+            title="Tribunais Superiores"
+            text="Recursos especiais e extraordinários, memoriais e sustentações orais junto aos Tribunais Superiores."
+          />
         </div>
       </div>
     </section>
