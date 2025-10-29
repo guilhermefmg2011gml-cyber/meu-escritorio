@@ -100,73 +100,36 @@ function Header(){
   );
 }
 
-function HeroLogo(){
-  return (
-    <div className="w-full">
-      <img
-        src="/hero.jpg"
-        alt="Moura Martins Advogados"
-        className="mx-auto block h-60 w-full max-w-none object-cover object-center shadow-[0_18px_60px_rgba(38,12,8,0.35)] ring-1 ring-[rgba(45,10,7,0.35)] sm:h-72 lg:h-80"
-      />
-    </div>
-  );
-}
-
-function HeroBanner(){
-  return (
-    <section
-      aria-labelledby="hero-heading"
-      className="relative flex flex-col items-center justify-end overflow-hidden bg-[var(--mm-bg)] pt-[4.5rem] pb-10 sm:pt-[5.25rem]"
-    >
-      <div
-        className="absolute inset-0"
-        aria-hidden
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at top, rgba(180,140,96,0.22), transparent 55%)," +
-            "linear-gradient(180deg, rgba(120,60,40,0.18), transparent)",
-        }}
-      />
-      <div className="relative z-10 w-full max-w-4xl px-6">
-        <HeroLogo />
-      </div>
-    </section>
-  );
-}
-
 function Hero(){
   return (
     <section
       id="top"
-      className="relative flex flex-col items-center justify-start overflow-hidden bg-[var(--mm-accent)] pb-20 pt-14 sm:pb-24"
+      className="relative flex min-h-[520px] flex-col items-center justify-center overflow-hidden pb-20 pt-[4.5rem] text-center text-[var(--mm-accent)] sm:pb-24 sm:pt-[5.25rem]"
+      style={{
+        backgroundImage: "url('/hero-logo-full.jpg')",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover",
+      }}
     >
-      <div
-        className="absolute inset-0"
-        aria-hidden
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at top, rgba(200,166,118,0.12), transparent 55%)," +
-            "linear-gradient(180deg, rgba(233,220,196,0.45), transparent)",
-        }}
-      />
-      <div className="absolute -top-8 left-0 right-0 h-12 rounded-b-[48px] bg-[var(--mm-paper)] sm:-top-10" />
-      <div className="relative z-10 flex w-full max-w-4xl flex-col items-center px-6 text-center text-[var(--mm-ink)]">
+      <div className="absolute inset-0 bg-[color:rgba(32,8,6,0.55)]" aria-hidden />
+      <div className="relative z-10 flex w-full max-w-4xl flex-col items-center px-6">
         <h1
           id="hero-heading"
-          className="mx-auto max-w-3xl text-4xl font-semibold leading-snug text-[var(--mm-ink)] sm:text-5xl"
+          className="mx-auto max-w-3xl text-4xl font-semibold leading-snug text-[var(--mm-accent)] sm:text-5xl"
           style={{ fontFamily: "var(--mm-serif)" }}
         >
           Soluções jurídicas artesanais e ágeis
         </h1>
-        <p className="mx-auto mt-6 max-w-2xl text-base text-[var(--mm-muted)] sm:text-lg">
-          Advocacia full service com atuação consultiva e contenciosa. Atendemos empresas e pessoas físicas em todas as áreas do Direito — com estratégia, técnica e discrição.
+        <p className="mx-auto mt-6 max-w-2xl text-base text-[color:rgba(248,244,236,0.82)] sm:text-lg">
+          Advocacia full service com atuação consultiva e contenciosa. Atendemos empresas e pessoas físicas em todas as áreas do
+ Direito — com estratégia, técnica e discrição.
         </p>
         <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
           <a href={waUrl} className="mm-btn mm-btn-primary">Entre em contato</a>
-          <a href={mailtoLarissa} className="mm-btn mm-btn-ghost">Enviar e-mail</a>
+          <a href={mailtoLarissa} className="mm-btn mm-btn-ghost mm-btn-ghost--on-dark">Enviar e-mail</a>
         </div>
       </div>
-      <div className="absolute bottom-0 left-0 right-0 h-12 rounded-t-[48px] bg-[var(--mm-paper)]" />
     </section>
   );
 }
@@ -367,7 +330,6 @@ export default function App(){
     <div className="bg-[color:var(--mm-accent)] text-[var(--mm-ink)]">
       <Header />
       <main>
-        <HeroBanner />
         <Hero />
         <InstitutionalIntro />
         <Areas />
