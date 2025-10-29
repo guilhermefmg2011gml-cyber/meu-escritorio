@@ -53,9 +53,9 @@ const mailtoGuilherme = `mailto:${SITE.emails[1]}`;
 function Feature({ Icon: IconProp, title, text }) {
   const Icon = IconProp;
   return (
-    <div className="reveal mm-card p-5">
+    <div className="reveal mm-card p-6">
       <div className="flex gap-4">
-        <Icon className="h-6 w-6 text-[var(--mm-primary)]" />
+        <Icon className="h-6 w-6 text-[#b89b5a]" />
         <div>
           <h3 className="font-semibold text-[var(--mm-ink)]">{title}</h3>
           <p className="mt-1 text-sm text-[var(--mm-muted)]">{text}</p>
@@ -91,7 +91,7 @@ function Header(){
           <span className="sr-only">Moura Martins Advogados</span>
         </a>
         <nav className="hidden items-center gap-8 text-sm font-semibold text-[var(--mm-ink)] sm:flex">
-          <a href="#areas" className="transition-colors hover:text-[var(--mm-primary)]">Áreas</a>
+          <a href="#areas" className="transition-colors hover:text-[var(--mm-primary)]">Núcleos</a>
           <a href="#socios" className="transition-colors hover:text-[var(--mm-primary)]">Sócios</a>
           <a href="#contato" className="transition-colors hover:text-[var(--mm-primary)]">Contato</a>
         </nav>
@@ -117,18 +117,14 @@ function Hero(){
       />
       <div className="relative z-10 mt-24 flex w-full max-w-4xl flex-col items-center px-6 text-center text-[var(--mm-ink)]">
         <img src="/logo-moura.svg" alt="Moura Martins" className="h-20 w-auto" />
-        <p className="mt-6 text-xs font-semibold uppercase tracking-[0.45em] text-[var(--mm-muted)]">
-          Atendimento empresarial personalizado
-        </p>
-        <span className="mt-6 block h-[2px] w-20 rounded-full bg-[var(--mm-primary)]" />
         <h1
           className="mx-auto mt-8 max-w-3xl text-4xl font-semibold leading-snug text-[var(--mm-ink)] sm:text-5xl"
           style={{ fontFamily: "var(--mm-serif)" }}
         >
           Soluções jurídicas artesanais e ágeis
         </h1>
-        <p className="mx-auto mt-5 max-w-2xl text-base text-[var(--mm-muted)] sm:text-lg">
-          Advocacia full service com atuação consultiva e contenciosa. Atendemos empresas e pessoas físicas em todas as principais áreas do Direito — com estratégia, técnica e discrição.
+        <p className="mx-auto max-w-2xl pt-6 text-base text-[var(--mm-muted)] sm:text-lg">
+          Advocacia full service com atuação consultiva e contenciosa. Atendemos empresas e pessoas físicas em todas as áreas do Direito — com estratégia, técnica e discrição.
         </p>
         <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
           <a href={waUrl} className="mm-btn mm-btn-primary">Entre em contato</a>
@@ -140,6 +136,16 @@ function Hero(){
   );
 }
 
+function InstitutionalIntro(){
+  return (
+    <section className="bg-[#f3e8dc] text-center py-10 px-6">
+      <p className="max-w-3xl mx-auto text-[#4a3425] text-[0.95rem] leading-relaxed font-medium">
+        A <strong>Moura Martins Advogados</strong> é uma banca de advocacia full service, estruturada por núcleos especializados que atuam de forma integrada. Nosso modelo une técnica, experiência e proximidade para entregar soluções jurídicas completas e personalizadas.
+      </p>
+    </section>
+  );
+}
+
 function Areas(){
   const containerRef = React.useRef(null);
   useReveal({ containerRef });
@@ -147,37 +153,43 @@ function Areas(){
     <section ref={containerRef} id="areas" className="-mt-8">
       <div className="mx-auto max-w-5xl rounded-[2.5rem] bg-[var(--mm-paper)] p-8 shadow-xl ring-1 ring-black/5">
         <div className="text-center">
-          <p className="mm-chip bg-[color:rgba(200,166,118,0.12)] text-[var(--mm-primary)]">Áreas de atuação</p>
+          <p className="mm-chip bg-[color:rgba(200,166,118,0.12)] text-[var(--mm-primary)]">Full service premium</p>
+          <h2 className="mt-4 text-3xl font-semibold text-[var(--mm-ink)]" style={{ fontFamily: "var(--mm-serif)" }}>
+            Nossos Núcleos de Atuação
+          </h2>
+          <p className="mx-auto mt-3 max-w-2xl text-sm text-[var(--mm-muted)] sm:text-base">
+            Atuação completa, coordenada e multidisciplinar — em todas as frentes jurídicas que impactam empresas, patrimônio e pessoas.
+          </p>
         </div>
         <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
           <Feature
             Icon={BriefcaseBusiness}
-            title="Direito Empresarial"
+            title="Núcleo Empresarial"
             text="Consultivo e contencioso empresarial: contratos, concorrência, responsabilidade de sócios, governança e estruturação de negócios."
           />
           <Feature
             Icon={Landmark}
-            title="Direito Administrativo"
+            title="Núcleo Administrativo"
             text="Licitações, PADs e improbidade. Defesa técnica em processos disciplinares e atuação perante órgãos de controle e Tribunais Superiores."
           />
           <Feature
             Icon={Building2}
-            title="Direito Imobiliário"
+            title="Núcleo Imobiliário"
             text="Due diligence e regularização de imóveis; contratos de compra, locação e incorporação; gestão e resolução de disputas patrimoniais."
           />
           <Feature
             Icon={Gavel}
-            title="Direito Sucessório e Patrimonial"
+            title="Núcleo Sucessório e Patrimonial"
             text="Planejamento sucessório, acordos familiares, blindagem patrimonial e condução de inventários judiciais e extrajudiciais."
           />
           <Feature
             Icon={ShieldCheck}
-            title="Penal Empresarial / Penal Econômico"
+            title="Núcleo Penal"
             text="Defesa em crimes econômicos, compliance e investigações internas. Atuação estratégica e sigilosa em casos de alta complexidade."
           />
           <Feature
             Icon={BookOpenCheck}
-            title="Tribunais Superiores"
+            title="Núcleo de Tribunais Superiores"
             text="Recursos especiais e extraordinários, memoriais e sustentações orais junto aos Tribunais Superiores."
           />
         </div>
@@ -321,6 +333,7 @@ export default function App(){
       <Header />
       <main className="pt-[64px]">
         <Hero />
+        <InstitutionalIntro />
         <Areas />
         <Socios socios={socios} onAddDevSocio={onAddDevSocio} />
         <Cta />
