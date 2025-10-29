@@ -102,19 +102,12 @@ function Header(){
 
 function HeroLogo(){
   return (
-    <div className="w-full bg-[#2d0a07] py-8 shadow-[0_18px_60px_rgba(38,12,8,0.45)] ring-1 ring-[rgba(255,255,255,0.08)]">
-      <div className="mx-auto flex max-w-5xl flex-col items-center justify-center gap-6 px-8 text-center sm:flex-row sm:gap-10 sm:text-left">
-        <img src="/logo-moura.svg" alt="Moura Martins" className="h-20 w-auto" />
-        <div>
-          <p
-            className="text-lg uppercase tracking-[0.55em] text-[#e3d5bd] sm:text-xl"
-            style={{ fontFamily: "var(--mm-serif)" }}
-          >
-            Moura Martins
-          </p>
-          <p className="mt-3 text-xs uppercase tracking-[0.7em] text-[#b8965b]">Advogados</p>
-        </div>
-      </div>
+    <div className="w-full">
+      <img
+        src="/hero.jpg"
+        alt="Moura Martins Advogados"
+        className="mx-auto block h-48 w-full max-w-none object-cover object-center shadow-[0_18px_60px_rgba(38,12,8,0.35)] ring-1 ring-[rgba(45,10,7,0.35)] sm:h-56 lg:h-64"
+      />
     </div>
   );
 }
