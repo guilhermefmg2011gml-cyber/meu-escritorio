@@ -106,14 +106,14 @@ function Hero(){
       id="top"
       className="flex flex-col items-center pb-20 pt-[4.5rem] text-center sm:pb-24 sm:pt-[5.25rem]"
     >
-      <div className="w-full px-6">
-        <div className="relative mx-auto aspect-[5/3] w-full max-w-4xl overflow-hidden rounded-[3rem] shadow-[0_38px_80px_-48px_rgba(44,13,13,0.6)] ring-1 ring-black/10">
+      <div className="relative w-full">
+        <div className="relative w-full min-h-[520px] overflow-hidden sm:min-h-[600px]">
           <img
             src="/hero-logo-full.jpg"
             alt="Arte institucional Moura Martins Advogados"
-            className="h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-[color:rgba(32,8,6,0.45)] mix-blend-multiply" aria-hidden />
+          <div className="absolute inset-0 bg-[color:rgba(32,8,6,0.5)]" aria-hidden />
         </div>
       </div>
       <div className="mt-12 w-full max-w-3xl px-6 text-[var(--mm-ink)] sm:mt-16">
