@@ -42,6 +42,5 @@ export function useReveal(options = {}) {
       elements.forEach((element) => observer.unobserve(element));
       observer.disconnect();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [containerRef, dependencyList]);
 }

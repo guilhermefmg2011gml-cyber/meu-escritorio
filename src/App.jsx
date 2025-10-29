@@ -6,6 +6,8 @@ import {
   ShieldCheck,
   Building2,
   BookOpenCheck,
+  Instagram,
+  Music2,
 } from "lucide-react";
 import { formatPhoneNumber, getDigitsOnly } from "./utils/phone";
 import { useReveal } from "./hooks/useReveal";
@@ -287,13 +289,8 @@ function Footer(){
             </li>
 
             <li className="flex items-center gap-3">
-              <span className={contactIconClass}>
-                <img
-                  src={instagramIcon}
-                  alt=""
-                  aria-hidden="true"
-                  className="h-4 w-4"
-                />
+              <span className={contactIconClass} aria-hidden="true">
+                <Instagram className="h-4 w-4" />
               </span>
               <a
                 href="https://www.instagram.com/mouramartinsadvogados"
@@ -306,13 +303,8 @@ function Footer(){
             </li>
             
             <li className="flex items-center gap-3">
-              <span className={contactIconClass}>
-                <img
-                  src={tiktokIcon}
-                  alt=""
-                  aria-hidden="true"
-                  className="h-4 w-4"
-                />
+              <span className={contactIconClass} aria-hidden="true">
+                <Music2 className="h-4 w-4" />
               </span>
               <a
                 href="https://www.tiktok.com/@mouramartinsadvogados"
