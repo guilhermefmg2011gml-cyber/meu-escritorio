@@ -100,6 +100,23 @@ function Header(){
   );
 }
 
+function HeroLogo(){
+  return (
+    <div className="inline-flex items-center gap-8 rounded-full bg-[#2d0a07] px-10 py-6 shadow-[0_18px_60px_rgba(38,12,8,0.45)] ring-1 ring-[rgba(255,255,255,0.06)]">
+      <img src="/logo-moura.svg" alt="Moura Martins" className="h-16 w-auto" />
+      <div className="text-left">
+        <p
+          className="text-lg uppercase tracking-[0.55em] text-[#e3d5bd] sm:text-xl"
+          style={{ fontFamily: "var(--mm-serif)" }}
+        >
+          Moura Martins
+        </p>
+        <p className="mt-3 text-xs uppercase tracking-[0.7em] text-[#b8965b]">Advogados</p>
+      </div>
+    </div>
+  );
+}
+
 function Hero(){
   return (
     <section
@@ -116,7 +133,7 @@ function Hero(){
         }}
       />
       <div className="relative z-10 mt-24 flex w-full max-w-4xl flex-col items-center px-6 text-center text-[var(--mm-ink)]">
-        <img src="/logo-moura.svg" alt="Moura Martins" className="h-20 w-auto" />
+        <HeroLogo />
         <h1
           className="mx-auto mt-8 max-w-3xl text-4xl font-semibold leading-snug text-[var(--mm-ink)] sm:text-5xl"
           style={{ fontFamily: "var(--mm-serif)" }}
