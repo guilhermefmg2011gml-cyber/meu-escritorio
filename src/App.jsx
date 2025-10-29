@@ -104,30 +104,32 @@ function Hero(){
   return (
     <section
       id="top"
-      className="relative flex min-h-[520px] flex-col items-center justify-center overflow-hidden pb-20 pt-[4.5rem] text-center text-[var(--mm-accent)] sm:pb-24 sm:pt-[5.25rem]"
-      style={{
-        backgroundImage: "url('/hero-logo-full.jpg')",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "cover",
-      }}
+      className="flex flex-col items-center pb-20 pt-[4.5rem] text-center sm:pb-24 sm:pt-[5.25rem]"
     >
-      <div className="absolute inset-0 bg-[color:rgba(32,8,6,0.55)]" aria-hidden />
-      <div className="relative z-10 flex w-full max-w-4xl flex-col items-center px-6">
+      <div className="w-full px-6">
+        <div className="relative mx-auto aspect-[5/3] w-full max-w-4xl overflow-hidden rounded-[3rem] shadow-[0_38px_80px_-48px_rgba(44,13,13,0.6)] ring-1 ring-black/10">
+          <img
+            src="/hero-logo-full.jpg"
+            alt="Arte institucional Moura Martins Advogados"
+            className="h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-[color:rgba(32,8,6,0.45)] mix-blend-multiply" aria-hidden />
+        </div>
+      </div>
+      <div className="mt-12 w-full max-w-3xl px-6 text-[var(--mm-ink)] sm:mt-16">
         <h1
           id="hero-heading"
-          className="mx-auto max-w-3xl text-4xl font-semibold leading-snug text-[var(--mm-accent)] sm:text-5xl"
+          className="mx-auto max-w-3xl text-4xl font-semibold leading-snug sm:text-5xl"
           style={{ fontFamily: "var(--mm-serif)" }}
         >
           Soluções jurídicas artesanais e ágeis
         </h1>
-        <p className="mx-auto mt-6 max-w-2xl text-base text-[color:rgba(248,244,236,0.82)] sm:text-lg">
-          Advocacia full service com atuação consultiva e contenciosa. Atendemos empresas e pessoas físicas em todas as áreas do
- Direito — com estratégia, técnica e discrição.
+        <p className="mx-auto mt-6 max-w-2xl text-base text-[var(--mm-muted)] sm:text-lg">
+          Advocacia full service com atuação consultiva e contenciosa. Atendemos empresas e pessoas físicas em todas as áreas do Direito — com estratégia, técnica e discrição.
         </p>
         <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
           <a href={waUrl} className="mm-btn mm-btn-primary">Entre em contato</a>
-          <a href={mailtoLarissa} className="mm-btn mm-btn-ghost mm-btn-ghost--on-dark">Enviar e-mail</a>
+          <a href={mailtoLarissa} className="mm-btn mm-btn-ghost">Enviar e-mail</a>
         </div>
       </div>
     </section>
