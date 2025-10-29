@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login — Moura Martins Advogados</title>
+  <meta name="description" content="Acesso reservado aos clientes do Moura Martins Advogados." />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <style>
+    :root{
+      --wine:#2a1512;           /* vinho-escuro */
+      --wine-900:#1c100e;
+      --gold:#d5b98a;           /* dourado */
+      --gold-600:#cbaa73;
+      --ivory:#f6f1ea;
+      --text:#fff7ef;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial;
+      color:var(--text);
+      background: var(--wine);
+      /* hero de fundo com overlay */
+      background-image:
+        linear-gradient(180deg, rgba(28,16,14,.55), rgba(28,16,14,.75)),
+        url("/hero.jpg");
+      background-size: cover;
+      background-position: center;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .card{
+      width: 100%;
+      max-width: 460px;
+      background: rgba(28,16,14,.75);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 18px;
+      box-shadow: 0 15px 40px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.05);
+      backdrop-filter: blur(6px);
+      padding: 26px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px; margin-bottom: 6px;
+    }
+    .brand img{ height:38px; width:auto; display:block }
+    .brand h1{
+      font-size:18px; letter-spacing:.12em; text-transform:uppercase; margin:0;
+      color:var(--ivory); font-weight:700;
+    }
+    .muted{ color:#e9dfd6cc; font-size:12.5px }
+
+    .title{ margin:14px 0 6px; font-size:26px; line-height:1.2; color:var(--ivory) }
+    label{ display:block; margin:14px 0 6px; font-weight:600; color:#f2e9e2 }
+    input[type="email"], input[type="password"]{
+      width:100%; padding:12px 14px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06); color:#fff;
+      outline:none;
+    }
+    input::placeholder{ color:#ffffffaa }
+    input:focus{ border-color: var(--gold) ; box-shadow: 0 0 0 3px rgba(213,185,138,.25) }
+
+    .row{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:10px }
+    .checkbox{ display:flex; align-items:center; gap:8px; font-size:13px; color:#f1e9e1 }
+    .checkbox input{ accent-color: var(--gold) }
+
+    .btn{
+      appearance:none; cursor:pointer; border:0;
+      background: var(--gold);
+      color: var(--wine-900);
+      font-weight:700; letter-spacing:.02em;
+      padding: 12px 16px; border-radius: 12px;
+      box-shadow: 0 6px 0 0 var(--gold-600), 0 10px 20px rgba(0,0,0,.25);
+      transition: transform .06s ease, box-shadow .06s ease, filter .2s ease;
+      width: 160px;
+    }
+    .btn:hover{ filter:brightness(1.04) }
+    .btn:active{ transform: translateY(2px); box-shadow: 0 4px 0 0 var(--gold-600), 0 6px 14px rgba(0,0,0,.28) }
+
+    .links{
+      display:flex; flex-wrap:wrap; gap:14px; margin-top:12px; font-size:12.5px;
+    }
+    .links a{ color:var(--gold); text-decoration:none }
+    .links a:hover{ text-decoration:underline }
+
+    .terms{
+      font-size:11.5px; color:#e9dfd6b3; margin-top:16px;
+    }
+    .footer{
+      margin-top:18px; font-size:12.5px; color:#e9dfd6cc;
+    }
+    .notice{
+      margin-top:8px; padding:10px 12px; border-radius:10px;
+      border:1px dashed rgba(255,255,255,.18);
+      background: rgba(255,255,255,.04); color:#f7efe7;
+      font-size:12.5px;
+    }
+
+    @media (max-width:560px){
+      .card{ padding:20px }
+      .title{ font-size:22px }
+      .row{ flex-direction:column; align-items:stretch }
+      .btn{ width:100% }
+    }
+  </style>
+</head>
+<body>
+  <main class="card" role="main" aria-labelledby="tit">
+    <div class="brand" aria-hidden="true">
+      <!-- usa seu arquivo já existente -->
+      <img src="/logo-moura.svg" alt="Logotipo Moura Martins" />
+      <h1>Moura Martins</h1>
+    </div>
+    <p class="muted">Acesso reservado</p>
+
+    <h2 id="tit" class="title">Sign in</h2>
+
+    <form id="loginForm" action="/api/login" method="post" novalidate>
+      <label for="email">E-mail</label>
+      <input id="email" name="email" type="email" inputmode="email" autocomplete="username"
+             placeholder="seu@email.com" required />
+
+      <label for="pwd">Senha</label>
+      <input id="pwd" name="password" type="password" autocomplete="current-password"
+             placeholder="••••••••" required minlength="6" />
+
+      <div class="row">
+        <label class="checkbox">
+          <input id="remember" name="remember" type="checkbox" />
+          Lembrar-me
+        </label>
+
+        <button class="btn" type="submit">Entrar</button>
+      </div>
+
+      <div class="links">
+        <a href="/recuperar-senha.html" target="_blank" rel="noopener">Esqueceu a senha?</a>
+        <span aria-hidden="true">•</span>
+        <a href="/" rel="noopener">Voltar ao site</a>
+      </div>
+
+      <p class="terms">
+        Ao clicar em “Entrar”, você concorda com nossos
+        <a href="/termos.html" target="_blank" rel="noopener" style="color:var(--gold)">Termos de Serviço</a>
+        e <a href="/privacidade.html" target="_blank" rel="noopener" style="color:var(--gold)">Política de Privacidade</a>.
+      </p>
+
+      <!-- Política de cadastro: somente administrador cria usuário -->
+      <div class="notice" role="note">
+        <strong>Cadastro:</strong> por segurança, apenas o administrador pode criar logins e senhas.
+        Caso precise de acesso, solicite suas credenciais ao escritório.
+      </div>
+
+      <div id="msg" class="footer" role="status" aria-live="polite"></div>
+    </form>
+  </main>
+
+  <script>
+    // Exemplo simples de validação; troque por sua integração real quando o backend estiver pronto.
+    document.getElementById('loginForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const pwd   = document.getElementById('pwd').value.trim();
+      const msg   = document.getElementById('msg');
+
+      if(!email || !pwd){
+        msg.textContent = 'Informe e-mail e senha válidos.';
+        return;
+      }
+      // Aqui você faria um fetch('/api/login', { method:'POST', body:FormData(...) })
+      // Por ora, apenas simulamos feedback:
+      msg.textContent = 'Validando credenciais…';
+      setTimeout(() => {
+        msg.textContent = 'Seus dados foram enviados. Caso não tenha credenciais, solicite ao administrador.';
+      }, 600);
+    });
+  </script>
+</body>
+</html>

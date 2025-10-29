@@ -93,6 +93,56 @@ function Header(){
           <a href="#areas" className="transition-colors hover:text-[var(--mm-primary)]">Núcleos</a>
           <a href="#socios" className="transition-colors hover:text-[var(--mm-primary)]">Sócios</a>
           <a href="#contato" className="transition-colors hover:text-[var(--mm-primary)]">Contato</a>
+          {/* Botão de “mais” (3 barrinhas) */}
+          <div className="relative ml-3" ref={moreRef}>
+            <button
+              type="button"
+              aria-haspopup="menu"
+              aria-expanded={moreOpen ? "true" : "false"}
+              aria-label="Mais opções"
+              onClick={() => setMoreOpen((v) => !v)}
+              className="inline-flex items-center justify-center rounded-md p-2 text-[var(--gold-500,#d5b98a)] hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--gold-500,#d5b98a)]"
+            >
+              <Menu className="h-5 w-5" strokeWidth={2} />
+            </button>
+
+            {/* Dropdown */}
+            {moreOpen && (
+              <div
+                role="menu"
+                aria-label="Mais"
+                className="absolute right-0 z-50 mt-2 min-w-[220px] rounded-xl border border-white/10 bg-[rgb(28,16,14)]/96 shadow-2xl backdrop-blur p-1"
+              >
+                <a
+                  role="menuitem"
+                  href="/historia.html"
+                  target="_blank"
+                  rel="noopener"
+                  className="block rounded-lg px-4 py-2.5 text-sm text-white/90 hover:bg-white/10"
+                >
+                  Nossa história
+                </a>
+                <a
+                  role="menuitem"
+                  href="/artigos.html"
+                  target="_blank"
+                  rel="noopener"
+                  className="block rounded-lg px-4 py-2.5 text-sm text-white/90 hover:bg-white/10"
+                >
+                  Artigos
+                </a>
+                <a
+                  role="menuitem"
+                  href="/login.html"
+                  target="_blank"
+                  rel="noopener"
+                  className="block rounded-lg px-4 py-2.5 text-sm text-white/90 hover:bg-white/10"
+                >
+                  Login
+                </a>
+              </div>
+            )}
+          </div>
         </nav>
       </div>
     </header>
@@ -362,6 +412,26 @@ function WhatsAppFloat(){
 }
 
 export default function App(){
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreRef = useRef(null);
+
+  useEffect(() => {
+    function onKey(e) {
+      if (e.key === "Escape") setMoreOpen(false);
+    }
+    function onClickOutside(e) {
+      if (moreRef.current && !moreRef.current.contains(e.target)) {
+        setMoreOpen(false);
+      }
+    }
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("click", onClickOutside);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("click", onClickOutside);
+    };
+  }, []);
+
   const [socios, setSocios] = React.useState(SITE.socios);
   const handleAddDevSocio = React.useCallback(() => {
     setSocios((prev) => [
@@ -379,7 +449,7 @@ export default function App(){
   const onAddDevSocio = import.meta.env?.DEV ? handleAddDevSocio : undefined;
   return (
     <div className="bg-[color:var(--mm-accent)] text-[var(--mm-ink)]">
-      <Header />
+      <Header moreOpen={moreOpen} setMoreOpen={setMoreOpen} moreRef={moreRef} />
       <main>
         <Hero />
         <InstitutionalIntro />
