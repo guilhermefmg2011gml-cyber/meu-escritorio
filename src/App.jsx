@@ -102,16 +102,18 @@ function Header(){
 
 function HeroLogo(){
   return (
-    <div className="inline-flex items-center gap-8 rounded-full bg-[#2d0a07] px-10 py-6 shadow-[0_18px_60px_rgba(38,12,8,0.45)] ring-1 ring-[rgba(255,255,255,0.06)]">
-      <img src="/logo-moura.svg" alt="Moura Martins" className="h-16 w-auto" />
-      <div className="text-left">
-        <p
-          className="text-lg uppercase tracking-[0.55em] text-[#e3d5bd] sm:text-xl"
-          style={{ fontFamily: "var(--mm-serif)" }}
-        >
-          Moura Martins
-        </p>
-        <p className="mt-3 text-xs uppercase tracking-[0.7em] text-[#b8965b]">Advogados</p>
+    <div className="w-full bg-[#2d0a07] py-8 shadow-[0_18px_60px_rgba(38,12,8,0.45)] ring-1 ring-[rgba(255,255,255,0.08)]">
+      <div className="mx-auto flex max-w-5xl flex-col items-center justify-center gap-6 px-8 text-center sm:flex-row sm:gap-10 sm:text-left">
+        <img src="/logo-moura.svg" alt="Moura Martins" className="h-20 w-auto" />
+        <div>
+          <p
+            className="text-lg uppercase tracking-[0.55em] text-[#e3d5bd] sm:text-xl"
+            style={{ fontFamily: "var(--mm-serif)" }}
+          >
+            Moura Martins
+          </p>
+          <p className="mt-3 text-xs uppercase tracking-[0.7em] text-[#b8965b]">Advogados</p>
+        </div>
       </div>
     </div>
   );
@@ -132,20 +134,22 @@ function Hero(){
             "linear-gradient(180deg, rgba(233,220,196,0.45), transparent)",
         }}
       />
-      <div className="relative z-10 mt-24 flex w-full max-w-4xl flex-col items-center px-6 text-center text-[var(--mm-ink)]">
+      <div className="relative z-10 mt-24 flex w-full flex-col items-center text-[var(--mm-ink)]">
         <HeroLogo />
-        <h1
-          className="mx-auto mt-8 max-w-3xl text-4xl font-semibold leading-snug text-[var(--mm-ink)] sm:text-5xl"
-          style={{ fontFamily: "var(--mm-serif)" }}
-        >
-          Soluções jurídicas artesanais e ágeis
-        </h1>
-        <p className="mx-auto max-w-2xl pt-6 text-base text-[var(--mm-muted)] sm:text-lg">
-          Advocacia full service com atuação consultiva e contenciosa. Atendemos empresas e pessoas físicas em todas as áreas do Direito — com estratégia, técnica e discrição.
-        </p>
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-          <a href={waUrl} className="mm-btn mm-btn-primary">Entre em contato</a>
-          <a href={mailtoLarissa} className="mm-btn mm-btn-ghost">Enviar e-mail</a>
+        <div className="flex w-full max-w-4xl flex-col items-center px-6 text-center">
+          <h1
+            className="mx-auto mt-10 max-w-3xl text-4xl font-semibold leading-snug text-[var(--mm-ink)] sm:text-5xl"
+            style={{ fontFamily: "var(--mm-serif)" }}
+          >
+            Soluções jurídicas artesanais e ágeis
+          </h1>
+          <p className="mx-auto max-w-2xl pt-6 text-base text-[var(--mm-muted)] sm:text-lg">
+            Advocacia full service com atuação consultiva e contenciosa. Atendemos empresas e pessoas físicas em todas as áreas do Direito — com estratégia, técnica e discrição.
+          </p>
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+            <a href={waUrl} className="mm-btn mm-btn-primary">Entre em contato</a>
+            <a href={mailtoLarissa} className="mm-btn mm-btn-ghost">Enviar e-mail</a>
+          </div>
         </div>
       </div>
       <div className="absolute bottom-0 left-0 right-0 h-12 rounded-t-[48px] bg-[var(--mm-paper)]" />
