@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Entrar — Moura Martins Advogados</title>
+<script src="/config.js"></script>
 <style>
   :root {
     --bg: #24100F; --card:#2E1513; --gold:#c9a268; --text:#f5eee8; --muted:#cdbfb8;
@@ -32,43 +33,68 @@
     <input id="password" type="password" placeholder="Sua senha" />
     <div class="row">
       <span class="help">Esqueceu a senha? Peça ao administrador.</span>
-      <button id="btn">Entrar</button>
+      <button id="btnEntrar">Entrar</button>
     </div>
   </div>
 </div>
 
 <script>
-const API_BASE = 'http://localhost:8080'; // <- ajuste!
+  const API_BASE = window.API_BASE;
 
-const $ = (id) => document.getElementById(id);
-$('btn').onclick = async () => {
-  $('err').style.display='none';
-  const email = $('email').value.trim();
-  const password = $('password').value;
+const $ = (sel) => document.querySelector(sel);
+  const btn = $("#btnEntrar");
+  const emailInput = $("#email");
+  const passInput = $("#password");
+  const errBox = $("#err");
 
-  try{
-    const r = await fetch(`${API_BASE}/api/auth/login`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({email,password})
-    });
-  const data = await r.json();
-    if(!r.ok) throw new Error(data.error||'Falha no login');
-
-    localStorage.setItem('mma_token', data.token);
-    localStorage.setItem('mma_user', JSON.stringify(data.user));
-    if (data.user.isFirstLogin) {
-      location.href = '/primeiro-acesso.html';
-    } else {
-      // admin vai direto ao painel, user pode ir pra área do cliente (futuro)
-      if (data.user.role === 'admin') location.href = '/admin/create-user.html';
-      else location.href = '/';
-    }
-  }catch(e){
-    $('err').textContent = e.message;
-    $('err').style.display='block';
+  function clearError() {
+    errBox.textContent = "";
+    errBox.style.display = "none";
   }
-};
+
+  async function doLogin() {
+    clearError();
+    btn.disabled = true;
+
+    try {
+      const email = emailInput.value.trim();
+      const password = passInput.value;
+
+      const resp = await fetch(`${API_BASE}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await resp.json();
+    
+      if (!resp.ok) throw new Error(data.error || "Falha ao entrar");
+
+      localStorage.setItem("mma_token", data.token);
+      localStorage.setItem("mma_role", data.role || (data.user && data.user.role) || "user");
+
+      if (data.isFirstLogin || (data.user && data.user.isFirstLogin)) {
+        location.href = "/primeiro-acesso.html";
+        return;
+      }
+
+      const role = localStorage.getItem("mma_role");
+      if (role === "admin") {
+        location.href = "/admin/create-user.html";
+      } else {
+        location.href = "/";
+      }
+    } catch (e) {
+      errBox.textContent = e.message;
+      errBox.style.display = "block";
+    } finally {
+      btn.disabled = false;
+    }
+  }
+  btn.addEventListener("click", doLogin);
+  passInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") doLogin();
+  });
 </script>
 </body>
 </html>
