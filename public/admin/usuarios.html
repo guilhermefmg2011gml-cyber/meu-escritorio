@@ -1,0 +1,132 @@
+<!doctype html><html lang="pt-BR"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Usuários & Permissões — MMA</title>
+<link rel="icon" href="/favicon.svg">
+<script src="/config.js"></script>
+<style>
+  body{margin:0;background:#220f0d;color:#efe5dd;font:400 16px/1.5 Inter,system-ui}
+  .wrap{max-width:980px;margin:36px auto;padding:0 18px}
+  h1{font:700 24px/1 "Cinzel",serif;margin:0 0 14px}
+  table{width:100%;border-collapse:separate;border-spacing:0 10px}
+  tr{background:linear-gradient(180deg,#2f1714,#3a1c18);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  td,th{padding:14px 16px}
+  th{color:#cdb9a6;text-align:left}
+  .pill{border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:4px 10px}
+  .row-actions{display:flex;gap:8px}
+  button{border:0;border-radius:10px;padding:8px 12px;cursor:pointer}
+  .gold{background:#d7b57a;color:#2b1a12}
+  .ghost{background:transparent;color:#cdb9a6;border:1px solid rgba(255,255,255,.2)}
+  .danger{background:#ff7a7a;color:#300}
+  .sw{display:flex;align-items:center;gap:8px}
+  .sw input{accent-color:#d7b57a}
+</style>
+</head><body>
+<div class="wrap">
+  <h1>Usuários & permissões</h1>
+  <p style="color:#cdb9a6">Ative/desative o acesso aos módulos. As alterações são salvas imediatamente.</p>
+  <div style="margin:16px 0">
+    <a class="gold" style="text-decoration:none;padding:10px 14px;border-radius:12px" href="/admin/create-user.html">➕ Criar colaborador</a>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Colaborador</th>
+        <th>Função</th>
+        <th>Permissões</th>
+        <th style="width:220px">Ações</th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+</div>
+
+<script>
+const API_BASE = window.API_BASE || '/api';
+const token = localStorage.getItem('mma_token');
+const role = localStorage.getItem('mma_role');
+if(!token || role !== 'admin') location.href="/login.html";
+
+const rows = document.getElementById("rows");
+const MODS = ["processos","atendimentos","financeiro","pecas","docs"];
+const LABEL = {
+  processos:"Processos", atendimentos:"Atend.", financeiro:"Financeiro", pecas:"Peças", docs:"Docs"
+};
+
+async function load(){
+  const r = await fetch(`${API_BASE}/api/admin/users`, { headers:{Authorization:`Bearer ${token}`} });
+  if(!r.ok){ alert("Falha ao carregar usuários"); return; }
+  const users = await r.json();
+  rows.innerHTML = "";
+  users.forEach(u=>{
+    const tr = document.createElement("tr");
+    const perms = u.permissions || {};
+    tr.innerHTML = `
+      <td>${u.email}</td>
+      <td><span class="pill">${u.role}</span></td>
+      <td>
+        <div style="display:flex;flex-wrap:wrap;gap:10px">
+          ${MODS.map(m=>{
+            const on = !!perms[m];
+            return `
+              <label class="sw">
+                <input type="checkbox" data-id="${u.id}" data-mod="${m}" ${on?"checked":""}/>
+                <span>${LABEL[m]}</span>
+              </label>`;
+          }).join("")}
+        </div>
+      </td>
+      <td>
+        <div class="row-actions">
+          <button class="ghost" data-reset="${u.id}">Redefinir senha</button>
+          <button class="danger" data-del="${u.id}">Excluir</button>
+        </div>
+      </td>`;
+    rows.appendChild(tr);
+  });
+}
+
+rows.addEventListener("change", async (e)=>{
+  const ck = e.target;
+  if(ck.matches("input[type=checkbox][data-id]")){
+    const id = ck.getAttribute("data-id");
+    const mod = ck.getAttribute("data-mod");
+    const body = { [mod]: ck.checked };
+    const r = await fetch(`${API_BASE}/api/admin/users/${id}/permissions`, {
+      method:"PATCH",
+      headers:{ "Content-Type":"application/json", Authorization:`Bearer ${token}` },
+      body: JSON.stringify(body)
+    });
+    if(!r.ok) { alert("Erro ao salvar permissão"); ck.checked = !ck.checked; }
+  }
+});
+
+rows.addEventListener("click", async (e)=>{
+  const resetBtn = e.target.closest("button[data-reset]");
+  if (resetBtn){
+    const id = resetBtn.getAttribute("data-reset");
+    const newp = prompt("Nova senha provisória (mín. 8 caracteres):");
+    if(!newp || newp.length<8) return;
+    const r = await fetch(`${API_BASE}/api/admin/users/${id}/reset-password`, {
+      method:"PATCH",
+      headers:{ "Content-Type":"application/json", Authorization:`Bearer ${token}` },
+      body: JSON.stringify({ newPassword:newp })
+    });
+    if(!r.ok) return alert("Falha ao redefinir");
+    alert("Senha redefinida.");
+  }
+  const delBtn = e.target.closest("button[data-del]");
+  if (delBtn){
+    const id = delBtn.getAttribute("data-del");
+    if(!confirm("Excluir este colaborador?")) return;
+    const r = await fetch(`${API_BASE}/api/admin/users/${id}`, {
+      method:"DELETE",
+      headers:{ Authorization:`Bearer ${token}` }
+    });
+    if(!r.ok) return alert("Falha ao excluir");
+    load();
+  }
+});
+
+load();
+</script>
+</body></html>

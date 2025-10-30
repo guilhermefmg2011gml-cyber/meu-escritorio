@@ -11,9 +11,14 @@
   a{color:#c9a268;text-decoration:none;font-weight:600}
   .wrap{max-width:960px;margin:28px auto;padding:0 16px}
   .card{background:#2E1513;border-radius:14px;padding:24px}
-  label{display:block;margin:12px 0 6px;color:#cdbfb8}
+  form label{display:block;margin:12px 0 6px;color:#cdbfb8}
   input{width:100%;padding:12px;border-radius:10px;border:1px solid #3b1f1c;background:#1d0d0c;color:#f5eee8}
   button{margin-top:16px;background:#c9a268;color:#24100F;border:0;padding:12px 16px;border-radius:999px;font-weight:700;cursor:pointer}
+  .field-group{margin-top:14px}
+  .perm-grid{display:grid;grid-template-columns:repeat(2,minmax(180px,1fr));gap:10px}
+  .switch{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
+  .switch input{accent-color:#d7b57a;width:18px;height:18px}
+  .switch span{color:#efe5dd}
   .alert{margin-top:12px}
 </style>
 </head>
@@ -28,16 +33,30 @@
 <div class="wrap">
   <div class="card">
     <h2>Criar novo usuário</h2>
-    <div class="alert" id="alert"></div>
-    <label>E-mail do usuário</label>
-    <input id="novoEmail" type="email" />
-    <label>Senha provisória</label>
-    <input id="senhaProvisoria" type="text" placeholder="Min. 8 caracteres" />
-    <button id="btnCriar">Criar usuário</button>
+    <form id="create-form">
+      <div class="alert" id="alert"></div>
+      <label for="email">E-mail do usuário</label>
+      <input id="email" name="email" type="email" required />
+      <label for="password">Senha provisória</label>
+      <input id="password" name="password" type="text" placeholder="Min. 8 caracteres" required />
+
+      <div class="field-group">
+        <label style="display:block;margin:0 0 6px;color:#cdb9a6">Permissões do colaborador</label>
+        <div class="perm-grid">
+          <label class="switch"><input type="checkbox" id="perm-processos" checked><span>Processos e casos</span></label>
+          <label class="switch"><input type="checkbox" id="perm-atendimentos" checked><span>Atendimentos</span></label>
+          <label class="switch"><input type="checkbox" id="perm-financeiro"><span>Financeiro</span></label>
+          <label class="switch"><input type="checkbox" id="perm-pecas" checked><span>Criação de peças</span></label>
+          <label class="switch"><input type="checkbox" id="perm-docs"><span>Documentos</span></label>
+        </div>
+      </div>
+
+      <button type="submit" id="btnCriar">Criar usuário</button>
+    </form>
   </div>
 </div>
 <script>
-const API_BASE = window.API_BASE;
+const API_BASE = window.API_BASE || '/api';
   const token = localStorage.getItem('mma_token');
   const role = localStorage.getItem('mma_role');
 
@@ -45,57 +64,61 @@ const API_BASE = window.API_BASE;
     location.href = '/login.html';
   }
 
-  const $ = (sel) => document.querySelector(sel);
-  const emailInput = $('#novoEmail');
-  const passInput = $('#senhaProvisoria');
-  const createBtn = $('#btnCriar');
-  const alertBox = $('#alert');
+  const form = document.getElementById('create-form');
+  const alertBox = document.getElementById('alert');
 
-  function resetAlert() {
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
     alertBox.textContent = '';
     alertBox.style.color = '';
-  }
 
-  async function createUser() {
-    resetAlert();
-    createBtn.disabled = true;
+    const email = document.getElementById('email').value.trim();
+    const pwd = document.getElementById('password').value;
+
+    if (!email || pwd.length < 8) {
+      alertBox.style.color = '#ffdede';
+      alertBox.textContent = 'Informe um e-mail válido e senha com pelo menos 8 caracteres.';
+      return;
+    }
+
+    const permissions = {
+      processos:     document.getElementById('perm-processos').checked,
+      atendimentos:  document.getElementById('perm-atendimentos').checked,
+      financeiro:    document.getElementById('perm-financeiro').checked,
+      pecas:         document.getElementById('perm-pecas').checked,
+      docs:          document.getElementById('perm-docs').checked,
+    };
+
     try {
-      const email = emailInput.value.trim();
-      const password = passInput.value.trim();
-      if (!email || password.length < 8) {
-        throw new Error('Informe e-mail válido e senha com pelo menos 8 caracteres.');
-      }
-
       const resp = await fetch(`${API_BASE}/api/admin/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ email, password, role: 'user' })
+        body: JSON.stringify({ email, password: pwd, permissions })
       });
-      const data = await resp.json();
-      if (!resp.ok) throw new Error(data.error || 'Falha ao criar usuário');
+      if (!resp.ok) {
+        const data = await resp.json().catch(() => ({}));
+        throw new Error(data.error || 'Erro ao criar usuário');
+      }
 
-      alertBox.style.color = '#9effb0';
-      alertBox.textContent = 'Usuário criado com sucesso.';
-      emailInput.value = '';
-      passInput.value = '';
-    } catch (e) {
+      alert('Usuário criado com sucesso!');
+      location.href = '/admin/usuarios.html';
+    } catch (err) {
       alertBox.style.color = '#ffdede';
-      alertBox.textContent = e.message;
-    } finally {
-      createBtn.disabled = false;
+      alertBox.textContent = err.message;
     }
-  }
-
-  createBtn.addEventListener('click', createUser);
+  });
 
   const logout = document.getElementById('logout');
   if (logout) {
     logout.addEventListener('click', () => {
       localStorage.removeItem('mma_token');
       localStorage.removeItem('mma_role');
+      localStorage.removeItem('mma_permissions');
+      localStorage.removeItem('mma_user');
+      location.href = '/login.html';
       location.href = '/login.html';
     });
   }

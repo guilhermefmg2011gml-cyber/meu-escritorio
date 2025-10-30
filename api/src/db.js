@@ -1,3 +1,5 @@
+/* eslint-env node */
+/* global process */
 import Database from 'better-sqlite3';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
@@ -14,9 +16,20 @@ db.exec(`
     password_hash TEXT NOT NULL,
     is_first_login INTEGER NOT NULL DEFAULT 1,
     active INTEGER NOT NULL DEFAULT 1,
-    created_at TEXT NOT NULL
+    created_at TEXT NOT NULL,
+    permissions TEXT NOT NULL DEFAULT '{}'
   );
 `);
+
+// Adiciona a coluna permissions caso a tabela tenha sido criada antes dessa versão
+const hasPermissionsColumn = db
+  .prepare("PRAGMA table_info('users')")
+  .all()
+  .some((column) => column.name === 'permissions');
+
+if (!hasPermissionsColumn) {
+  db.exec("ALTER TABLE users ADD COLUMN permissions TEXT NOT NULL DEFAULT '{}' ");
+}
 
 // Seed do ADMIN (se não existir)
 const adminEmail = process.env.ADMIN_EMAIL;

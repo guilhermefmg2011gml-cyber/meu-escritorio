@@ -16,10 +16,17 @@ router.post('/login', async (req, res) => {
   const ok = await comparePassword(password, row.password_hash);
   if (!ok) return res.status(401).json({ error: 'Credenciais inválidas' });
 
+  const permissions = JSON.parse(row.permissions || '{}');
   const token = signToken({ id: row.id, email: row.email, role: row.role });
   res.json({
     token,
-    user: { id: row.id, email: row.email, role: row.role, isFirstLogin: !!row.is_first_login }
+    user: {
+      id: row.id,
+      email: row.email,
+      role: row.role,
+      isFirstLogin: !!row.is_first_login,
+      permissions,
+    },
   });
 });
 
@@ -52,6 +59,21 @@ router.post('/change-password', requireAuth, async (req, res) => {
   db.prepare('UPDATE users SET password_hash=? WHERE id=?').run(hash, row.id);
 
   res.json({ ok: true });
+});
+
+router.get('/me', requireAuth, (req, res) => {
+  const row = db
+    .prepare('SELECT id, email, role, is_first_login, permissions FROM users WHERE id = ?')
+    .get(req.user.id);
+  if (!row) return res.status(404).json({ error: 'Usuário não encontrado' });
+
+  res.json({
+    id: row.id,
+    email: row.email,
+    role: row.role,
+    isFirstLogin: !!row.is_first_login,
+    permissions: JSON.parse(row.permissions || '{}'),
+  });
 });
 
 export default router;

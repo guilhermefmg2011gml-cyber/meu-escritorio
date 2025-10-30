@@ -39,7 +39,7 @@
 </div>
 
 <script>
-  const API_BASE = window.API_BASE;
+  const API_BASE = window.API_BASE || '/api';
 
 const $ = (sel) => document.querySelector(sel);
   const btn = $("#btnEntrar");
@@ -70,17 +70,21 @@ const $ = (sel) => document.querySelector(sel);
     
       if (!resp.ok) throw new Error(data.error || "Falha ao entrar");
 
-      localStorage.setItem("mma_token", data.token);
-      localStorage.setItem("mma_role", data.role || (data.user && data.user.role) || "user");
+      const user = data.user || {};
 
-      if (data.isFirstLogin || (data.user && data.user.isFirstLogin)) {
+      localStorage.setItem("mma_token", data.token);
+      localStorage.setItem("mma_role", user.role || data.role || "user");
+      localStorage.setItem("mma_user", JSON.stringify(user));
+      localStorage.setItem("mma_permissions", JSON.stringify(user.permissions || {}));
+
+      if (data.isFirstLogin || user.isFirstLogin) {
         location.href = "/primeiro-acesso.html";
         return;
       }
 
       const role = localStorage.getItem("mma_role");
       const redirectMap = {
-        admin: "/admin/create-user.html"
+        admin: "/admin/index.html"
       };
       const targetPath = redirectMap[role] || "/";
       location.href = targetPath;
