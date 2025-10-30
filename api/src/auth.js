@@ -1,8 +1,21 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-export const hashPassword = (plain) => bcrypt.hash(plain, 10);
-export const comparePassword = (plain, hash) => bcrypt.compare(plain, hash);
+export const hashPassword = (plain) =>
+  new Promise((resolve, reject) => {
+    bcrypt.hash(plain, 10, (err, hash) => {
+      if (err) return reject(err);
+      resolve(hash);
+    });
+  });
+
+export const comparePassword = (plain, hash) =>
+  new Promise((resolve, reject) => {
+    bcrypt.compare(plain, hash, (err, same) => {
+      if (err) return reject(err);
+      resolve(same);
+    });
+  });
 
 export const signToken = (payload) => jwt.sign(
   payload,
