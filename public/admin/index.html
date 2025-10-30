@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin — Moura Martins Advogados</title>
+  <link rel="icon" href="/favicon.svg">
+  <style>
+    :root{
+      --bg:#220f0d;          /* vinho-escuro do site */
+      --panel:#2f1714;       /* painel levemente mais claro */
+      --soft:#3a1c18;
+      --text:#efe5dd;        /* bege claro do texto */
+      --muted:#cdb9a6;
+      --gold:#d7b57a;        /* “dourado” dos botões */
+      --chip:#f2e6d7;
+      --chip-ink:#6b5441;
+      --ok:#3bbf86;
+      --bad:#ff7a7a;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;background:linear-gradient(180deg,var(--bg),#1b0d0b);
+      color:var(--text); font:400 16px/1.55 "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial;
+    }
+    .shell{
+      display:grid; grid-template-columns: 280px 1fr; min-height:100%;
+    }
+    /* sidebar */
+    .side{
+      background:linear-gradient(180deg,var(--panel),var(--soft));
+      border-right:1px solid rgba(255,255,255,.05);
+      padding:28px 18px; position:sticky; top:0; height:100dvh;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px; margin-bottom:18px; padding:6px 8px;
+    }
+    .brand img{height:36px; width:auto; filter:drop-shadow(0 2px 6px rgba(0,0,0,.4))}
+    .brand h1{font:600 14px/1 "Cinzel", serif; letter-spacing:.12em; margin:0; color:var(--muted)}
+    .sep{height:1px; background:rgba(255,255,255,.08); margin:12px 0 18px}
+    nav a{
+      display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text);
+      padding:12px 12px; border-radius:12px; transition:.2s background;
+    }
+    nav a:hover{background:rgba(255,255,255,.06)}
+    nav a.active{background:rgba(215,181,122,.18); outline:1px solid rgba(215,181,122,.35)}
+    .chip{
+      display:inline-block; padding:.22rem .55rem; border-radius:999px; 
+      background:var(--chip); color:var(--chip-ink); font-size:.72rem; font-weight:600;
+    }
+    /* topbar */
+    .top{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:20px 28px; position:sticky; top:0; backdrop-filter: blur(6px);
+      background:linear-gradient(180deg,rgba(34,15,13,.8),rgba(34,15,13,.35));
+      border-bottom:1px solid rgba(255,255,255,.06); z-index:5;
+    }
+    .top .title{font:700 22px/1 "Cinzel", serif; letter-spacing:.04em}
+    .actions{display:flex; gap:10px; align-items:center}
+    .btn{
+      border:0; border-radius:999px; padding:10px 16px; cursor:pointer; font-weight:600;
+      background:var(--gold); color:#2b1a12; box-shadow:var(--shadow);
+    }
+    .btn.ghost{background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,.15)}
+    .btn.bad{background:var(--bad); color:#300}
+    /* main grid */
+    .main{padding:26px 28px 40px}
+    .grid{display:grid; gap:18px; grid-template-columns: repeat(12,1fr)}
+    .card{
+      grid-column: span 12;
+      background:linear-gradient(180deg,var(--panel),var(--soft));
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:var(--radius); box-shadow:var(--shadow);
+      padding:18px 18px 16px;
+    }
+    .card h3{margin:0 0 6px; font:700 18px/1.2 "Cinzel", serif; letter-spacing:.04em}
+    .card p{margin:0; color:var(--muted)}
+    .row{display:flex; flex-wrap:wrap; gap:10px; margin-top:12px}
+    .tool{
+      display:flex; align-items:center; gap:10px; padding:12px 14px;
+      background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
+      border-radius:12px; text-decoration:none; color:var(--text); transition:.2s;
+    }
+    .tool:hover{background:rgba(255,255,255,.06)}
+    .stat{
+      display:flex; flex-direction:column; gap:6px; padding:14px 16px; border-radius:14px;
+      background:rgba(215,181,122,.08); border:1px solid rgba(215,181,122,.25);
+      min-width:200px;
+    }
+    .stat strong{font-size:22px; font-weight:800}
+    /* responsive */
+    @media (min-width:900px){
+      .card.span-6{grid-column: span 6}
+      .card.span-4{grid-column: span 4}
+    }
+    @media (max-width:900px){
+      .shell{grid-template-columns: 1fr}
+      .side{position:static; height:auto; border:0; border-bottom:1px solid rgba(255,255,255,.08)}
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <!-- SIDEBAR -->
+    <aside class="side">
+      <div class="brand">
+        <img src="/logo-moura.svg" alt="Moura Martins">
+        <h1>MOURA MARTINS<br><span style="font-weight:400; opacity:.8">ADVOGADOS</span></h1>
+      </div>
+      <div class="sep"></div>
+      <nav>
+        <a class="active" href="/admin/index.html">Painel geral</a>
+        <a href="#" data-link="processos">Processos e casos</a>
+        <a href="#" data-link="atendimentos">Atendimentos</a>
+        <a href="#" data-link="financeiro">Financeiro</a>
+        <a href="#" data-link="pecas">Criação de peças</a>
+        <a href="#" data-link="docs">Documentos</a>
+        <div class="sep"></div>
+        <a href="/admin/create-user.html">Usuários & permissões <span class="chip">Admin</span></a>
+      </nav>
+    </aside>
+
+    <!-- CONTEÚDO -->
+    <div>
+      <!-- TOPBAR -->
+      <header class="top">
+        <div class="title">Painel do Administrador</div>
+        <div class="actions">
+          <button class="btn ghost" id="btnChangePass" onclick="location.href='/alterar-senha.html'">Alterar senha</button>
+          <button class="btn bad" id="btnLogout">Sair</button>
+        </div>
+      </header>
+
+      <main class="main">
+        <!-- BLOCO SAUDAÇÃO E RESUMO -->
+        <section class="grid">
+          <div class="card span-6">
+            <h3>Bem-vindo(a), <span id="who">Admin</span></h3>
+            <p>Gerencie usuários, permissões e módulos internos do escritório. Seu acesso é total.</p>
+            <div class="row" style="margin-top:14px">
+              <a class="tool" href="/admin/create-user.html">➕ Criar colaborador</a>
+              <a class="tool" href="#" id="openPerms">🔐 Ajustar permissões</a>
+              <a class="tool" href="/primeiro-acesso.html">🗝️ Instruções de primeiro acesso</a>
+            </div>
+          </div>
+
+          <div class="card span-6">
+            <h3>Indicadores rápidos</h3>
+            <div class="row">
+              <div class="stat">
+                <span>Colaboradores</span>
+                <strong id="statUsers">—</strong>
+                <small class="muted">ativos no sistema</small>
+              </div>
+              <div class="stat">
+                <span>Processos</span>
+                <strong id="statCases">—</strong>
+                <small class="muted">em acompanhamento</small>
+              </div>
+              <div class="stat">
+                <span>Tarefas</span>
+                <strong id="statTasks">—</strong>
+                <small class="muted">pendentes hoje</small>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- BLOCO MÓDULOS -->
+        <section class="grid" style="margin-top:10px">
+          <div class="card span-4">
+            <h3>Processos e Casos</h3>
+            <p>Cadastre e acompanhe processos, andamentos e prazos.</p>
+            <div class="row"><a class="tool" href="#" data-link="processos">Abrir módulo</a></div>
+          </div>
+          <div class="card span-4">
+            <h3>Atendimentos</h3>
+            <p>Registre e organize contatos e histórico com clientes.</p>
+            <div class="row"><a class="tool" href="#" data-link="atendimentos">Abrir módulo</a></div>
+          </div>
+          <div class="card span-4">
+            <h3>Financeiro</h3>
+            <p>Honorários, despesas e relatórios consolidados.</p>
+            <div class="row"><a class="tool" href="#" data-link="financeiro">Abrir módulo</a></div>
+          </div>
+          <div class="card span-4">
+            <h3>Criação de Peças</h3>
+            <p>Gere minutas e petições com apoio inteligente.</p>
+            <div class="row"><a class="tool" href="#" data-link="pecas">Abrir módulo</a></div>
+          </div>
+          <div class="card span-4">
+            <h3>Documentos</h3>
+            <p>Biblioteca interna de contratos, modelos e anexos.</p>
+            <div class="row"><a class="tool" href="#" data-link="docs">Abrir módulo</a></div>
+          </div>
+          <div class="card span-4">
+            <h3>Usuários & Permissões</h3>
+            <p>Crie colaboradores, redefina senhas e limite acessos.</p>
+            <div class="row">
+              <a class="tool" href="/admin/create-user.html">Gerenciar usuários</a>
+              <a class="tool" href="#" id="openPerms2">Definir permissões</a>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // ====== CONFIG da API (mesmo padrão do /public/config.js) ======
+    const API_BASE = "/api"; // se sua API estiver em subdomínio/porta, ajuste aqui
+
+    // ====== GUARD: exige login e checa se é admin ======
+    const token = localStorage.getItem("mma_token");
+    if (!token) {
+      location.href = "/login.html";
+    } else {
+      // tenta obter dados do usuário logado
+      fetch(`${API_BASE}/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(async (r)=>{
+        if(!r.ok) throw new Error("unauthorized");
+        return r.json();
+      })
+      .then((me)=>{
+        // espera algo como { email, role: 'admin'|'user', name? }
+        document.getElementById("who").textContent = me.name || me.email || "Administrador";
+        if (me.role !== "admin") {
+          // se não for admin, redireciona para um painel reduzido (colaborador)
+          location.href = "/admin/colaborador.html"; // (criaremos depois)
+        } else {
+          carregarIndicadores();
+        }
+      })
+      .catch(()=> location.href = "/login.html");
+    }
+
+    // ====== Logout ======
+    document.getElementById("btnLogout")?.addEventListener("click", ()=>{
+      localStorage.removeItem("mma_token");
+      location.href = "/login.html";
+    });
+
+    // ====== Indicadores mock (substitua por endpoints reais quando existirem) ======
+    async function carregarIndicadores(){
+      try{
+        // exemplos de endpoints futuros:
+        // const users = await (await fetch(`${API_BASE}/admin/users`, { headers:{Authorization:`Bearer ${token}`} })).json();
+        // document.getElementById("statUsers").textContent = users.length;
+
+        // por enquanto, valores “placeholder”:
+        document.getElementById("statUsers").textContent  = "8";
+        document.getElementById("statCases").textContent  = "41";
+        document.getElementById("statTasks").textContent  = "12";
+      }catch(e){
+        console.warn(e);
+      }
+    }
+
+    // ====== Links dos módulos (ajuste quando as páginas existirem) ======
+    document.querySelectorAll("[data-link]").forEach(a=>{
+      a.addEventListener("click", (ev)=>{
+        ev.preventDefault();
+        const mod = a.getAttribute("data-link");
+        // rotas temporárias:
+        const rotas = {
+          processos:   "/nucleos.html#processos",
+          atendimentos:"/nucleos.html#atendimentos",
+          financeiro:  "/nucleos.html#financeiro",
+          pecas:       "/nucleos.html#pecas",
+          docs:        "/nucleos.html#docs"
+        };
+        location.href = rotas[mod] || "/";
+      });
+    });
+
+    // ====== Permissões (telas futuras) ======
+    document.getElementById("openPerms")?.addEventListener("click", (e)=>{
+      e.preventDefault();
+      alert("Tela de permissões em desenvolvimento. Aqui o admin ajustará módulos por usuário.");
+    });
+    document.getElementById("openPerms2")?.addEventListener("click", (e)=>{
+      e.preventDefault();
+      alert("Tela de permissões em desenvolvimento. Aqui o admin ajustará módulos por usuário.");
+    });
+  </script>
+</body>
+</html>
