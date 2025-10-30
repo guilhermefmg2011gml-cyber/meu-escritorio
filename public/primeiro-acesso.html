@@ -1,6 +1,7 @@
 <!doctype html><html lang="pt-BR"><head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Primeiro acesso — MMA</title>
+<script src="/config.js"></script>
 <style>
   body{font-family:Inter,system-ui;background:#24100F;color:#f5eee8;margin:0}
   .wrap{min-height:100dvh;display:grid;place-items:center}
@@ -19,7 +20,7 @@
   <button id="ok">Salvar e continuar</button>
 </div></div>
 <script>
-const API_BASE='http://localhost:8080';
+const API_BASE = window.API_BASE || '/api';
 const token = localStorage.getItem('mma_token');
 if(!token){ location.href='/login.html'; }
 

@@ -1,3 +1,5 @@
+/* eslint-env node */
+/* global process */
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 

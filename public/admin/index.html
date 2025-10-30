@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin — Moura Martins Advogados</title>
   <link rel="icon" href="/favicon.svg">
+  <script src="/config.js"></script>
   <style>
     :root{
       --bg:#220f0d;          /* vinho-escuro do site */
@@ -113,13 +114,13 @@
       <div class="sep"></div>
       <nav>
         <a class="active" href="/admin/index.html">Painel geral</a>
-        <a href="#" data-link="processos">Processos e casos</a>
-        <a href="#" data-link="atendimentos">Atendimentos</a>
-        <a href="#" data-link="financeiro">Financeiro</a>
-        <a href="#" data-link="pecas">Criação de peças</a>
-        <a href="#" data-link="docs">Documentos</a>
+        <a href="#" data-mod="processos">Processos e casos</a>
+        <a href="#" data-mod="atendimentos">Atendimentos</a>
+        <a href="#" data-mod="financeiro">Financeiro</a>
+        <a href="#" data-mod="pecas">Criação de peças</a>
+        <a href="#" data-mod="docs">Documentos</a>
         <div class="sep"></div>
-        <a href="/admin/create-user.html">Usuários & permissões <span class="chip">Admin</span></a>
+        <a href="/admin/usuarios.html">Usuários & permissões <span class="chip">Admin</span></a>
       </nav>
     </aside>
 
@@ -142,7 +143,7 @@
             <p>Gerencie usuários, permissões e módulos internos do escritório. Seu acesso é total.</p>
             <div class="row" style="margin-top:14px">
               <a class="tool" href="/admin/create-user.html">➕ Criar colaborador</a>
-              <a class="tool" href="#" id="openPerms">🔐 Ajustar permissões</a>
+              <a class="tool" href="/admin/usuarios.html" id="openPerms">🔐 Ajustar permissões</a>
               <a class="tool" href="/primeiro-acesso.html">🗝️ Instruções de primeiro acesso</a>
             </div>
           </div>
@@ -174,34 +175,34 @@
           <div class="card span-4">
             <h3>Processos e Casos</h3>
             <p>Cadastre e acompanhe processos, andamentos e prazos.</p>
-            <div class="row"><a class="tool" href="#" data-link="processos">Abrir módulo</a></div>
+            <div class="row"><a class="tool" href="#" data-mod="processos">Abrir módulo</a></div>
           </div>
           <div class="card span-4">
             <h3>Atendimentos</h3>
             <p>Registre e organize contatos e histórico com clientes.</p>
-            <div class="row"><a class="tool" href="#" data-link="atendimentos">Abrir módulo</a></div>
+            <div class="row"><a class="tool" href="#" data-mod="atendimentos">Abrir módulo</a></div>
           </div>
           <div class="card span-4">
             <h3>Financeiro</h3>
             <p>Honorários, despesas e relatórios consolidados.</p>
-            <div class="row"><a class="tool" href="#" data-link="financeiro">Abrir módulo</a></div>
+            <div class="row"><a class="tool" href="#" data-mod="financeiro">Abrir módulo</a></div>
           </div>
           <div class="card span-4">
             <h3>Criação de Peças</h3>
             <p>Gere minutas e petições com apoio inteligente.</p>
-            <div class="row"><a class="tool" href="#" data-link="pecas">Abrir módulo</a></div>
+            <div class="row"><a class="tool" href="#" data-mod="pecas">Abrir módulo</a></div>
           </div>
           <div class="card span-4">
             <h3>Documentos</h3>
             <p>Biblioteca interna de contratos, modelos e anexos.</p>
-            <div class="row"><a class="tool" href="#" data-link="docs">Abrir módulo</a></div>
+            <div class="row"><a class="tool" href="#" data-mod="docs">Abrir módulo</a></div>
           </div>
           <div class="card span-4">
             <h3>Usuários & Permissões</h3>
             <p>Crie colaboradores, redefina senhas e limite acessos.</p>
             <div class="row">
               <a class="tool" href="/admin/create-user.html">Gerenciar usuários</a>
-              <a class="tool" href="#" id="openPerms2">Definir permissões</a>
+              <a class="tool" href="/admin/usuarios.html" id="openPerms2">Definir permissões</a>
             </div>
           </div>
         </section>
@@ -211,7 +212,7 @@
 
   <script>
     // ====== CONFIG da API (mesmo padrão do /public/config.js) ======
-    const API_BASE = "/api"; // se sua API estiver em subdomínio/porta, ajuste aqui
+    const API_BASE = window.API_BASE || '/api'; // se sua API estiver em subdomínio/porta, ajuste aqui
 
     // ====== GUARD: exige login e checa se é admin ======
     const token = localStorage.getItem("mma_token");
@@ -229,6 +230,9 @@
       .then((me)=>{
         // espera algo como { email, role: 'admin'|'user', name? }
         document.getElementById("who").textContent = me.name || me.email || "Administrador";
+        if (me.permissions) {
+          localStorage.setItem('mma_permissions', JSON.stringify(me.permissions));
+        }
         if (me.role !== "admin") {
           // se não for admin, redireciona para um painel reduzido (colaborador)
           location.href = "/admin/colaborador.html"; // (criaremos depois)
@@ -242,6 +246,9 @@
     // ====== Logout ======
     document.getElementById("btnLogout")?.addEventListener("click", ()=>{
       localStorage.removeItem("mma_token");
+      localStorage.removeItem("mma_role");
+      localStorage.removeItem("mma_permissions");
+      localStorage.removeItem("mma_user");
       location.href = "/login.html";
     });
 
@@ -262,10 +269,10 @@
     }
 
     // ====== Links dos módulos (ajuste quando as páginas existirem) ======
-    document.querySelectorAll("[data-link]").forEach(a=>{
+    document.querySelectorAll("[data-mod]").forEach(a=>{
       a.addEventListener("click", (ev)=>{
         ev.preventDefault();
-        const mod = a.getAttribute("data-link");
+        const mod = a.getAttribute("data-mod");
         // rotas temporárias:
         const rotas = {
           processos:   "/nucleos.html#processos",
@@ -281,11 +288,11 @@
     // ====== Permissões (telas futuras) ======
     document.getElementById("openPerms")?.addEventListener("click", (e)=>{
       e.preventDefault();
-      alert("Tela de permissões em desenvolvimento. Aqui o admin ajustará módulos por usuário.");
+      location.href = "/admin/usuarios.html";
     });
     document.getElementById("openPerms2")?.addEventListener("click", (e)=>{
       e.preventDefault();
-      alert("Tela de permissões em desenvolvimento. Aqui o admin ajustará módulos por usuário.");
+      location.href = "/admin/usuarios.html";
     });
   </script>
 </body>
