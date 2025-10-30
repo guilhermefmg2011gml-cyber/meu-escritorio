@@ -79,11 +79,11 @@ const $ = (sel) => document.querySelector(sel);
       }
 
       const role = localStorage.getItem("mma_role");
-      if (role === "admin") {
-        location.href = "/admin/create-user.html";
-      } else {
-        location.href = "/";
-      }
+      const redirectMap = {
+        admin: "/admin/create-user.html"
+      };
+      const targetPath = redirectMap[role] || "/";
+      location.href = targetPath;
     } catch (e) {
       errBox.textContent = e.message;
       errBox.style.display = "block";
