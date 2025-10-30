@@ -1,6 +1,10 @@
-<!doctype html><html lang="pt-BR"><head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Admin — Criar usuário</title>
+<script src="/config.js"></script>
 <style>
   body{font-family:Inter,system-ui;margin:0;background:#24100F;color:#f5eee8}
   header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;background:#2E1513}
@@ -8,10 +12,12 @@
   .wrap{max-width:960px;margin:28px auto;padding:0 16px}
   .card{background:#2E1513;border-radius:14px;padding:24px}
   label{display:block;margin:12px 0 6px;color:#cdbfb8}
-  input,select{width:100%;padding:12px;border-radius:10px;border:1px solid #3b1f1c;background:#1d0d0c;color:#f5eee8}
+  input{width:100%;padding:12px;border-radius:10px;border:1px solid #3b1f1c;background:#1d0d0c;color:#f5eee8}
   button{margin-top:16px;background:#c9a268;color:#24100F;border:0;padding:12px 16px;border-radius:999px;font-weight:700;cursor:pointer}
   .alert{margin-top:12px}
-</style></head><body>
+</style>
+</head>
+<body>
 <header>
   <strong>Painel do Administrador</strong>
   <nav>
@@ -23,38 +29,76 @@
   <div class="card">
     <h2>Criar novo usuário</h2>
     <div class="alert" id="alert"></div>
-    <label>E-mail do usuário</label><input id="email" type="email" />
-    <label>Senha provisória</label><input id="pass" type="text" placeholder="Min. 8 caracteres"/>
-    <label>Perfil (role)</label>
-    <select id="role"><option value="user">Usuário</option></select>
-    <button id="btn">Criar usuário</button>
+    <label>E-mail do usuário</label>
+    <input id="novoEmail" type="email" />
+    <label>Senha provisória</label>
+    <input id="senhaProvisoria" type="text" placeholder="Min. 8 caracteres" />
+    <button id="btnCriar">Criar usuário</button>
   </div>
 </div>
 <script>
-const API_BASE='http://localhost:8080';
-const token = localStorage.getItem('mma_token');
-const user = JSON.parse(localStorage.getItem('mma_user')||'{}');
-if(!token || user.role!=='admin'){ location.href='/login.html'; }
+const API_BASE = window.API_BASE;
+  const token = localStorage.getItem('mma_token');
+  const role = localStorage.getItem('mma_role');
 
-document.getElementById('logout').onclick = ()=>{ localStorage.clear(); location.href='/login.html'; };
-
-document.getElementById('btn').onclick = async ()=>{
-  const email=document.getElementById('email').value.trim();
-  const provisionalPassword=document.getElementById('pass').value.trim();
-  const role=document.getElementById('role').value;
-  const alertBox=document.getElementById('alert'); alertBox.textContent='';
-  try{
-    const r = await fetch(`${API_BASE}/api/admin/users`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body: JSON.stringify({ email, provisionalPassword, role })
-    });
-    const data = await r.json();
-    if(!r.ok) throw new Error(data.error||'Falha ao criar');
-    alertBox.style.color='#9effb0'; alertBox.textContent='Usuário criado com sucesso.';
-  }catch(e){
-    alertBox.style.color='#ffdede'; alertBox.textContent=e.message;
+  if (!token || role !== 'admin') {
+    location.href = '/login.html';
   }
-};
+
+  const $ = (sel) => document.querySelector(sel);
+  const emailInput = $('#novoEmail');
+  const passInput = $('#senhaProvisoria');
+  const createBtn = $('#btnCriar');
+  const alertBox = $('#alert');
+
+  function resetAlert() {
+    alertBox.textContent = '';
+    alertBox.style.color = '';
+  }
+
+  async function createUser() {
+    resetAlert();
+    createBtn.disabled = true;
+    try {
+      const email = emailInput.value.trim();
+      const password = passInput.value.trim();
+      if (!email || password.length < 8) {
+        throw new Error('Informe e-mail válido e senha com pelo menos 8 caracteres.');
+      }
+
+      const resp = await fetch(`${API_BASE}/api/admin/users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ email, password, role: 'user' })
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'Falha ao criar usuário');
+
+      alertBox.style.color = '#9effb0';
+      alertBox.textContent = 'Usuário criado com sucesso.';
+      emailInput.value = '';
+      passInput.value = '';
+    } catch (e) {
+      alertBox.style.color = '#ffdede';
+      alertBox.textContent = e.message;
+    } finally {
+      createBtn.disabled = false;
+    }
+  }
+
+  createBtn.addEventListener('click', createUser);
+
+  const logout = document.getElementById('logout');
+  if (logout) {
+    logout.addEventListener('click', () => {
+      localStorage.removeItem('mma_token');
+      localStorage.removeItem('mma_role');
+      location.href = '/login.html';
+    });
+  }
 </script>
-</body></html>
+</body>
+</html>
