@@ -46,7 +46,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           # Diretório de destino no servidor (ex.: /public_html/ ou /public_html/site/)
-          server-dir: ${{ secrets.FTP_PATH }}
+          server-dir: public_html/
           # ✅ Precisa terminar com "/"
           local-dir: ./dist/
           protocol: ftp
