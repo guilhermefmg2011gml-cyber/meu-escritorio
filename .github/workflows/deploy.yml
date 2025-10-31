@@ -18,29 +18,40 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-        
+
       - name: 📦 Instalar dependências
         run: npm ci
 
       - name: 🏗️ Build de produção (Vite)
         run: npm run build
-      
-      # Se você precisar copiar arquivos adicionais para o dist,
-      # descomente e ajuste o bloco abaixo.
+
+      # (Opcional) Copiar estáticos extras p/ dist
       # - name: Copiar arquivos estáticos extras (opcional)
       #   run: |
       #     cp -r public/* dist/ || true
 
+      # ✅ Verifica se o build gerou a pasta dist
+      - name: 🔎 Verificar pasta dist
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "ERRO: pasta dist não foi gerada. Verifique o build."
+            exit 1
+          fi
+          echo "dist OK"
+
       - name: 📤 Enviar via FTP (HostGator)
-        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
+          # Diretório de destino no servidor (ex.: /public_html/ ou /public_html/site/)
           server-dir: ${{ secrets.FTP_PATH }}
-          local-dir: ./dist
-          # Use com cuidado: limpa o destino ANTES de enviar.
-          # Se quiser evitar arquivos órfãos do deploy anterior, ative:
+          # ✅ Precisa terminar com "/"
+          local-dir: ./dist/
+          protocol: ftp
+          timeout: 600000
+          # Se quiser apagar tudo no destino antes de enviar, ative:
           # dangerous-clean-slate: true
           exclude: |
             **/.git*
