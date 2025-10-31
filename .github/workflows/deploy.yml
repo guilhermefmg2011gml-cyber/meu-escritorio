@@ -1,64 +1,49 @@
-name: Deploy site to HostGator
+name: 🚀 Deploy automático — Moura Martins Advogados
 
 on:
   push:
-    branches: [main]
-    paths:
-      - "index.html"
-      - "vite.config.js"
-      - "package.json"
-      - "package-lock.json"
-      - "src/**"
-      - "public/**"
-      - "!api/**"
-  workflow_dispatch:
+    branches:
+      - main
 
 jobs:
-  build:
+  deploy:
+    name: 📦 Build & Deploy para HostGator via FTP
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: 🔄 Checkout do repositório
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: 🧰 Instalar Node LTS
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-
-      - name: Install deps
+          node-version: '20'
+        
+      - name: 📦 Instalar dependências
         run: npm ci
 
-      - name: Build (Vite)
+      - name: 🏗️ Build de produção (Vite)
         run: npm run build
+      
+      # Se você precisar copiar arquivos adicionais para o dist,
+      # descomente e ajuste o bloco abaixo.
+      # - name: Copiar arquivos estáticos extras (opcional)
+      #   run: |
+      #     cp -r public/* dist/ || true
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: site
-          path: dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: site
-          path: dist
-
-      - name: Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: 📤 Enviar via FTP (HostGator)
+        uses: SamKirkland/FTP-Deploy-Action@4.3.0
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          port: 21
-          protocol: ftp
-          local-dir: dist/
-          server-dir: ${{ secrets.FTP_PATH || '/public_html/' }}
+          server-dir: ${{ secrets.FTP_PATH }}
+          local-dir: ./dist
+          # Use com cuidado: limpa o destino ANTES de enviar.
+          # Se quiser evitar arquivos órfãos do deploy anterior, ative:
+          # dangerous-clean-slate: true
           exclude: |
             **/.git*
-            **/.github/**
+            **/.github*
             **/node_modules/**
-            api/**
+            **/.env
