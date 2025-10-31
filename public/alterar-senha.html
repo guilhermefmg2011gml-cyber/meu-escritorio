@@ -19,7 +19,8 @@
   <button id="ok">Alterar</button>
 </div></div>
 <script>
-const API_BASE = window.API_BASE || '/api';
+const API_BASE = (window.API_BASE || '/api').replace(/\/+$/, '');
+const apiUrl = (path) => `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
 const token = localStorage.getItem('mma_token');
 if(!token){ location.href='/login.html'; }
 
@@ -27,7 +28,7 @@ document.getElementById('ok').onclick = async ()=>{
   const currentPassword = document.getElementById('curr').value;
   const newPassword = document.getElementById('next').value;
   try{
-    const r = await fetch(`${API_BASE}/api/auth/change-password`,{
+    const r = await fetch(apiUrl('/auth/change-password'),{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
       body: JSON.stringify({ currentPassword, newPassword })

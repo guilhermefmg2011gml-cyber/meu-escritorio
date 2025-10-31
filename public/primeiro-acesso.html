@@ -20,14 +20,14 @@
   <button id="ok">Salvar e continuar</button>
 </div></div>
 <script>
-const API_BASE = window.API_BASE || '/api';
-const token = localStorage.getItem('mma_token');
+const API_BASE = (window.API_BASE || '/api').replace(/\/+$/, '');
+const apiUrl = (path) => `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
 if(!token){ location.href='/login.html'; }
 
 document.getElementById('ok').onclick = async ()=>{
   const newPassword = document.getElementById('pass').value;
   try{
-    const r = await fetch(`${API_BASE}/api/auth/first-change-password`,{
+    const r = await fetch(apiUrl('/auth/first-change-password'),{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
       body: JSON.stringify({ newPassword })

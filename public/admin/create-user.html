@@ -56,7 +56,8 @@
   </div>
 </div>
 <script>
-const API_BASE = window.API_BASE || '/api';
+const API_BASE = (window.API_BASE || '/api').replace(/\/+$/, '');
+const apiUrl = (path) => `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
   const token = localStorage.getItem('mma_token');
   const role = localStorage.getItem('mma_role');
 
@@ -90,7 +91,7 @@ const API_BASE = window.API_BASE || '/api';
     };
 
     try {
-      const resp = await fetch(`${API_BASE}/api/admin/users`, {
+      const resp = await fetch(apiUrl('/admin/users'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -118,7 +119,6 @@ const API_BASE = window.API_BASE || '/api';
       localStorage.removeItem('mma_role');
       localStorage.removeItem('mma_permissions');
       localStorage.removeItem('mma_user');
-      location.href = '/login.html';
       location.href = '/login.html';
     });
   }
