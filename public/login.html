@@ -39,7 +39,8 @@
 </div>
 
 <script>
-  const API_BASE = window.API_BASE || '/api';
+  const API_BASE = (window.API_BASE || '/api').replace(/\/+$/, '');
+  const apiUrl = (path) => `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
 
 const $ = (sel) => document.querySelector(sel);
   const btn = $("#btnEntrar");
@@ -60,7 +61,7 @@ const $ = (sel) => document.querySelector(sel);
       const email = emailInput.value.trim();
       const password = passInput.value;
 
-      const resp = await fetch(`${API_BASE}/api/auth/login`, {
+      const resp = await fetch(apiUrl('/auth/login'), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })

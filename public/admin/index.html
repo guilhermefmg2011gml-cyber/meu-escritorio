@@ -212,15 +212,15 @@
 
   <script>
     // ====== CONFIG da API (mesmo padrão do /public/config.js) ======
-    const API_BASE = window.API_BASE || '/api'; // se sua API estiver em subdomínio/porta, ajuste aqui
-
+    const API_BASE = (window.API_BASE || '/api').replace(/\/+$/, ''); // se sua API estiver em subdomínio/porta, ajuste aqui
+    const apiUrl = (path) => `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
     // ====== GUARD: exige login e checa se é admin ======
     const token = localStorage.getItem("mma_token");
     if (!token) {
       location.href = "/login.html";
     } else {
       // tenta obter dados do usuário logado
-      fetch(`${API_BASE}/auth/me`, {
+      fetch(apiUrl('/auth/me'), {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(async (r)=>{
@@ -256,7 +256,7 @@
     async function carregarIndicadores(){
       try{
         // exemplos de endpoints futuros:
-        // const users = await (await fetch(`${API_BASE}/admin/users`, { headers:{Authorization:`Bearer ${token}`} })).json();
+        // const users = await (await fetch(apiUrl('/admin/users'), { headers:{Authorization:`Bearer ${token}`} })).json();
         // document.getElementById("statUsers").textContent = users.length;
 
         // por enquanto, valores “placeholder”:

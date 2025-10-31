@@ -41,7 +41,8 @@
 </div>
 
 <script>
-const API_BASE = window.API_BASE || '/api';
+const API_BASE = (window.API_BASE || '/api').replace(/\/+$/, '');
+const apiUrl = (path) => `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
 const token = localStorage.getItem('mma_token');
 const role = localStorage.getItem('mma_role');
 if(!token || role !== 'admin') location.href="/login.html";
@@ -53,7 +54,7 @@ const LABEL = {
 };
 
 async function load(){
-  const r = await fetch(`${API_BASE}/api/admin/users`, { headers:{Authorization:`Bearer ${token}`} });
+  const r = await fetch(apiUrl('/admin/users'), { headers:{Authorization:`Bearer ${token}`} });
   if(!r.ok){ alert("Falha ao carregar usuários"); return; }
   const users = await r.json();
   rows.innerHTML = "";
@@ -91,7 +92,7 @@ rows.addEventListener("change", async (e)=>{
     const id = ck.getAttribute("data-id");
     const mod = ck.getAttribute("data-mod");
     const body = { [mod]: ck.checked };
-    const r = await fetch(`${API_BASE}/api/admin/users/${id}/permissions`, {
+    const r = await fetch(apiUrl(`/admin/users/${id}/permissions`), {
       method:"PATCH",
       headers:{ "Content-Type":"application/json", Authorization:`Bearer ${token}` },
       body: JSON.stringify(body)
@@ -118,7 +119,7 @@ rows.addEventListener("click", async (e)=>{
   if (delBtn){
     const id = delBtn.getAttribute("data-del");
     if(!confirm("Excluir este colaborador?")) return;
-    const r = await fetch(`${API_BASE}/api/admin/users/${id}`, {
+    const r = await fetch(apiUrl(`/admin/users/${id}`), {
       method:"DELETE",
       headers:{ Authorization:`Bearer ${token}` }
     });
