@@ -56,8 +56,9 @@
   </div>
 </div>
 <script>
-const API_BASE = (window.API_BASE || '/api').replace(/\/+$/, '');
-const apiUrl = (path) => `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
+let API_BASE = window.API_BASE || '/api';
+  while (API_BASE.endsWith('/')) API_BASE = API_BASE.slice(0, -1);
+  const apiUrl = window.buildApiUrl || ((path) => `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`);
   const token = localStorage.getItem('mma_token');
   const role = localStorage.getItem('mma_role');
 
