@@ -4,40 +4,31 @@ import bcrypt from "bcryptjs";
 export async function seedAdminIfEnabled() {
   if (process.env.SEED_ADMIN !== "true") return;
 
-  const TABLE = process.env.USERS_TABLE || "users";
-  const EMAIL = process.env.EMAIL_COL || "email";
-  const PASS = process.env.PASS_COL || "password_hash";
-  const ROLE = process.env.ROLE_COL || "role";
+  const T = process.env.USERS_TABLE || "users";
+  const E = process.env.EMAIL_COL || "email";
+  const P = process.env.PASS_COL || "password_hash";
+  const R = process.env.ROLE_COL || "role";
 
-  const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
-  const ADMIN_PASS = process.env.ADMIN_PASSWORD;
-  const hash = bcrypt.hashSync(ADMIN_PASS, 10);
+  const email = process.env.ADMIN_EMAIL || "administrador@mouramartinsadvogados.com.br";
+  const pass = process.env.ADMIN_PASSWORD || "Direito94@";
+  const hash = bcrypt.hashSync(pass, 10);
 
-  const exists = db
-    .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name=?")
-    .get(TABLE);
+  const exists = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name=?").get(T);
   if (!exists) {
-    let ddl = `CREATE TABLE ${TABLE} (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      ${EMAIL} TEXT UNIQUE NOT NULL,
-      ${PASS} TEXT NOT NULL`;
-    if (ROLE) ddl += `, ${ROLE} TEXT DEFAULT 'admin'`;
+    let ddl = `CREATE TABLE ${T} (id INTEGER PRIMARY KEY AUTOINCREMENT, ${E} TEXT UNIQUE NOT NULL, ${P} TEXT NOT NULL`;
+    if (R) ddl += `, ${R} TEXT DEFAULT 'admin'`;
     ddl += `);`;
     db.exec(ddl);
-    console.log(`Tabela ${TABLE} criada.`);
   }
 
-  const user = db.prepare(`SELECT * FROM ${TABLE} WHERE ${EMAIL}=?`).get(ADMIN_EMAIL);
-  if (user) {
-    db.prepare(
-      `UPDATE ${TABLE} SET ${PASS}=? ${ROLE ? `, ${ROLE}='admin'` : ""} WHERE ${EMAIL}=?`
-    ).run(hash, ADMIN_EMAIL);
-    console.log("👑 Admin atualizado com nova senha.");
+  const u = db.prepare(`SELECT * FROM ${T} WHERE ${E}=?`).get(email);
+  if (u) {
+    db.prepare(`UPDATE ${T} SET ${P}=? ${R ? `, ${R}='admin'` : ""} WHERE ${E}=?`).run(hash, email);
+    console.log("Seed: admin atualizado.");
   } else {
-    db.prepare(
-      `INSERT INTO ${TABLE} (${EMAIL}, ${PASS}${ROLE ? `, ${ROLE}` : ""})
-       VALUES (?, ?${ROLE ? ", 'admin'" : ""})`
-    ).run(ADMIN_EMAIL, hash);
-    console.log("✅ Admin criado com sucesso.");
+    const cols = [E, P].concat(R ? [R] : []);
+    const vals = [email, hash].concat(R ? ["admin"] : []);
+    db.prepare(`INSERT INTO ${T} (${cols.join(",")}) VALUES (${cols.map(() => "?").join(",")})`).run(...vals);
+    console.log("Seed: admin inserido.");
   }
 }
