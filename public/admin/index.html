@@ -212,8 +212,10 @@
 
   <script>
     // ====== CONFIG da API (mesmo padrão do /public/config.js) ======
-    const API_BASE = (window.API_BASE || '/api').replace(/\/+$/, ''); // se sua API estiver em subdomínio/porta, ajuste aqui
-    const apiUrl = (path) => `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
+    let API_BASE = window.API_BASE || '/api'; // se sua API estiver em subdomínio/porta, ajuste aqui
+    while (API_BASE.endsWith('/')) API_BASE = API_BASE.slice(0, -1);
+    const apiUrl = window.buildApiUrl || ((path) => `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`);
+
     // ====== GUARD: exige login e checa se é admin ======
     const token = localStorage.getItem("mma_token");
     if (!token) {
