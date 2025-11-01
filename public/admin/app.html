@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8"/>
+  <title>Área de Trabalho — Moura Martins</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <script src="/admin/auth-guard.js"></script>
+  <script src="/admin/api.js"></script>
+  <link rel="stylesheet" href="/admin/app.css"/>
+</head>
+<body>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="mark">⚖️</div>
+      <div class="title">Moura Martins</div>
+    </div>
+    <div class="nav">
+      <a href="/admin/app.html"><span class="dot"></span> Área de Trabalho</a>
+      <a href="/admin/agenda.html"><span class="dot"></span> Agenda</a>
+      <a href="/admin/contatos.html"><span class="dot"></span> Contatos</a>
+      <a href="/admin/atendimentos.html"><span class="dot"></span> Atendimentos</a>
+      <hr style="border-color:#2a1717">
+      <a href="/admin/usuarios.html"><span class="dot"></span> Usuários</a>
+      <a href="/admin/auditoria.html"><span class="dot"></span> Auditoria</a>
+      <a href="javascript:void(0)" data-logout><span class="dot"></span> Sair</a>
+    </div>
+  </aside>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="btn-secondary menu" data-menu>☰</button>
+    <div class="crumb">Área de Trabalho</div>
+    <div class="actions">
+      <span class="badge">Admin</span>
+      <button class="btn-secondary" onclick="location.href='/admin/usuarios.html'">Gerenciar usuários</button>
+      <button data-logout>Sair</button>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="content">
+    <div class="grid">
+
+      <section class="card span-4">
+        <h3>Usuários</h3>
+        <div class="muted">Total de contas</div>
+        <div style="font-size:36px; font-weight:800; margin-top:8px" id="kpi-usuarios">—</div>
+      </section>
+
+      <section class="card span-4">
+        <h3>Eventos do sistema</h3>
+        <div class="muted">Status de auditoria</div>
+        <div style="font-size:36px; font-weight:800; margin-top:8px" id="kpi-eventos">—</div>
+      </section>
+
+      <section class="card span-4">
+        <h3>Acessos rápidos</h3>
+        <div class="muted">Atalhos do dia a dia</div>
+        <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap">
+          <a class="btn" href="/admin/agenda.html">Abrir Agenda</a>
+          <a class="btn" href="/admin/contatos.html">Ver Contatos</a>
+          <a class="btn" href="/admin/atendimentos.html">Atendimentos</a>
+        </div>
+      </section>
+
+      <section class="card span-8">
+        <h3>Últimas ações (auditoria)</h3>
+        <table class="table" id="audit-table">
+          <thead><tr><th>Quando</th><th>Usuário</th><th>Ação</th><th>Alvo</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <script>
+          (async function(){
+            try{
+              const res = await mmaApi.get('/api/audit?limit=8');
+              const rows = await res.json();
+              const tb = document.querySelector('#audit-table tbody');
+              tb.innerHTML = rows.map(r=>`
+                <tr>
+                  <td>${r.created_at}</td>
+                  <td>${r.user_email||'admin'}</td>
+                  <td>${r.action}</td>
+                  <td>${(r.entity||'-')} #${r.entity_id||'-'}</td>
+                </tr>`).join('');
+            }catch(e){}
+          })();
+        </script>
+      </section>
+
+      <section class="card span-4">
+        <h3>Lembretes rápidos</h3>
+        <ul style="margin:8px 0 0 16px">
+          <li>Definir papéis de novos colaboradores</li>
+          <li>Conferir agenda da semana</li>
+          <li>Revisar atendimentos pendentes</li>
+        </ul>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script src="/admin/app.js"></script>
+</body>
+</html>
