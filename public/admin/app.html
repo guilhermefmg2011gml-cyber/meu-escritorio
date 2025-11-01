@@ -5,7 +5,6 @@
   <title>Área de Trabalho — Moura Martins</title>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <script src="/admin/auth-guard.js"></script>
-  <script src="/admin/api.js"></script>
   <link rel="stylesheet" href="/admin/app.css"/>
 </head>
 <body>
@@ -72,7 +71,8 @@
           <thead><tr><th>Quando</th><th>Usuário</th><th>Ação</th><th>Alvo</th></tr></thead>
           <tbody></tbody>
         </table>
-        <script>
+        <script type="module">
+          import { mmaApi } from './api.js';
           (async function(){
             try{
               const res = await mmaApi.get('/api/audit?limit=8');
@@ -103,6 +103,6 @@
   </main>
 </div>
 
-<script src="/admin/app.js"></script>
+<script type="module" src="/admin/app.js"></script>
 </body>
 </html>

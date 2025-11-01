@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <title>Usuários — Moura Martins</title>
   <script src="/admin/auth-guard.js"></script>
-  <script src="/admin/api.js"></script>
   <style>
     body{font-family:system-ui,Arial,sans-serif;margin:24px;background:#110b0b;color:#f3e9e9}
     table{width:100%;border-collapse:collapse;background:#201212;border-radius:12px;overflow:hidden}
@@ -34,20 +33,22 @@
     <tbody id="tbody"></tbody>
   </table>
 
-  <script>
+  <script type="module">
+  import { mmaApi } from './api.js';
+
   async function load() {
-    const res = await mmaApi.get("/api/admin/users");
+    const res = await mmaApi.get('/api/admin/users');
     const rows = await res.json();
-    const tb = document.getElementById("tbody");
+    const tb = document.getElementById('tbody');
     tb.innerHTML = rows.map(u => `
       <tr>
         <td>${u.id}</td>
         <td>${u.email}</td>
         <td>
           <select data-id="${u.id}" class="sel-role">
-            <option value="colab"  ${u.role==="colab"?"selected":""}>colab</option>
-            <option value="gestor" ${u.role==="gestor"?"selected":""}>gestor</option>
-            <option value="admin"  ${u.role==="admin"?"selected":""}>admin</option>
+            <option value="colab"  ${u.role==='colab'?'selected':''}>colab</option>
+            <option value="gestor" ${u.role==='gestor'?'selected':''}>gestor</option>
+            <option value="admin"  ${u.role==='admin'?'selected':''}>admin</option>
           </select>
         </td>
         <td class="row-actions">
@@ -55,9 +56,9 @@
           <button data-id="${u.id}" class="btn-del">Excluir</button>
         </td>
       </tr>
-    `).join("");
+    `).join('');
 
-    document.querySelectorAll(".sel-role").forEach(el=>{
+    document.querySelectorAll('.sel-role').forEach(el=>{
       el.onchange = async () => {
         const id = el.dataset.id;
         await mmaApi.put(`/api/admin/users/${id}`, { role: el.value });
@@ -68,32 +69,32 @@
     document.querySelectorAll(".btn-reset").forEach(b=>{
       b.onclick = async () => {
         const id = b.dataset.id;
-        const p = prompt("Nova senha para o usuário:");
+        const p = prompt('Nova senha para o usuário:');
         if (!p) return;
         await mmaApi.put(`/api/admin/users/${id}`, { password: p });
-        alert("Senha atualizada.");
+        alert('Senha atualizada.');
       };
     });
 
-    document.querySelectorAll(".btn-del").forEach(b=>{
+    document.querySelectorAll('.btn-del').forEach(b=>{
       b.onclick = async () => {
         const id = b.dataset.id;
-        if (!confirm("Excluir este usuário?")) return;
+        if (!confirm('Excluir este usuário?')) return;
         await mmaApi.del(`/api/admin/users/${id}`);
         load();
       };
     });
   }
 
-  document.getElementById("btnCreate").onclick = async () => {
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-    const role = document.getElementById("role").value;
-    if (!email || !password) { alert("Preencha email e senha."); return; }
-    const res = await mmaApi.post("/api/admin/users", { email, password, role });
-    if (!res.ok) { alert("Erro ao criar (email pode estar em uso)."); return; }
-    document.getElementById("email").value="";
-    document.getElementById("password").value="";
+  document.getElementById('btnCreate').onclick = async () => {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const role = document.getElementById('role').value;
+    if (!email || !password) { alert('Preencha email e senha.'); return; }
+    const res = await mmaApi.post('/api/admin/users', { email, password, role });
+    if (!res.ok) { alert('Erro ao criar (email pode estar em uso).'); return; }
+    document.getElementById('email').value='';
+    document.getElementById('password').value='';
     load();
   };
 

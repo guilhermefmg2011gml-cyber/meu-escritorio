@@ -1,25 +1,39 @@
-window.mmaApi = (function () {
-  const API = "https://mma-auth-api-production.up.railway.app";
-  function token(){ return localStorage.getItem("mma_token"); }
-  async function request(path, options = {}) {
-    const t = token();
-    const headers = Object.assign(
-      { "Content-Type": "application/json" },
-      options.headers || {},
-      t ? { Authorization: `Bearer ${t}` } : {}
-    );
-    const res = await fetch(`${API}${path}`, { ...options, headers });
-    if (res.status === 401 || res.status === 403) {
-      localStorage.removeItem("mma_token");
-      window.location.href = "/login.html";
-      return new Response(null, { status: res.status });
-    }
-    return res;
-  }
-  return {
-    get: (p) => request(p, { method: "GET" }),
-    post:(p,b)=>request(p,{ method:"POST", body: JSON.stringify(b||{}) }),
-    put: (p,b)=>request(p,{ method:"PUT",  body: JSON.stringify(b||{}) }),
-    del: (p)=>request(p,{ method:"DELETE" })
-  };
-})();
+export const mmaApi = {
+  base: 'https://mma-auth-api-production.up.railway.app',
+
+  headers() {
+    const t = localStorage.getItem('mma_token');
+    return t ? { Authorization: `Bearer ${t}` } : {};
+  },
+
+  get(path) {
+    return fetch(this.base + path, { headers: this.headers() });
+  },
+
+  post(path, body) {
+    return fetch(this.base + path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...this.headers() },
+      body: JSON.stringify(body || {}),
+    });
+  },
+
+  put(path, body) {
+    return fetch(this.base + path, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...this.headers() },
+      body: JSON.stringify(body || {}),
+    });
+  },
+
+  del(path) {
+    return fetch(this.base + path, {
+      method: 'DELETE',
+      headers: this.headers(),
+    });
+  },
+};
+
+if (typeof window !== 'undefined') {
+  window.mmaApi = mmaApi;
+}

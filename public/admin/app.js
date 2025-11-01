@@ -1,12 +1,12 @@
+import { mmaApi } from './api.js';
+
 (function () {
-  // abrir/fechar sidebar no mobile
   const menuBtn = document.querySelector('[data-menu]');
   const sidebar = document.querySelector('.sidebar');
   if (menuBtn && sidebar) {
     menuBtn.addEventListener('click', () => sidebar.classList.toggle('open'));
   }
 
-  // marcar link ativo
  const segments = window.location.pathname.split('/').filter(Boolean);
   const segment = (segments.pop() || '').split('?')[0];
   const currentSegment = segment === 'admin' ? 'app.html' : segment;
@@ -18,17 +18,12 @@
     }
   });
 
-  // logout
   document.querySelectorAll('[data-logout]').forEach((button) => {
     button.addEventListener('click', () => {
       localStorage.removeItem('mma_token');
       window.location.href = '/login.html';
     });
   });
-
-  if (!window.mmaApi) {
-    return;
-  }
 
   async function loadUsersCount() {
     const el = document.getElementById('kpi-usuarios');

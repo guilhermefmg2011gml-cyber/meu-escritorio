@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <title>Auditoria — Moura Martins</title>
   <script src="/admin/auth-guard.js"></script>
-  <script src="/admin/api.js"></script>
   <style>
     body{font-family:system-ui,Arial,sans-serif;margin:24px;background:#110b0b;color:#f3e9e9}
     .top{display:flex;gap:8px;margin-bottom:16px}
@@ -23,20 +22,22 @@
 
   <div id="list"></div>
 
-  <script>
+  <script type="module">
+  import { mmaApi } from './api.js';
+
   async function load(q="") {
     const res = await mmaApi.get(`/api/audit?limit=50&q=${encodeURIComponent(q)}`);
     const rows = await res.json();
-    const root = document.getElementById("list");
+    const root = document.getElementById('list');
     root.innerHTML = rows.map(r => `
       <div class="log">
-        <div><strong>${r.action}</strong> — ${r.entity||"-"} #${r.entity_id||"-"}</div>
-        <div class="muted">${r.created_at} · ${r.user_email||"admin"} · IP ${r.ip}</div>
-        ${r.diff_json ? `<pre>${r.diff_json}</pre>` : ""}
+        <div><strong>${r.action}</strong> — ${r.entity||'-'} #${r.entity_id||'-'}</div>
+        <div class="muted">${r.created_at} · ${r.user_email||'admin'} · IP ${r.ip}</div>
+        ${r.diff_json ? `<pre>${r.diff_json}</pre>` : ''}
       </div>
-    `).join("");
+    `).join('');
   }
-  document.getElementById("btn").onclick = () => load(document.getElementById("q").value);
+  document.getElementById('btn').onclick = () => load(document.getElementById('q').value);
   load();
   </script>
 </body>

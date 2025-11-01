@@ -1,16 +1,25 @@
 (function () {
-  const token = localStorage.getItem("mma_token");
-  if (!token) { window.location.href = "/login.html"; return; }
+  const path = location.pathname;
+  
+  if (path.endsWith('/login.html')) return;
+  if (!path.startsWith('/admin/')) return;
 
-  function parseJwt(t) {
-    try {
-      const p = t.split(".")[1];
-      return JSON.parse(atob(p.replace(/-/g,"+").replace(/_/g,"/")));
-    } catch { return null; }
+  const token = localStorage.getItem('mma_token');
+  if (!token) {
+    location.replace('/login.html');
+    return;
   }
-  const payload = parseJwt(token);
-  if (!payload) {
-    localStorage.removeItem("mma_token");
-    window.location.href = "/login.html";
-  }
+
+  fetch('https://mma-auth-api-production.up.railway.app/api/auth/me', {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+    .then((res) => {
+      if (res.ok) return;
+      localStorage.removeItem('mma_token');
+      location.replace('/login.html');
+    })
+    .catch(() => {
+      localStorage.removeItem('mma_token');
+      location.replace('/login.html');
+    });
 })();
