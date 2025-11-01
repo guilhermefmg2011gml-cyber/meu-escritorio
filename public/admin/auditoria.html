@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <title>Auditoria — Moura Martins</title>
+  <script src="/admin/auth-guard.js"></script>
+  <script src="/admin/api.js"></script>
+  <style>
+    body{font-family:system-ui,Arial,sans-serif;margin:24px;background:#110b0b;color:#f3e9e9}
+    .top{display:flex;gap:8px;margin-bottom:16px}
+    input,button{padding:8px;border-radius:8px;border:0}
+    .log{background:#201212;border-radius:12px;padding:12px;margin-bottom:8px}
+    .muted{opacity:.7}
+    pre{white-space:pre-wrap}
+  </style>
+</head>
+<body>
+  <div class="top">
+    <button onclick="window.location.href='/admin/index.html'">← Voltar</button>
+    <input id="q" placeholder="filtrar por ação/entidade/email" />
+    <button id="btn">Buscar</button>
+  </div>
+
+  <div id="list"></div>
+
+  <script>
+  async function load(q="") {
+    const res = await mmaApi.get(`/api/audit?limit=50&q=${encodeURIComponent(q)}`);
+    const rows = await res.json();
+    const root = document.getElementById("list");
+    root.innerHTML = rows.map(r => `
+      <div class="log">
+        <div><strong>${r.action}</strong> — ${r.entity||"-"} #${r.entity_id||"-"}</div>
+        <div class="muted">${r.created_at} · ${r.user_email||"admin"} · IP ${r.ip}</div>
+        ${r.diff_json ? `<pre>${r.diff_json}</pre>` : ""}
+      </div>
+    `).join("");
+  }
+  document.getElementById("btn").onclick = () => load(document.getElementById("q").value);
+  load();
+  </script>
+</body>
+</html>
