@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8"/>
+  <title>Atendimentos — Moura Martins</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <script src="/admin/auth-guard.js"></script>
+  <script src="/admin/api.js"></script>
+  <link rel="stylesheet" href="/admin/app.css"/>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand"><div class="mark">🗂️</div><div class="title">Moura Martins</div></div>
+    <div class="nav">
+      <a href="/admin/app.html"><span class="dot"></span> Área de Trabalho</a>
+      <a href="/admin/agenda.html"><span class="dot"></span> Agenda</a>
+      <a href="/admin/contatos.html"><span class="dot"></span> Contatos</a>
+      <a href="/admin/atendimentos.html"><span class="dot"></span> Atendimentos</a>
+      <hr style="border-color:#2a1717">
+      <a href="/admin/usuarios.html"><span class="dot"></span> Usuários</a>
+      <a href="/admin/auditoria.html"><span class="dot"></span> Auditoria</a>
+      <a href="javascript:void(0)" data-logout><span class="dot"></span> Sair</a>
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <button class="btn-secondary menu" data-menu>☰</button>
+    <div class="crumb">Atendimentos</div>
+    <div class="actions">
+      <button class="btn-secondary" onclick="location.href='/admin/app.html'">Área de Trabalho</button>
+      <button data-logout>Sair</button>
+    </div>
+  </header>
+
+  <main class="content">
+    <div class="grid">
+      <section class="card span-8">
+        <h3>Atendimentos em aberto</h3>
+        <div class="muted">[placeholder] Tabela/kanban de atendimentos</div>
+      </section>
+      <section class="card span-4">
+        <h3>Novo atendimento</h3>
+        <div class="muted">[placeholder] Formulário básico</div>
+      </section>
+    </div>
+  </main>
+</div>
+<script src="/admin/app.js"></script>
+</body>
+</html>
