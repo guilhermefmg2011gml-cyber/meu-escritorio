@@ -1,74 +1,35 @@
-<!doctype html><html lang="pt-BR"><head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Painel do Colaborador — MMA</title>
-<link rel="icon" href="/favicon.svg">
-<script src="/config.js"></script>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<title>Painel do Colaborador — Moura Martins</title>
+<script src="/admin/auth-guard.js"></script>
 <style>
   body{margin:0;background:#220f0d;color:#efe5dd;font:400 16px/1.5 Inter,system-ui}
   header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;background:#2f1714}
   a{color:#d7b57a;text-decoration:none;font-weight:600}
   main{max-width:960px;margin:32px auto;padding:0 18px}
   h1{font:700 24px/1 "Cinzel",serif;margin:0 0 16px}
-  .modules{display:grid;gap:14px}
-  .mod{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-radius:14px;background:linear-gradient(180deg,#2f1714,#3a1c18);border:1px solid rgba(255,255,255,.08)}
-  .mod span{font-weight:600}
-  .mod.disabled{opacity:.4;pointer-events:none}
+  .card{background:linear-gradient(180deg,#2f1714,#3a1c18);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px}
   button{border:0;background:#d7b57a;color:#2b1a12;padding:8px 14px;border-radius:10px;cursor:pointer;font-weight:600}
 </style>
-</head><body>
+</head>
+<body>
 <header>
   <strong>Painel do Colaborador</strong>
-  <nav>
-    <a href="/alterar-senha.html">Alterar senha</a> &nbsp;|&nbsp;
-    <a id="logout" href="#">Sair</a>
-  </nav>
+  <button id="logout">Sair</button>
 </header>
 <main>
-  <h1>Bem-vindo(a)!</h1>
-  <p style="color:#cdb9a6">Acesse os módulos liberados pelo administrador.</p>
-  <div class="modules">
-    <div class="mod" data-mod="processos"><span>Processos e casos</span><button>Entrar</button></div>
-    <div class="mod" data-mod="atendimentos"><span>Atendimentos</span><button>Entrar</button></div>
-    <div class="mod" data-mod="financeiro"><span>Financeiro</span><button>Entrar</button></div>
-    <div class="mod" data-mod="pecas"><span>Criação de peças</span><button>Entrar</button></div>
-    <div class="mod" data-mod="docs"><span>Documentos</span><button>Entrar</button></div>
+  <h1>Em breve</h1>
+  <div class="card">
+    <p>Os módulos de trabalho dos colaboradores estarão disponíveis aqui assim que forem liberados.</p>
   </div>
 </main>
 <script>
-let API_BASE = window.API_BASE || '/api';
-  while (API_BASE.endsWith('/')) API_BASE = API_BASE.slice(0, -1);
-  const apiUrl = window.buildApiUrl || ((path) => `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`);
-const token = localStorage.getItem('mma_token');
-if(!token){ location.href='/login.html'; }
-
-document.getElementById('logout')?.addEventListener('click', ()=>{
-  localStorage.removeItem('mma_token');
-  localStorage.removeItem('mma_role');
-  localStorage.removeItem('mma_permissions');
-  localStorage.removeItem('mma_user');
-  location.href='/login.html';
-});
-
-fetch(apiUrl('/auth/me'),{headers:{Authorization:`Bearer ${token}`}})
-  .then(r=>{
-    if(!r.ok) throw new Error('unauthorized');
-    return r.json();
-  })
-  .then(me=>{
-    if(me.role === 'admin'){
-      location.href = '/admin/index.html';
-      return;
-    }
-    localStorage.setItem('mma_permissions', JSON.stringify(me.permissions || {}));
-    const perms = me.permissions || {};
-    document.querySelectorAll('[data-mod]').forEach(el=>{
-      const mod = el.getAttribute('data-mod');
-      if(perms[mod] !== true){
-        el.classList.add('disabled');
-        el.querySelector('button')?.setAttribute('disabled','disabled');
-      }
-    });
-  })
-  .catch(()=> location.href='/login.html');
+document.getElementById('logout').addEventListener('click', () => {
+    localStorage.removeItem('mma_token');
+    window.location.href = '/login.html';
+  });
 </script>
-</body></html>
+</body>
+</html>
