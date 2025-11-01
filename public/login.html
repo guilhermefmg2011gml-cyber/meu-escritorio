@@ -33,72 +33,59 @@
         <span class="help">Esqueceu a senha? Peça ao administrador.</span>
         <button type="submit">Entrar</button>
       </div>
+      <div id="error" style="display:none;margin-top:12px;color:#ffb4b4;font-size:.9rem"></div>
     </form>
   </div>
 </div>
 
-<script>
-  let API_BASE = window.API_BASE || '/api';
-  while (API_BASE.endsWith('/')) API_BASE = API_BASE.slice(0, -1);
-  const apiUrl = window.buildApiUrl || ((path) => `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`);
+<script type="module">
+  const existingToken = localStorage.getItem('mma_token');
+  if (existingToken) {
+    window.location.replace('/admin/app.html');
+  }
 
-const $ = (sel) => document.querySelector(sel);
-  const btn = $("#btnEntrar");
-  const emailInput = $("#email");
-  const passInput = $("#password");
-  const errBox = $("#err");
+  const form = document.querySelector('form');
+  const errorBox = document.getElementById('error');
+  const submitBtn = form.querySelector('button[type="submit"]');
+
+function showError(message) {
+    errorBox.textContent = message;
+    errorBox.style.display = 'block';
+  }
 
   function clearError() {
-    errBox.textContent = "";
-    errBox.style.display = "none";
+    errorBox.textContent = '';
+    errorBox.style.display = 'none';
   }
 
-  async function doLogin() {
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
     clearError();
-    btn.disabled = true;
+    submitBtn.disabled = true;
+
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
 
     try {
-      const email = emailInput.value.trim();
-      const password = passInput.value;
-
-      const resp = await fetch(apiUrl('/auth/login'), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+      const res = await fetch('https://mma-auth-api-production.up.railway.app/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
       });
 
-      const data = await resp.json();
-    
-      if (!resp.ok) throw new Error(data.error || "Falha ao entrar");
-
-      const user = data.user || {};
-
-      localStorage.setItem("mma_token", data.token);
-      localStorage.setItem("mma_role", user.role || data.role || "user");
-      localStorage.setItem("mma_user", JSON.stringify(user));
-      localStorage.setItem("mma_permissions", JSON.stringify(user.permissions || {}));
-
-      if (data.isFirstLogin || user.isFirstLogin) {
-        location.href = "/primeiro-acesso.html";
-        return;
+      if (!res.ok) {
+        const msg = (await res.json().catch(() => ({ message: 'Falha no login' }))).message || 'Credenciais inválidas';
+        throw new Error(msg);
       }
 
-      const role = localStorage.getItem("mma_role");
-      const redirectMap = {
-        admin: "/admin/index.html"
-      };
-      const targetPath = redirectMap[role] || "/";
-      location.href = targetPath;
-    } catch (e) {
-      errBox.textContent = e.message;
-      errBox.style.display = "block";
+      const data = await res.json();
+      localStorage.setItem('mma_token', data.token);
+      window.location.href = '/admin/app.html';
+    } catch (error) {
+      showError(error.message || 'Erro ao autenticar');
     } finally {
-      btn.disabled = false;
+      submitBtn.disabled = false;
     }
-  }
-  btn.addEventListener("click", doLogin);
-  passInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") doLogin();
   });
 </script>
 </body>
