@@ -73,20 +73,37 @@
         </table>
         <script type="module">
           import { mmaApi } from './api.js';
-          (async function(){
-            try{
-              const res = await mmaApi.get('/api/audit?limit=8');
+          async function loadAuditTable() {
+            const tbody = document.querySelector('#audit-table tbody');
+            if (!tbody) return;
+
+            try {
+              const res = await mmaApi.get('/api/audit/latest');
+              if (!res.ok) {
+                console.warn('audit/latest retornou', res.status);
+                tbody.innerHTML = '';
+                return;
+              }
               const rows = await res.json();
-              const tb = document.querySelector('#audit-table tbody');
-              tb.innerHTML = rows.map(r=>`
+              const list = Array.isArray(rows) ? rows.slice(0, 8) : [];
+              tbody.innerHTML = list
+                .map(
+                  (r) => `
                 <tr>
-                  <td>${r.created_at}</td>
-                  <td>${r.user_email||'admin'}</td>
-                  <td>${r.action}</td>
-                  <td>${(r.entity||'-')} #${r.entity_id||'-'}</td>
-                </tr>`).join('');
-            }catch(e){}
-          })();
+                  <td>${r.created_at || r.ts || '-'}</td>
+                  <td>${r.user_email || r.user || 'admin'}</td>
+                  <td>${r.action || '-'}</td>
+                  <td>${(r.entity || r.target || '-')}${r.entity_id ? ` #${r.entity_id}` : ''}</td>
+                </tr>`
+                )
+                .join('');
+            } catch (error) {
+              console.warn('Falha ao carregar auditoria recente', error);
+              tbody.innerHTML = '';
+            }
+          }
+
+          loadAuditTable();
         </script>
       </section>
 

@@ -31,11 +31,15 @@ import { mmaApi } from './api.js';
 
     try {
       const res = await mmaApi.get('/api/admin/users');
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) {
+        console.warn('users request returned', res.status);
+        el.textContent = '—';
+        return;
+      }
       const users = await res.json();
       el.textContent = Array.isArray(users) ? users.length : '—';
     } catch (error) {
-      console.error('Falha ao carregar quantidade de usuários', error);
+      console.warn('Falha ao carregar quantidade de usuários', error);
       el.textContent = '—';
     }
   }
@@ -45,12 +49,16 @@ import { mmaApi } from './api.js';
     if (!el) return;
 
     try {
-      const res = await mmaApi.get('/api/audit?limit=1');
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const res = await mmaApi.get('/api/audit/latest');
+      if (!res.ok) {
+        console.warn('audit/latest retornou', res.status);
+        el.textContent = '—';
+        return;
+      }
       const logs = await res.json();
       el.textContent = Array.isArray(logs) && logs.length ? 'Ativo' : '—';
     } catch (error) {
-      console.error('Falha ao carregar status de auditoria', error);
+      console.warn('Falha ao carregar status de auditoria', error);
       el.textContent = '—';
     }
   }

@@ -11,7 +11,8 @@
   }
 
   fetch('https://mma-auth-api-production.up.railway.app/api/auth/me', {
-    headers: { Authorization: `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
+
   })
     .then((res) => {
       if (res.ok) return;

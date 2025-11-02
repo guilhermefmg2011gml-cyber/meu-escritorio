@@ -26,16 +26,26 @@
   import { mmaApi } from './api.js';
 
   async function load(q="") {
-    const res = await mmaApi.get(`/api/audit?limit=50&q=${encodeURIComponent(q)}`);
-    const rows = await res.json();
     const root = document.getElementById('list');
-    root.innerHTML = rows.map(r => `
-      <div class="log">
-        <div><strong>${r.action}</strong> — ${r.entity||'-'} #${r.entity_id||'-'}</div>
-        <div class="muted">${r.created_at} · ${r.user_email||'admin'} · IP ${r.ip}</div>
-        ${r.diff_json ? `<pre>${r.diff_json}</pre>` : ''}
-      </div>
-    `).join('');
+    try {
+      const res = await mmaApi.get(`/api/audit?limit=50&q=${encodeURIComponent(q)}`);
+      if (!res.ok) {
+        console.warn('/api/audit retornou', res.status);
+        root.innerHTML = '<div class="log">Falha ao carregar registros.</div>';
+        return;
+      }
+      const rows = await res.json();
+      root.innerHTML = rows.map(r => `
+        <div class="log">
+          <div><strong>${r.action}</strong> — ${r.entity||'-'} #${r.entity_id||'-'}</div>
+          <div class="muted">${r.created_at || r.ts || '—'} · ${r.user_email||r.user||'admin'} · IP ${r.ip || '-'}</div>
+          ${r.diff_json ? `<pre>${r.diff_json}</pre>` : (r.meta ? `<pre>${r.meta}</pre>` : '')}
+        </div>
+      `).join('');
+    } catch (error) {
+      console.warn('Falha ao carregar auditoria', error);
+      root.innerHTML = '<div class="log">Falha ao carregar registros.</div>';
+    }
   }
   document.getElementById('btn').onclick = () => load(document.getElementById('q').value);
   load();
