@@ -5,23 +5,17 @@
   <title>Contatos — Moura Martins</title>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <script src="/js/api-client.js"></script>
-  <script src="/js/auth-guard.js"></script>
+  <script type="module" src="/js/auth-guard.js"></script>
   <link rel="stylesheet" href="/admin/app.css"/>
 </head>
 <body>
 <div class="layout">
   <aside class="sidebar">
-    <div class="brand"><div class="mark">📇</div><div class="title">Moura Martins</div></div>
-    <div class="nav">
-      <a href="/admin/app.html"><span class="dot"></span> Área de Trabalho</a>
-      <a href="/admin/agenda.html"><span class="dot"></span> Agenda</a>
-      <a href="/admin/contatos.html"><span class="dot"></span> Contatos</a>
-      <a href="/admin/atendimentos.html"><span class="dot"></span> Atendimentos</a>
-      <hr style="border-color:#2a1717">
-      <a href="/admin/usuarios.html"><span class="dot"></span> Usuários</a>
-      <a href="/admin/auditoria.html"><span class="dot"></span> Auditoria</a>
-      <a href="javascript:void(0)" data-logout><span class="dot"></span> Sair</a>
-    </div>
+    <iframe
+      src="/admin/sidebar.html"
+      title="Menu administrativo"
+      class="sidebar-frame"
+    ></iframe>
   </aside>
 
   <header class="topbar">

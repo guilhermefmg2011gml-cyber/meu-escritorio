@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Processos e Casos — Moura Martins</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="./app.css" />
+  <script src="/js/api-client.js"></script>
+  <script type="module" src="/js/auth-guard.js"></script>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <iframe
+        src="/admin/sidebar.html"
+        title="Menu administrativo"
+        class="sidebar-frame"
+      ></iframe>
+    </aside>
+
+    <header class="topbar">
+      <button class="btn-secondary menu" data-menu>☰</button>
+      <div class="crumb">Processos e Casos</div>
+      <div class="actions">
+        <button class="btn-secondary" onclick="location.href='/admin/app.html'">Área de Trabalho</button>
+        <button data-logout>Sair</button>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="grid">
+        <section class="card span-6">
+          <h3>Central de processos</h3>
+          <div class="muted">Central de acompanhamento de processos judiciais e administrativos.</div>
+          <p style="margin-top:12px">Configure filtros por área, instância, situação e responsáveis. A listagem receberá dados em tempo real assim que a integração com os sistemas eletrônicos for ativada.</p>
+        </section>
+
+        <section class="card span-6">
+          <h3>Em andamento</h3>
+          <div class="muted">Aqui serão exibidos os processos ativos, distribuídos por área e situação.</div>
+        </section>
+
+        <section class="card span-12">
+          <h3>Andamentos recentes</h3>
+          <div class="muted">Listagem com atualizações automáticas via integração PJe / Projudi (em breve).</div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="/admin/app.js"></script>
+  <script type="module" src="./processos.js"></script>
+</body>
+</html>

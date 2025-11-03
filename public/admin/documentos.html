@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Documentos — Moura Martins</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="./app.css" />
+  <script src="/js/api-client.js"></script>
+  <script type="module" src="/js/auth-guard.js"></script>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <iframe
+        src="/admin/sidebar.html"
+        title="Menu administrativo"
+        class="sidebar-frame"
+      ></iframe>
+    </aside>
+
+    <header class="topbar">
+      <button class="btn-secondary menu" data-menu>☰</button>
+      <div class="crumb">Documentos</div>
+      <div class="actions">
+        <button class="btn-secondary" onclick="location.href='/admin/app.html'">Área de Trabalho</button>
+        <button data-logout>Sair</button>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="grid">
+        <section class="card span-6">
+          <h3>Repositório interno</h3>
+          <div class="muted">Repositório interno de contratos, petições, modelos e arquivos PDF.</div>
+          <p style="margin-top:12px">Organize documentos por pastas inteligentes, etiquetas e clientes vinculados.</p>
+        </section>
+
+        <section class="card span-6">
+          <h3>Controle de versões</h3>
+          <div class="muted">Acompanhe revisões de peças processuais e colabore com a equipe.</div>
+        </section>
+
+        <section class="card span-12">
+          <h3>Uploads e integrações</h3>
+          <div class="muted">Upload e indexação de arquivos (PDF, Word, etc.) com busca avançada prevista.</div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="/admin/app.js"></script>
+  <script type="module" src="./documentos.js"></script>
+</body>
+</html>

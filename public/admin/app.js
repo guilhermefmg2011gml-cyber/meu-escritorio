@@ -1,36 +1,31 @@
+import { bindLogoutHandlers } from '../js/auth-guard.js';
+
 (function () {
   const API = window.API;
   if (!API) {
     console.error('[app] API client não encontrado');
     return;
   }
+
   const menuBtn = document.querySelector('[data-menu]');
   const sidebar = document.querySelector('.sidebar');
   if (menuBtn && sidebar) {
     menuBtn.addEventListener('click', () => sidebar.classList.toggle('open'));
   }
 
- const segments = window.location.pathname.split('/').filter(Boolean);
-  const segment = (segments.pop() || '').split('?')[0];
-  const currentSegment = segment === 'admin' ? 'app.html' : segment;
-  document.querySelectorAll('.nav a').forEach((link) => {
-    const href = link.getAttribute('href') || '';
-    const last = href.split('/').pop()?.split('?')[0];
-    if (last === currentSegment) {
-      link.classList.add('active');
-    }
-  });
+  if (typeof bindLogoutHandlers === 'function') {
+    bindLogoutHandlers();
 
-  document.querySelectorAll('[data-logout]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      try {
-        await API.logout();
-      } catch (err) {
-        console.warn('[app] falha ao sair', err);
-      }
-      window.location.href = '/login.html';
-    });
-  });
+  const sidebarFrame = document.querySelector('.sidebar-frame');
+    if (sidebarFrame) {
+      sidebarFrame.addEventListener('load', () => {
+        const doc = sidebarFrame.contentDocument || sidebarFrame.contentWindow?.document;
+        if (doc) {
+          bindLogoutHandlers(doc);
+        }
+      });
+    }
+  }
 
   async function loadUsersCount() {
     const el = document.getElementById('kpi-usuarios');
