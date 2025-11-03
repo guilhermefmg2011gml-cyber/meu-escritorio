@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <title>Painel do Colaborador — Moura Martins</title>
-<script src="/admin/auth-guard.js"></script>
+<script src="/js/api-client.js"></script>
+<script src="/js/auth-guard.js"></script>
 <style>
   body{margin:0;background:#220f0d;color:#efe5dd;font:400 16px/1.5 Inter,system-ui}
   header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;background:#2f1714}
@@ -26,8 +27,12 @@
   </div>
 </main>
 <script>
-document.getElementById('logout').addEventListener('click', () => {
-    localStorage.removeItem('mma_token');
+document.getElementById('logout').addEventListener('click', async () => {
+    try {
+      await window.API?.logout();
+    } catch (err) {
+      console.warn('[colaborador] falha ao sair', err);
+    }
     window.location.href = '/login.html';
   });
 </script>

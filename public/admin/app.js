@@ -1,6 +1,9 @@
-import { mmaApi } from './api.js';
-
 (function () {
+  const API = window.API;
+  if (!API) {
+    console.error('[app] API client não encontrado');
+    return;
+  }
   const menuBtn = document.querySelector('[data-menu]');
   const sidebar = document.querySelector('.sidebar');
   if (menuBtn && sidebar) {
@@ -19,8 +22,12 @@ import { mmaApi } from './api.js';
   });
 
   document.querySelectorAll('[data-logout]').forEach((button) => {
-    button.addEventListener('click', () => {
-      localStorage.removeItem('mma_token');
+    button.addEventListener('click', async () => {
+      try {
+        await API.logout();
+      } catch (err) {
+        console.warn('[app] falha ao sair', err);
+      }
       window.location.href = '/login.html';
     });
   });
@@ -30,14 +37,14 @@ import { mmaApi } from './api.js';
     if (!el) return;
 
     try {
-      const res = await mmaApi.get('/api/admin/users');
-      if (!res.ok) {
-        console.warn('users request returned', res.status);
+      const result = await API.adminUsers();
+      if (!result || result.res.status !== 200) {
+        console.warn('users request returned', result?.res?.status);
         el.textContent = '—';
         return;
       }
-      const users = await res.json();
-      el.textContent = Array.isArray(users) ? users.length : '—';
+      const users = Array.isArray(result.data) ? result.data : [];
+      el.textContent = users.length ? users.length : '0';
     } catch (error) {
       console.warn('Falha ao carregar quantidade de usuários', error);
       el.textContent = '—';
@@ -49,14 +56,14 @@ import { mmaApi } from './api.js';
     if (!el) return;
 
     try {
-      const res = await mmaApi.get('/api/audit/latest');
-      if (!res.ok) {
-        console.warn('audit/latest retornou', res.status);
+      const result = await API.auditLatest();
+      if (!result || result.res.status !== 200) {
+        console.warn('audit/latest retornou', result?.res?.status);
         el.textContent = '—';
         return;
       }
-      const logs = await res.json();
-      el.textContent = Array.isArray(logs) && logs.length ? 'Ativo' : '—';
+      const logs = Array.isArray(result.data) ? result.data : [];
+      el.textContent = logs.length ? 'Ativo' : '—';
     } catch (error) {
       console.warn('Falha ao carregar status de auditoria', error);
       el.textContent = '—';

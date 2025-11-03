@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <title>Usuários — Moura Martins</title>
-  <script src="/admin/auth-guard.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/auth-guard.js"></script>
   <style>
     body{font-family:system-ui,Arial,sans-serif;margin:24px;background:#110b0b;color:#f3e9e9}
     table{width:100%;border-collapse:collapse;background:#201212;border-radius:12px;overflow:hidden}
@@ -33,72 +34,148 @@
     <tbody id="tbody"></tbody>
   </table>
 
-  <script type="module">
-  import { mmaApi } from './api.js';
+  <script>
+  (function () {
+    if (!window.API) return;
 
-  async function load() {
-    const res = await mmaApi.get('/api/admin/users');
-    const rows = await res.json();
-    const tb = document.getElementById('tbody');
-    tb.innerHTML = rows.map(u => `
-      <tr>
-        <td>${u.id}</td>
-        <td>${u.email}</td>
-        <td>
-          <select data-id="${u.id}" class="sel-role">
-            <option value="colab"  ${u.role==='colab'?'selected':''}>colab</option>
-            <option value="gestor" ${u.role==='gestor'?'selected':''}>gestor</option>
-            <option value="admin"  ${u.role==='admin'?'selected':''}>admin</option>
-          </select>
-        </td>
-        <td class="row-actions">
-          <button data-id="${u.id}" class="btn-reset">Redefinir senha</button>
-          <button data-id="${u.id}" class="btn-del">Excluir</button>
-        </td>
-      </tr>
-    `).join('');
+    const tbody = document.getElementById('tbody');
 
-    document.querySelectorAll('.sel-role').forEach(el=>{
-      el.onchange = async () => {
-        const id = el.dataset.id;
-        await mmaApi.put(`/api/admin/users/${id}`, { role: el.value });
-        alert("Papel atualizado.");
-      };
-    });
+    async function load() {
+      try {
+        const result = await window.API.adminUsers();
+        if (!result || result.res.status !== 200 || !Array.isArray(result.data)) {
+          console.warn('[usuarios] falha ao listar', result?.res?.status);
+          tbody.innerHTML = '<tr><td colspan="4">Não foi possível carregar os usuários.</td></tr>';
+          return;
+        }
 
-    document.querySelectorAll(".btn-reset").forEach(b=>{
-      b.onclick = async () => {
-        const id = b.dataset.id;
-        const p = prompt('Nova senha para o usuário:');
-        if (!p) return;
-        await mmaApi.put(`/api/admin/users/${id}`, { password: p });
-        alert('Senha atualizada.');
-      };
-    });
+        tbody.innerHTML = result.data
+          .map(
+            (u) => `
+        <tr>
+          <td>${u.id}</td>
+          <td>${u.email}</td>
+          <td>
+            <select data-id="${u.id}" class="sel-role">
+              <option value="colab"  ${u.role === 'colab' ? 'selected' : ''}>colab</option>
+              <option value="gestor" ${u.role === 'gestor' ? 'selected' : ''}>gestor</option>
+              <option value="admin"  ${u.role === 'admin' ? 'selected' : ''}>admin</option>
+            </select>
+          </td>
+          <td class="row-actions">
+            <button data-id="${u.id}" class="btn-reset">Redefinir senha</button>
+            <button data-id="${u.id}" class="btn-del">Excluir</button>
+          </td>
+        </tr>
+      `
+          )
+          .join('');
 
-    document.querySelectorAll('.btn-del').forEach(b=>{
-      b.onclick = async () => {
-        const id = b.dataset.id;
-        if (!confirm('Excluir este usuário?')) return;
-        await mmaApi.del(`/api/admin/users/${id}`);
+        if (!tbody.innerHTML) {
+          tbody.innerHTML = '<tr><td colspan="4">Nenhum usuário cadastrado.</td></tr>';
+        }
+
+        bindActions();
+      } catch (err) {
+        console.warn('[usuarios] erro ao carregar', err);
+        tbody.innerHTML = '<tr><td colspan="4">Não foi possível carregar os usuários.</td></tr>';
+      }
+    }
+
+    function bindActions() {
+      document.querySelectorAll('.sel-role').forEach((el) => {
+        el.onchange = async () => {
+          const id = el.dataset.id;
+          try {
+            const result = await window.API.json(`/admin/users/${id}`, {
+              method: 'PUT',
+              body: { role: el.value },
+            });
+            if (!result.res.ok) {
+              alert('Falha ao atualizar papel.');
+            } else {
+              alert('Papel atualizado.');
+            }
+          } catch (error) {
+            console.warn('[usuarios] erro ao atualizar papel', error);
+            alert('Falha ao atualizar papel.');
+          }
+        };
+      });
+
+      document.querySelectorAll('.btn-reset').forEach((button) => {
+        button.onclick = async () => {
+          const id = button.dataset.id;
+          const password = prompt('Nova senha para o usuário:');
+          if (!password) return;
+          try {
+            const result = await window.API.json(`/admin/users/${id}`, {
+              method: 'PUT',
+              body: { password },
+            });
+            if (!result.res.ok) {
+              alert('Falha ao redefinir senha.');
+            } else {
+              alert('Senha atualizada.');
+            }
+          } catch (error) {
+            console.warn('[usuarios] erro ao redefinir senha', error);
+            alert('Falha ao redefinir senha.');
+          }
+        };
+      });
+
+      document.querySelectorAll('.btn-del').forEach((button) => {
+        button.onclick = async () => {
+          const id = button.dataset.id;
+          if (!confirm('Excluir este usuário?')) return;
+          try {
+            const res = await window.API.request(`/admin/users/${id}`, { method: 'DELETE' });
+            if (!res.ok) {
+              alert('Falha ao excluir usuário.');
+              return;
+            }
+            load();
+          } catch (error) {
+            console.warn('[usuarios] erro ao excluir', error);
+            alert('Falha ao excluir usuário.');
+          }
+        };
+      });
+    }
+
+    document.getElementById('btnCreate').onclick = async () => {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const role = document.getElementById('role').value;
+      if (!email || !password) {
+        alert('Preencha email e senha.');
+        return;
+      }
+
+      try {
+        const result = await window.API.json('/admin/users', {
+          method: 'POST',
+          body: { email, password, role },
+        });
+
+        if (!result.res.ok) {
+          const message = result.data?.error || 'Erro ao criar (email pode estar em uso).';
+          alert(message);
+          return;
+        }
+
+        document.getElementById('email').value = '';
+        document.getElementById('password').value = '';
         load();
-      };
-    });
-  }
+      } catch (error) {
+        console.warn('[usuarios] erro ao criar', error);
+        alert('Erro ao criar usuário.');
+      }
+    };
 
-  document.getElementById('btnCreate').onclick = async () => {
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-    const role = document.getElementById('role').value;
-    if (!email || !password) { alert('Preencha email e senha.'); return; }
-    const res = await mmaApi.post('/api/admin/users', { email, password, role });
-    if (!res.ok) { alert('Erro ao criar (email pode estar em uso).'); return; }
-    document.getElementById('email').value='';
-    document.getElementById('password').value='';
     load();
-  };
-
-  load();
+   })();
   </script>
 </body>
 </html>

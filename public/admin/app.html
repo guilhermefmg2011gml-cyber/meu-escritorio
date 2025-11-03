@@ -4,7 +4,8 @@
   <meta charset="utf-8"/>
   <title>Área de Trabalho — Moura Martins</title>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <script src="/admin/auth-guard.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/auth-guard.js"></script>
   <link rel="stylesheet" href="/admin/app.css"/>
 </head>
 <body>
@@ -71,22 +72,22 @@
           <thead><tr><th>Quando</th><th>Usuário</th><th>Ação</th><th>Alvo</th></tr></thead>
           <tbody></tbody>
         </table>
-        <script type="module">
-          import { mmaApi } from './api.js';
-          async function loadAuditTable() {
+         <script>
+          (async function loadAuditTable() {
             const tbody = document.querySelector('#audit-table tbody');
-            if (!tbody) return;
+            if (!tbody || !window.API) return;
 
             try {
-              const res = await mmaApi.get('/api/audit/latest');
-              if (!res.ok) {
-                console.warn('audit/latest retornou', res.status);
+              const result = await window.API.auditLatest();
+              if (!result || result.res.status !== 200) {
+                console.warn('audit/latest retornou', result?.res?.status);
                 tbody.innerHTML = '';
                 return;
               }
-              const rows = await res.json();
-              const list = Array.isArray(rows) ? rows.slice(0, 8) : [];
-              tbody.innerHTML = list
+
+              const rows = Array.isArray(result.data) ? result.data.slice(0, 8) : [];
+              tbody.innerHTML = rows
+
                 .map(
                   (r) => `
                 <tr>
@@ -101,9 +102,7 @@
               console.warn('Falha ao carregar auditoria recente', error);
               tbody.innerHTML = '';
             }
-          }
-
-          loadAuditTable();
+          })();
         </script>
       </section>
 

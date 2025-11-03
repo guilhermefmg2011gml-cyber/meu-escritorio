@@ -2,6 +2,7 @@
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Alterar senha — MMA</title>
 <script src="/config.js"></script>
+<script src="/js/api-client.js"></script>
 <style>
   body{font-family:Inter,system-ui;background:#24100F;color:#f5eee8;margin:0}
   .wrap{min-height:100dvh;display:grid;place-items:center}
@@ -19,26 +20,34 @@
   <button id="ok">Alterar</button>
 </div></div>
 <script>
-let API_BASE = window.API_BASE || '/api';
-  while (API_BASE.endsWith('/')) API_BASE = API_BASE.slice(0, -1);
-  const apiUrl = window.buildApiUrl || ((path) => `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`);
-const token = localStorage.getItem('mma_token');
-if(!token){ location.href='/login.html'; }
+async function ensureSession() {
+  if (!window.API) return false;
+  try {
+    const { res } = await window.API.me();
+    if (res.status === 200) return true;
+  } catch (err) {
+    console.warn('[alterar-senha] sessão inválida', err);
+  }
+  location.href = '/login.html';
+  return false;
+}
 
 document.getElementById('ok').onclick = async ()=>{
+  if (!(await ensureSession())) return;
   const currentPassword = document.getElementById('curr').value;
   const newPassword = document.getElementById('next').value;
   try{
-    const r = await fetch(apiUrl('/auth/change-password'),{
+    const result = await window.API.json('/auth/change-password',{
       method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body: JSON.stringify({ currentPassword, newPassword })
+      body: { currentPassword, newPassword }
     });
-    const data = await r.json();
-    if(!r.ok) throw new Error(data.error||'Erro');
+    const data = result.data || {};
+    if(!result.res.ok) throw new Error(data.error||'Erro');
     alert('Senha alterada com sucesso!');
     location.href='/';
   }catch(e){ document.getElementById('err').textContent=e.message; }
 };
+
+ensureSession();
 </script>
 </body></html>

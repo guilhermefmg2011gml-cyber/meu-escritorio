@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <title>Painel — Moura Martins</title>
-  <script src="/admin/auth-guard.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/auth-guard.js"></script>
   <style>
     body{font-family:system-ui,Arial,sans-serif;margin:24px;background:#110b0b;color:#f3e9e9}
     .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
@@ -27,36 +28,67 @@
     <a href="/admin/auditoria.html"><button>Ver auditoria</button></a>
   </div>
 
-  <script type="module">
-    import { mmaApi } from './api.js';
+  <script>
+    const logoutButton = document.getElementById('logout');
+    if (logoutButton) {
+      logoutButton.onclick = async () => {
+        try {
+          await window.API?.logout();
+        } catch (err) {
+          console.warn('[painel] falha ao sair', err);
+        }
+        window.location.href = '/login.html';
+      };
+    }
 
-  document.getElementById('logout').onclick = () => {
-      localStorage.removeItem('mma_token');
-      window.location.href = '/login.html';
-    };
-
-    (async function () {
+  (async function bootstrap() {
+      if (!window.API) return;
       const ul = document.getElementById('users');
       try {
-        const res = await mmaApi.get('/api/admin/users');
-        const rows = await res.json();
-        ul.innerHTML = rows.slice(0, 5).map((u) => `<li>${u.email} — ${u.role}</li>`).join('');
-      } catch (e) {
+        const result = await window.API.adminUsers();
+        if (!result || result.res.status !== 200) {
+          console.warn('/api/admin/users retornou', result?.res?.status);
         ul.innerHTML = '<li>Falha ao carregar</li>';
-      }
-
-      const logUl = document.getElementById('audit');
-      try {
-        const res = await mmaApi.get('/api/audit?limit=5');
-        const rows = await res.json();
-        logUl.innerHTML = rows
-          .map((r) => `<li>${r.created_at} — ${r.user_email || 'admin'} — ${r.action} ${r.entity || ''}#${r.entity_id || ''}</li>`)
-          .join('');
+        } else {
+          const rows = Array.isArray(result.data) ? result.data.slice(0, 5) : [];
+          usersEl.innerHTML = rows.map((u) => `<li>${u.email} — ${u.role}</li>`).join('');
+          if (!usersEl.innerHTML) {
+            usersEl.innerHTML = '<li>Nenhum usuário cadastrado</li>';
+          }
+        }
       } catch (e) {
-        logUl.innerHTML = '<li>Falha ao carregar</li>';
+        console.warn('Falha ao carregar usuários', e);
+        usersEl.innerHTML = '<li>Falha ao carregar</li>';
       }
 
-      document.getElementById('goUsers').onclick = () => (window.location.href = '/admin/usuarios.html');
+      const auditEl = document.getElementById('audit');
+      try {
+        const result = await window.API.auditLatest();
+        if (!result || result.res.status !== 200) {
+          console.warn('audit/latest retornou', result?.res?.status);
+          auditEl.innerHTML = '<li>Falha ao carregar</li>';
+        } else {
+          const list = Array.isArray(result.data) ? result.data.slice(0, 5) : [];
+          auditEl.innerHTML = list
+            .map((r) => {
+              const target = r.entity || r.target || '';
+              const targetId = r.entity_id ? ` #${r.entity_id}` : '';
+              return `<li>${r.created_at || r.ts || '—'} — ${r.user_email || r.user || 'admin'} — ${r.action || ''} ${target}${targetId}</li>`;
+            })
+            .join('');
+          if (!auditEl.innerHTML) {
+            auditEl.innerHTML = '<li>Sem registros de auditoria</li>';
+          }
+        }
+      } catch (e) {
+        console.warn('Falha ao carregar auditoria', e);
+        auditEl.innerHTML = '<li>Falha ao carregar</li>';
+      }
+
+      const goUsers = document.getElementById('goUsers');
+      if (goUsers) {
+        goUsers.onclick = () => (window.location.href = '/admin/usuarios.html');
+      }
     })();
   </script>
 </body>
