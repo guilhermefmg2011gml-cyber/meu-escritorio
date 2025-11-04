@@ -1,7 +1,10 @@
 const TOKEN_KEY = "mma_auth_token";
 
 function resolveBase() {
-  let base = window.API_BASE || "/api";
+  let base =
+    (typeof window !== "undefined" && window.APP_CONFIG && window.APP_CONFIG.API_BASE) ||
+    (typeof window !== "undefined" && window.API_BASE) ||
+    "http://localhost:8080/api";
   if (base.endsWith("/")) base = base.slice(0, -1);
   return base;
 }
@@ -56,7 +59,9 @@ const API = {
   },
 
   async request(path, opts = {}) {
-    const url = buildUrl(this.base, path);
+    const base = resolveBase();
+    this.base = base;
+    const url = buildUrl(base, path);
     const headers = { ...(opts.headers || {}) };
 
     const body = opts.body;
