@@ -1,10 +1,18 @@
 import { ensureAuthOrRedirect, bindLogoutHandlers } from "../js/auth-guard.js";
-
-const API = window.API;
+import { apiFetch } from "/js/api-client.js";
 
 const state = {
   loading: false,
 };
+
+const tableBody = document.querySelector("#processTable tbody");
+const drawer = document.querySelector("#drawer");
+const drawerTitle = document.querySelector("#drawerTitle");
+const drawerClose = document.querySelector("#drawerClose");
+const timelineEl = document.querySelector("#timeline");
+const searchBtn = document.querySelector("#btnBuscar");
+const importBtn = document.querySelector("#btnImportCSV");
+const csvInput = document.querySelector("#csvFile");
 
 function toggleSidebarMenu() {
   const menuBtn = document.querySelector("[data-menu]");
@@ -26,227 +34,179 @@ function initSidebarLogoutSync() {
   }
 }
 
-function escapeHtml(str = "") {
-  return String(str).replace(/[&<>"']/g, (ch) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;",
-  })[ch]);
+function escapeHtml(value = "") {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
-function formatDate(value) {
+function formatDateTime(value) {
   if (!value) return "";
-  try {
-    return new Date(value).toLocaleString("pt-BR");
-  } catch (err) {
-    return value;
-  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return escapeHtml(value);
+  return date.toLocaleString("pt-BR");
 }
 
-function toggle(el, show) {
-  if (!el) return;
-  el.classList.toggle("hidden", !show);
-  if (el.classList.contains("drawer")) {
-    el.classList.toggle("show", !!show);
-  }
+function renderProcesses(rows = []) {
+  if (!tableBody) return;
+  if (!rows.length) {
+    tableBody.innerHTML = `<tr><td colspan="7">Nenhum processo localizado.</td></tr>`;
+    return;
+}
+
+tableBody.innerHTML = rows
+    .map(
+      (row) => `
+        <tr>
+          <td>${escapeHtml(row.cnj || "")}</td>
+          <td>${escapeHtml(row.titulo || "—")}</td>
+          <td>${escapeHtml(row.classe || "—")}</td>
+          <td>${escapeHtml(row.uf || "—")}</td>
+          <td>${escapeHtml(row.situacao || "—")}</td>
+          <td>${escapeHtml(row.cliente || "—")}</td>
+          <td><button class="btn-secondary" data-open-timeline="${row.id}">Timeline</button></td>
+        </tr>
+      `
+    )
+    .join("");
 }
 
 async function loadProcesses() {
-  if (!API) return;
   if (state.loading) return;
   state.loading = true;
-  const grid = document.querySelector("#gridProc tbody");
-  if (grid) grid.innerHTML = `<tr><td colspan="6">Carregando...</td></tr>`;
+  if (tableBody) {
+    tableBody.innerHTML = `<tr><td colspan="7">Carregando processos...</td></tr>`;
+  }
 
-  const q = document.querySelector("#fltQ").value.trim();
-  const situacao = document.querySelector("#fltSit").value;
+  const q = document.querySelector("#fltQ")?.value?.trim();
+  const uf = document.querySelector("#fltUF")?.value?.trim().toUpperCase();
+  const oab = document.querySelector("#fltOAB")?.value?.trim();
 
   try {
-    const rows = await API.listProcesses({ q, situacao });
-    if (grid) {
-      if (!rows.length) {
-        grid.innerHTML = `<tr><td colspan="6">Nenhum processo localizado.</td></tr>`;
-      } else {
-        grid.innerHTML = rows
-          .map(
-            (r) => `
-              <tr data-id="${r.id}">
-                <td><button class="linklike" data-open="${r.id}">${escapeHtml(r.numero || "")}</button></td>
-                <td>${escapeHtml(r.classe || "")}</td>
-                <td>${escapeHtml(r.assunto || "")}</td>
-                <td>${escapeHtml(r.instancia || "")}</td>
-                <td>${escapeHtml(r.situacao || "")}</td>
-                <td>${escapeHtml(r.origem || "")}</td>
-              </tr>
-            `
-          )
-          .join("");
-      }
+    const params = new URLSearchParams();
+    if (q) params.set("q", q);
+    if (uf) params.set("uf", uf);
+    if (oab) params.set("oab", oab);
+    const query = params.toString();
+    const rows = await apiFetch(`/processes${query ? `?${query}` : ""}`);
+    renderProcesses(Array.isArray(rows) ? rows : []);
 
-      grid.querySelectorAll("[data-open]").forEach((btn) => {
-        btn.addEventListener("click", () => openDrawer(btn.dataset.open));
-      });
-    }
   } catch (error) {
-    console.error("[processos] falha ao carregar", error);
-    if (grid) grid.innerHTML = `<tr><td colspan="6">Erro ao carregar processos.</td></tr>`;
+    console.error("[processos] erro ao carregar lista", error);
+    if (tableBody) {
+      tableBody.innerHTML = `<tr><td colspan="7">Erro ao carregar processos.</td></tr>`;
+    }
   } finally {
     state.loading = false;
   }
 }
 
-async function salvarManual() {
+async function openTimeline(processId) {
+  if (!processId) return;
   try {
-    const payload = {
-      numero: document.querySelector("#pNumero").value.trim(),
-      classe: document.querySelector("#pClasse").value.trim(),
-      assunto: document.querySelector("#pAssunto").value.trim(),
-      foro: document.querySelector("#pForo").value.trim(),
-      vara: document.querySelector("#pVara").value.trim(),
-      instancia: document.querySelector("#pInstancia").value.trim(),
-      situacao: document.querySelector("#pSituacao").value,
-      polo_ativo: document.querySelector("#pAtivo").value.trim(),
-      polo_passivo: document.querySelector("#pPassivo").value.trim(),
-    };
-    if (!payload.numero) {
-      alert("Informe o número do processo");
-      return;
-    }
-    const res = await API.createProcessManual(payload);
-    if (res?.id) {
-      toggle(document.querySelector("#modalProc"), false);
-      await loadProcesses();
-    } else {
-      alert("Não foi possível salvar");
-    }
-  } catch (error) {
-    console.error("[processos] falha ao salvar", error);
-    alert("Erro ao salvar processo");
-  }
-}
-
-async function openDrawer(id) {
-  if (!id) return;
-  try {
-    const [meta, events] = await Promise.all([
-      API.getProcessDetails(id),
-      API.getProcessEvents(id),
+    const [proc, events] = await Promise.all([
+      apiFetch(`/processes/${processId}`),
+      apiFetch(`/processes/${processId}/events`),
     ]);
 
-    const drawer = document.querySelector("#drawer");
-    const dwTitle = document.querySelector("#dwTitle");
-    const dwMeta = document.querySelector("#dwMeta");
-    const dwEvents = document.querySelector("#dwEvents");
+    if (drawerTitle) {
+      const title = proc?.cnj ? `${proc.cnj} — Timeline` : `Processo #${processId}`;
+      drawerTitle.textContent = title;
+    }
 
-    if (dwTitle) dwTitle.textContent = meta?.numero || `Processo #${id}`;
-    if (dwMeta) {
-      dwMeta.innerHTML = `
-        <div><strong>Classe:</strong> ${escapeHtml(meta?.classe || "")}</div>
-        <div><strong>Assunto:</strong> ${escapeHtml(meta?.assunto || "")}</div>
-        <div><strong>Instância:</strong> ${escapeHtml(meta?.instancia || "")}</div>
-        <div><strong>Situação:</strong> ${escapeHtml(meta?.situacao || "")}</div>
-      `;
+    if (timelineEl) {
+      const list = Array.isArray(events) ? events : [];
+      if (!list.length) {
+        timelineEl.innerHTML = `<div class="item">Sem eventos registrados.</div>`;
+      } else {
+        timelineEl.innerHTML = list
+          .map(
+            (ev) => `
+              <div class="item">
+                <div class="when">${formatDateTime(ev.data_evento)}</div>
+                <div class="type">${escapeHtml(ev.tipo || "-")} · origem: ${escapeHtml(ev.origem || "-")}</div>
+                <div class="desc">${escapeHtml(ev.descricao || "")}</div>
+              </div>
+            `
+          )
+          .join("");
+      }
     }
-    if (dwEvents) {
-      dwEvents.innerHTML = (events || [])
-        .map(
-          (ev) => `
-            <li>
-              <time>${formatDate(ev.data_mov)}</time>
-              <div><strong>${escapeHtml(ev.movimento || "")}</strong></div>
-              ${ev.complemento ? `<div>${escapeHtml(ev.complemento)}</div>` : ""}
-              <small>origem: ${escapeHtml(ev.origem || "")}</small>
-            </li>
-          `
-        )
-        .join("");
+    if (drawer) {
+      drawer.classList.remove("hidden");
     }
-    toggle(drawer, true);
+    
   } catch (error) {
-    console.error("[processos] falha ao abrir drawer", error);
-    alert("Não foi possível carregar detalhes do processo");
+    console.error("[processos] erro ao abrir timeline", error);
+    alert("Não foi possível carregar a timeline do processo.");
   }
 }
 
-async function executarPdpjTest() {
-  try {
-    const result = await API.pdpjPing();
-    alert(result?.ok ? "PDPJ OK: token emitido" : "Falha ao testar PDPJ");
-  } catch (error) {
-    alert(`Falha PDPJ: ${error?.message || error}`);
+function bindTimelineEvents() {
+  document.addEventListener("click", (event) => {
+    const target = event.target;
+    const button = target instanceof Element ? target.closest("[data-open-timeline]") : null;
+    if (!button) return;
+    const processId = button.getAttribute("data-open-timeline");
+    openTimeline(processId);
+  });
+
+  if (drawerClose) {
+    drawerClose.addEventListener("click", () => {
+      drawer?.classList.add("hidden");
+    });
   }
 }
 
-async function rodarSyncOAB() {
-  const oab = document.querySelector("#oabNum").value.trim();
-  const uf = document.querySelector("#oabUF").value.trim() || "GO";
+async function handleCsvImport(file) {
+  if (!file) return;
   if (!oab) return alert("Informe a OAB (apenas números)");
   try {
-    const result = await API.syncByOAB({ oab, uf, ingerir: true });
-    if (result?.ok) {
-      alert(`Sincronizado! Registros: ${result.total}. Inseridos: ${result.inseridos?.length || 0}`);
-      toggle(document.querySelector("#modalOAB"), false);
-      await loadProcesses();
-    } else {
-      alert(`Falha na sincronização: ${result?.error || "ver logs"}`);
+    const text = await file.text();
+    if (!text.trim()) {
+      alert("O arquivo CSV está vazio.");
+      return;
     }
+    const result = await apiFetch("/processes/import-csv", {
+      method: "POST",
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
+      body: text,
+    });
+    const created = result?.created ?? 0;
+    const updated = result?.updated ?? 0;
+    const skipped = result?.skipped ?? 0;
+    alert(`Importação concluída. Registros: ${result?.rows ?? 0}. Criados: ${created}. Atualizados: ${updated}. Ignorados: ${skipped}.`);
+    await loadProcesses();
   } catch (error) {
-    alert(`Falha na sincronização: ${error?.message || error}`);
+    console.error("[processos] erro ao importar CSV", error);
+    alert(error?.message || "Falha ao importar CSV");
   }
 }
 
-async function importarCSV() {
-  const text = document.querySelector("#csvText").value.trim();
-  if (!text) return alert("Cole seu CSV no campo.");
-  try {
-    const result = await API.importProcessesCSV(text);
-    if (result?.ok) {
-      alert(
-        `Importado. Inseridos: ${result.inseridos} | Atualizados: ${result.atualizados} | Erros: ${result.erros}`
-      );
-      toggle(document.querySelector("#modalCSV"), false);
-      await loadProcesses();
-    } else {
-      alert(`Falha ao importar: ${result?.error || "ver logs"}`);
-    }
-  } catch (error) {
-    alert(`Falha ao importar: ${error?.message || error}`);
+function bindActions() {
+  if (searchBtn) {
+    searchBtn.addEventListener("click", () => loadProcesses());
   }
-}
+document.querySelectorAll(".filters input").forEach((input) => {
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        loadProcesses();
+      }
+    });
+  });
 
-function bindUiEvents() {
-  document.querySelector("#btnBuscar")?.addEventListener("click", loadProcesses);
-  document.querySelector("#btnNovoProc")?.addEventListener("click", () =>
-    toggle(document.querySelector("#modalProc"), true)
-  );
-  document.querySelector("#fecharProc")?.addEventListener("click", () =>
-    toggle(document.querySelector("#modalProc"), false)
-  );
-  document.querySelector("#salvarProc")?.addEventListener("click", salvarManual);
-
-  document.querySelector("#btnPdpj")?.addEventListener("click", executarPdpjTest);
-
-  document.querySelector("#btnSyncOAB")?.addEventListener("click", () =>
-    toggle(document.querySelector("#modalOAB"), true)
-  );
-  document.querySelector("#fecharOAB")?.addEventListener("click", () =>
-    toggle(document.querySelector("#modalOAB"), false)
-  );
-  document.querySelector("#rodarOAB")?.addEventListener("click", rodarSyncOAB);
-
-  document.querySelector("#btnImportCSV")?.addEventListener("click", () =>
-    toggle(document.querySelector("#modalCSV"), true)
-  );
-  document.querySelector("#btnCSVFechar")?.addEventListener("click", () =>
-    toggle(document.querySelector("#modalCSV"), false)
-  );
-  document.querySelector("#btnCSVEnviar")?.addEventListener("click", importarCSV);
-
-  document.querySelector("#dwClose")?.addEventListener("click", () =>
-    toggle(document.querySelector("#drawer"), false)
-  );
+  if (importBtn && csvInput) {
+    importBtn.addEventListener("click", () => csvInput.click());
+    csvInput.addEventListener("change", async (event) => {
+      const file = event.target?.files?.[0];
+      await handleCsvImport(file);
+      event.target.value = "";
+    });
+  }
 }
 
 async function bootstrap() {
@@ -256,7 +216,8 @@ async function bootstrap() {
   bindLogoutHandlers();
   toggleSidebarMenu();
   initSidebarLogoutSync();
-  bindUiEvents();
+  bindActions();
+  bindTimelineEvents();
   await loadProcesses();
 }
 

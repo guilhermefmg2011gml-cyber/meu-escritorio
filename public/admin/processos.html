@@ -31,143 +31,63 @@
       <div class="grid">
         <section class="card span-12">
           <h3>Central de Processos</h3>
-          <div class="muted">Pesquise, cadastre e sincronize processos diretamente da PDPJ.</div>
+          <div class="muted">Pesquise processos, visualize timelines e importe dados CSV com deduplicação por CNJ.</div>
           <div class="filters">
             <div class="field">
-              <label for="fltQ">Busca rápida</label>
-              <input id="fltQ" type="text" placeholder="Número, classe ou assunto" />
+              <label for="fltQ">Busca</label>
+              <input id="fltQ" type="text" placeholder="CNJ, título ou assunto" />
             </div>
             <div class="field">
-              <label for="fltSit">Situação</label>
-              <select id="fltSit">
-                <option value="">Todas</option>
-                <option value="em andamento">Em andamento</option>
-                <option value="suspenso">Suspenso</option>
-                <option value="arquivado">Arquivado</option>
-              </select>
+              <label for="fltUF">UF</label>
+              <input id="fltUF" type="text" placeholder="GO" maxlength="2" />
+            </div>
+            <div class="field">
+              <label for="fltOAB">OAB</label>
+              <input id="fltOAB" type="text" placeholder="GO-76350" />
             </div>
             <div class="field actions">
               <button id="btnBuscar">Buscar</button>
             </div>
           </div>
           <div class="toolbar">
-            <button id="btnNovoProc" class="btn">Novo processo manual</button>
-            <button id="btnSyncOAB" class="btn-secondary">Sincronizar por OAB</button>
             <button id="btnImportCSV" class="btn-secondary">Importar CSV</button>
-            <button id="btnPdpj" class="btn-secondary">Testar PDPJ</button>
+            <input id="csvFile" type="file" accept=".csv,text/csv" class="hidden" />
           </div>
         </section>
 
         <section class="card span-12">
           <h3>Processos cadastrados</h3>
           <div class="table-wrap">
-            <table class="table" id="gridProc">
+            <table class="table" id="processTable">
               <thead>
                 <tr>
-                  <th>Número</th>
+                  <th>CNJ</th>
+                  <th>Título</th>
                   <th>Classe</th>
-                  <th>Assunto</th>
-                  <th>Instância</th>
+                  <th>UF</th>
                   <th>Situação</th>
-                  <th>Origem</th>
+                  <th>Cliente</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td colspan="6">Nenhum processo carregado.</td>
+                  <td colspan="7">Nenhum processo carregado.</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </section>
       </div>
+
+      <aside id="drawer" class="drawer hidden">
+        <div class="drawer__header">
+          <h3 id="drawerTitle">Timeline do processo</h3>
+          <button id="drawerClose" class="btn">Fechar</button>
+        </div>
+        <div id="timeline" class="timeline"></div>
+      </aside>
     </main>
-  </div>
-
-  <aside id="drawer" class="drawer hidden">
-    <div class="drawer-box">
-      <div class="drawer-head">
-        <h3 id="dwTitle">Detalhes do processo</h3>
-        <button id="dwClose" class="btn btn-secondary">Fechar</button>
-      </div>
-      <div id="dwMeta" class="dw-meta"></div>
-      <h4>Andamentos</h4>
-      <ul id="dwEvents" class="timeline"></ul>
-    </div>
-  </aside>
-
-  <div id="modalProc" class="modal hidden">
-    <div class="modal-box">
-      <h4>Novo processo manual</h4>
-      <div class="form-grid">
-        <label>Número
-          <input id="pNumero" type="text" placeholder="0000000-00.0000.0.00.0000" />
-        </label>
-        <label>Classe
-          <input id="pClasse" type="text" />
-        </label>
-        <label>Assunto
-          <input id="pAssunto" type="text" />
-        </label>
-        <label>Foro
-          <input id="pForo" type="text" />
-        </label>
-        <label>Vara
-          <input id="pVara" type="text" />
-        </label>
-        <label>Instância
-          <input id="pInstancia" type="text" />
-        </label>
-        <label>Situação
-          <select id="pSituacao">
-            <option value="em andamento">Em andamento</option>
-            <option value="suspenso">Suspenso</option>
-            <option value="arquivado">Arquivado</option>
-          </select>
-        </label>
-        <label>Polo ativo
-          <textarea id="pAtivo" rows="2" placeholder="Nome das partes ativas"></textarea>
-        </label>
-        <label>Polo passivo
-          <textarea id="pPassivo" rows="2" placeholder="Nome das partes passivas"></textarea>
-        </label>
-      </div>
-      <div class="actions">
-        <button id="salvarProc" class="btn">Salvar</button>
-        <button id="fecharProc" class="btn btn-secondary">Cancelar</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="modalOAB" class="modal hidden">
-    <div class="modal-box">
-      <h4>Sincronizar processos por OAB</h4>
-      <p class="muted">Informe a OAB (apenas números) e UF para solicitar ao gateway PDPJ.</p>
-      <div class="form-inline">
-        <label>OAB
-          <input id="oabNum" type="text" placeholder="123456" />
-        </label>
-        <label>UF
-          <input id="oabUF" type="text" placeholder="UF" maxlength="2" />
-        </label>
-      </div>
-      <div class="actions">
-        <button id="rodarOAB" class="btn">Sincronizar</button>
-        <button id="fecharOAB" class="btn btn-secondary">Fechar</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="modalCSV" class="modal hidden">
-    <div class="modal-box">
-      <h4>Importar CSV</h4>
-      <p>Colunas mínimas: <code>numero,classe,assunto,instancia,situacao</code>. Separador: vírgula ou ponto-e-vírgula.</p>
-      <textarea id="csvText" rows="8" placeholder="numero,classe,assunto,instancia,situacao&#10;0712345-67.2025.8.09.0000,Cível,Indenização,1º grau,em andamento"></textarea>
-      <div class="actions">
-        <button id="btnCSVEnviar" class="btn">Importar</button>
-        <button id="btnCSVFechar" class="btn btn-secondary">Fechar</button>
-      </div>
-    </div>
   </div>
 
   <script type="module" src="/admin/app.js"></script>

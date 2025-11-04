@@ -136,7 +136,8 @@ const API = {
   async listProcesses(filters = {}) {
     const params = new URLSearchParams();
     if (filters.q) params.set("q", filters.q);
-    if (filters.situacao) params.set("situacao", filters.situacao);
+    if (filters.uf) params.set("uf", filters.uf);
+    if (filters.oab) params.set("oab", filters.oab);
     const query = params.toString();
     const data = await this.authedFetch(`/processes${query ? `?${query}` : ""}`);
     return Array.isArray(data) ? data : [];
@@ -159,9 +160,10 @@ const API = {
   },
 
   async importProcessesCSV(csvText) {
-    return this.authedFetch("/processes/import", {
+    return this.authedFetch("/processes/import-csv", {
       method: "POST",
-      body: { csv: csvText },
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
+      body: typeof csvText === "string" ? csvText : String(csvText ?? ""),
     });
   },
 
@@ -172,6 +174,29 @@ const API = {
     });
   },
 };
+
+export async function apiFetch(path, opts = {}) {
+  if (typeof path !== "string" || !path.trim()) {
+    throw new Error("Path obrigatório");
+  }
+
+  let target = path.trim();
+  if (/^https?:/i.test(target)) {
+    return API.authedFetch(target, opts);
+  }
+
+  if (target.startsWith("/api/")) {
+    target = target.slice(4);
+  } else if (target === "/api") {
+    target = "/";
+  }
+
+  if (!target.startsWith("/")) {
+    target = `/${target}`;
+  }
+
+  return API.authedFetch(target, opts);
+}
 
 if (typeof window !== "undefined") {
   window.API = API;
