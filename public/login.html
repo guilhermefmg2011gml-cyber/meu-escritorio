@@ -38,7 +38,10 @@
   </div>
 </div>
 
-<script src="/js/api-client.js"></script>
+<script type="module">
+  import * as API from "/js/api-client.js";
+  window.API = API;
+</script>
 <script>
   const form = document.getElementById('loginForm');
   const errorBox = document.getElementById('error');
