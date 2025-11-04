@@ -28,6 +28,18 @@
     </header>
 
     <main class="content">
+      <div class="card" style="margin-bottom:1rem">
+        <form id="dj">
+          <div class="grid">
+            <label>Nº CNJ
+              <input id="djcnj" placeholder="0000000-00.0000.0.00.0000" required />
+            </label>
+            <button class="btn btn-primary" style="align-self:end">Buscar (Datajud)</button>
+            <button type="button" id="djsync" class="btn" style="align-self:end">Sincronizar agora</button>
+          </div>
+        </form>
+        <small>Dica: a busca tenta em todos os tribunais configurados.</small>
+      </div>
       <div class="grid">
         <section class="card span-12">
           <h3>Central de Processos</h3>
@@ -90,6 +102,39 @@
       </aside>
     </main>
   </div>
+
+  <script type="module">
+    import { datajudSearchNumero, datajudSync } from "/js/api-client.js";
+
+    const $dj = document.querySelector("#dj");
+    const $cnj = document.querySelector("#djcnj");
+    const $sync = document.querySelector("#djsync");
+
+    $dj.onsubmit = async (e) => {
+      e.preventDefault();
+      try {
+        const r = await datajudSearchNumero($cnj.value);
+        if (r?.ok && r?.id) {
+          location.href = `/admin/processo.html?id=${r.id}`;
+        } else {
+          alert("Não encontrado nos aliases configurados.");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Erro ao consultar Datajud.");
+      }
+    };
+
+    $sync.onclick = async () => {
+      try {
+        const r = await datajudSync({});
+        alert(`Sync OK: hits=${r.totalHits}, novos=${r.totalNew}, eventos=${r.totalEvents}`);
+      } catch (e) {
+        console.error(e);
+        alert("Erro ao sincronizar Datajud.");
+      }
+    };
+  </script>
 
   <script type="module" src="/admin/app.js"></script>
   <script type="module" src="./processos.js"></script>

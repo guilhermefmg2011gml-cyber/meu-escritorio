@@ -184,6 +184,19 @@ const API = {
 };
 
 
+export async function datajudSearchNumero(numero) {
+  return API.authedFetch(`/datajud/${encodeURIComponent(numero)}`);
+}
+
+export async function datajudSync(payload = {}) {
+  return API.authedFetch(`/datajud/sync`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: payload,
+  });
+}
+
+
 export async function apiFetch(path, opts = {}) {
   if (typeof path !== "string" || !path.trim()) {
     throw new Error("Path obrigatório");

@@ -55,18 +55,18 @@ function renderProcesses(rows = []) {
   if (!rows.length) {
     tableBody.innerHTML = `<tr><td colspan="7">Nenhum processo localizado.</td></tr>`;
     return;
-}
+  }
 
-tableBody.innerHTML = rows
+  tableBody.innerHTML = rows
     .map(
       (row) => `
         <tr>
-          <td>${escapeHtml(row.cnj || "")}</td>
-          <td>${escapeHtml(row.titulo || "—")}</td>
-          <td>${escapeHtml(row.classe || "—")}</td>
-          <td>${escapeHtml(row.uf || "—")}</td>
-          <td>${escapeHtml(row.situacao || "—")}</td>
-          <td>${escapeHtml(row.cliente || "—")}</td>
+          <td>${escapeHtml(row.cnj || row.cnj_number || "")}</td>
+          <td>${escapeHtml(row.titulo || row.subject || row.classeNome || "—")}</td>
+          <td>${escapeHtml(row.classe || row.classeNome || "—")}</td>
+          <td>${escapeHtml(row.uf || row.tribunal || "—")}</td>
+          <td>${escapeHtml(row.situacao || row.situation || "—")}</td>
+          <td>${escapeHtml(row.cliente || row.orgaoNome || "—")}</td>
           <td><button class="btn-secondary" data-open-timeline="${row.id}">Timeline</button></td>
         </tr>
       `
