@@ -30,7 +30,7 @@ function buildUrl(base, path) {
   return `${base}${path}`;
 }
 
-window.API = {
+const API = {
   base: resolveBase(),
   _token: loadStoredToken(),
 
@@ -173,4 +173,10 @@ window.API = {
   },
 };
 
-export default window.API;
+if (typeof window !== "undefined") {
+  window.API = API;
+}
+
+export const login = (body) => API.login(body);
+export const me = () => API.me();
+export default API;

@@ -38,66 +38,6 @@
   </div>
 </div>
 
-<script type="module">
-  import * as API from "/js/api-client.js";
-  window.API = API;
-</script>
-<script>
-  const form = document.getElementById('loginForm');
-  const errorBox = document.getElementById('error');
-  const submitBtn = form.querySelector('button[type="submit"]');
-  const originalText = submitBtn.textContent;
-
-function showError(message) {
-    errorBox.textContent = message;
-    errorBox.style.display = 'block';
-  }
-
-  function clearError() {
-    errorBox.textContent = '';
-    errorBox.style.display = 'none';
-  }
-
-  async function checkSession() {
-    if (!window.API) return;
-    try {
-      const { res, data } = await window.API.me();
-      if (res.status === 200 && data && data.user) {
-        window.location.replace('/admin/app.html');
-      }
-    } catch (err) {
-      console.debug('[login] nenhuma sessão ativa', err);
-    }
-  }
-
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    clearError();
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Entrando...';
-
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-
-    try {
-      const { res, data } = await window.API.login({ email, password });
-      if (res.status === 200) {
-        window.location.href = '/admin/app.html';
-        return;
-      }
-
-      const message = data?.error || data?.message || 'Falha ao entrar.';
-      showError(message);
-    } catch (error) {
-      console.warn('[login] erro ao autenticar', error);
-      showError('Erro ao autenticar. Tente novamente.');
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = originalText;
-    }
-  });
-  
-  checkSession();
-</script>
+<script type="module" src="/js/login.js"></script>
 </body>
 </html>
