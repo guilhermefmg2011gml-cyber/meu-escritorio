@@ -173,7 +173,16 @@ const API = {
       body: { oab, uf, ingerir },
     });
   },
+
+  async post(path, body) {
+    return this.authedFetch(path, { method: "POST", body });
+  },
+
+  async patch(path, body) {
+    return this.authedFetch(path, { method: "PATCH", body });
+  },
 };
+
 
 export async function apiFetch(path, opts = {}) {
   if (typeof path !== "string" || !path.trim()) {
@@ -204,4 +213,5 @@ if (typeof window !== "undefined") {
 
 export const login = (body) => API.login(body);
 export const me = () => API.me();
+export const api = API;
 export default API;

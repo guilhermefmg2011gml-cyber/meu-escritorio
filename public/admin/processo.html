@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Detalhes do Processo — Moura Martins</title>
+  <link rel="stylesheet" href="/admin/app.css" />
+</head>
+<body class="dark">
+  <div class="container">
+    <a class="btn" href="/admin/processos.html">← Voltar</a>
+    <h1 id="procTitle">Processo</h1>
+
+    <section class="card" id="procInfo">
+      <h2>Dados principais</h2>
+      <dl class="grid info-grid">
+        <div>
+          <dt>CNJ</dt>
+          <dd id="infoCnj">—</dd>
+        </div>
+        <div>
+          <dt>Tribunal / Órgão</dt>
+          <dd id="infoCourt">—</dd>
+        </div>
+        <div>
+          <dt>Jurisd./Instância</dt>
+          <dd id="infoJurisdiction">—</dd>
+        </div>
+        <div>
+          <dt>Área</dt>
+          <dd id="infoArea">—</dd>
+        </div>
+        <div>
+          <dt>Assunto</dt>
+          <dd id="infoSubject">—</dd>
+        </div>
+        <div>
+          <dt>Situação</dt>
+          <dd id="infoSituation">—</dd>
+        </div>
+        <div>
+          <dt>Status</dt>
+          <dd id="infoStatus">—</dd>
+        </div>
+        <div>
+          <dt>Última atualização</dt>
+          <dd id="infoUpdated">—</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="card" id="partyCard">
+      <h2>Partes</h2>
+      <div id="partiesList" class="stack"></div>
+    </section>
+
+    <h3>Timeline</h3>
+    <div id="timeline" class="timeline"></div>
+
+    <div class="card">
+      <h4>Novo andamento</h4>
+      <form id="ev" class="stack">
+        <input name="title" placeholder="Título do evento" required>
+        <input name="at" type="datetime-local">
+        <textarea name="detail" placeholder="Observações (opcional)"></textarea>
+        <button class="btn">Adicionar</button>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="/admin/processo.js"></script>
+</body>
+</html>
