@@ -30,6 +30,17 @@ function buildUrl(base, path) {
   return `${base}${path}`;
 }
 
+async function ensureJson(res) {
+  const contentType = (res.headers && res.headers.get && res.headers.get("content-type")) || "";
+  if (contentType.toLowerCase().includes("application/json")) {
+    return res.json();
+  }
+
+  const text = await res.text();
+  const preview = text ? text.slice(0, 200) : "(corpo vazio)";
+  throw new Error(`Resposta não-JSON (status ${res.status}): ${preview}`);
+}
+
 const API = {
   base: resolveBase(),
   _token: loadStoredToken(),
@@ -82,16 +93,15 @@ const API = {
 
   async json(path, opts) {
     const res = await this.request(path, opts || {});
-    let data = null;
-    const text = await res.text();
-    if (text) {
-      try {
-        data = JSON.parse(text);
-      } catch (err) {
-        console.warn("[api] resposta não é JSON válido", err);
+    try {
+      const data = await ensureJson(res);
+      return { res, data };
+    } catch (error) {
+      if (res.ok) {
+        throw error;
       }
+      return { res, data: { error: error?.message || String(error) } };
     }
-    return { res, data };
   },
 
   async authedFetch(path, opts) {
@@ -185,7 +195,15 @@ const API = {
 
 
 export async function datajudSearchNumero(numero) {
-  return API.authedFetch(`/datajud/${encodeURIComponent(numero)}`);
+  const cnj = (numero || "").trim();
+  if (!cnj) throw new Error("CNJ obrigatório");
+  return API.authedFetch(`/datajud/search/numero?numero=${encodeURIComponent(cnj)}`);
+}
+
+export async function datajudImportNumero(numero) {
+  const cnj = (numero || "").trim();
+  if (!cnj) throw new Error("CNJ obrigatório");
+  return API.authedFetch(`/datajud/${encodeURIComponent(cnj)}`);
 }
 
 export async function datajudSync(payload = {}) {
@@ -194,6 +212,11 @@ export async function datajudSync(payload = {}) {
     headers: { "Content-Type": "application/json" },
     body: payload,
   });
+}
+
+
+export async function listAliases() {
+  return API.authedFetch(`/datajud/aliases`);
 }
 
 

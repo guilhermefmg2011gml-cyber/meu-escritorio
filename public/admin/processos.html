@@ -104,21 +104,48 @@
   </div>
 
   <script type="module">
-    import { datajudSearchNumero, datajudSync } from "/js/api-client.js";
-
+    import { datajudSearchNumero, datajudImportNumero, datajudSync, listAliases } from "/js/api-client.js";
     const $dj = document.querySelector("#dj");
     const $cnj = document.querySelector("#djcnj");
     const $sync = document.querySelector("#djsync");
 
+    listAliases()
+      .then((info) => {
+        console.log("ALIASES:", info?.aliases || []);
+        if (!info?.aliases?.length) {
+          alert("Sem aliases configurados na API.");
+        }
+      })
+      .catch((err) => {
+        console.warn("[datajud] falha ao listar aliases", err);
+      });
+
     $dj.onsubmit = async (e) => {
       e.preventDefault();
       try {
-        const r = await datajudSearchNumero($cnj.value);
-        if (r?.ok && r?.id) {
-          location.href = `/admin/processo.html?id=${r.id}`;
-        } else {
-          alert("Não encontrado nos aliases configurados.");
+        const cnj = $cnj.value.trim();
+        if (!cnj) {
+          alert("Informe um número CNJ.");
+          return;
         }
+
+        const search = await datajudSearchNumero(cnj);
+        const ok = Array.isArray(search?.results)
+          ? search.results.find((item) => item?.ok && item?.data)
+          : null;
+
+        if (!ok) {
+          alert("Não encontrado nos aliases configurados.");
+          return;
+        }
+
+        const ingest = await datajudImportNumero(cnj);
+        if (ingest?.ok && ingest?.id) {
+          location.href = `/admin/processo.html?id=${ingest.id}`;
+          return;
+        }
+
+        alert("Processo encontrado, mas não foi possível importar.");
       } catch (err) {
         console.error(err);
         alert("Erro ao consultar Datajud.");
