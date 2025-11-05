@@ -1,10 +1,24 @@
 const TOKEN_KEY = "mma_auth_token";
 
+const DEFAULT_API = (() => {
+  if (typeof location !== "undefined") {
+    const host = location.hostname;
+    if (host === "localhost" || host === "127.0.0.1") {
+      return "http://localhost:8080";
+    }
+  }
+  return "https://mma-auth-api-production.up.railway.app";
+})();
+
 function resolveBase() {
-  let base =
-    (typeof window !== "undefined" && window.APP_CONFIG && window.APP_CONFIG.API_BASE) ||
-    (typeof window !== "undefined" && window.API_BASE) ||
-    "http://localhost:8080";
+  let base = DEFAULT_API;
+  if (typeof window !== "undefined") {
+    if (window.APP_CONFIG && window.APP_CONFIG.API_BASE) {
+      base = window.APP_CONFIG.API_BASE;
+    } else if (window.API_BASE) {
+      base = window.API_BASE;
+    }
+  }
   while (base.endsWith("/")) base = base.slice(0, -1);
   return base;
 }
