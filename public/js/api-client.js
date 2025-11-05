@@ -4,8 +4,8 @@ function resolveBase() {
   let base =
     (typeof window !== "undefined" && window.APP_CONFIG && window.APP_CONFIG.API_BASE) ||
     (typeof window !== "undefined" && window.API_BASE) ||
-    "http://localhost:8080/api";
-  if (base.endsWith("/")) base = base.slice(0, -1);
+    "http://localhost:8080";
+  while (base.endsWith("/")) base = base.slice(0, -1);
   return base;
 }
 
@@ -29,8 +29,12 @@ function storeToken(token) {
 
 function buildUrl(base, path) {
   if (/^https?:/i.test(path)) return path;
-  if (!path.startsWith("/")) return `${base}/${path}`;
-  return `${base}${path}`;
+  const cleanBase = base.endsWith("/") ? base.slice(0, -1) : base;
+  let cleanPath = path.startsWith("/") ? path : `/${path}`;
+  if (!cleanPath.startsWith("/api")) {
+    cleanPath = cleanPath === "/" ? "/api" : `/api${cleanPath}`;
+  }
+  return `${cleanBase}${cleanPath}`;
 }
 
 async function ensureJson(res) {

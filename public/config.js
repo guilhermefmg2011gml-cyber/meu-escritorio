@@ -2,15 +2,15 @@
 // Em DESENVOLVIMENTO:
 // public/config.js  (e também em dist/config.js se você subir o build manualmente)
 //
-// A URL abaixo deve apontar diretamente para a raiz da API (incluindo o sufixo /api).
+// A URL abaixo deve apontar diretamente para a raiz do backend hospedado.
 // Ajuste conforme o ambiente utilizado.
 window.APP_CONFIG = Object.assign({}, window.APP_CONFIG, {
-  API_BASE: "https://mma-auth-api-production.up.railway.app/api",
+  API_BASE: "https://mma-auth-api-production.up.railway.app",
 });
 
 // Normaliza a base para evitar barras duplicadas ao montar as URLs.
 (function normalizeApiBase() {
-  const fallback = "/api";
+  const fallback = "";
   let base = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || fallback;
   while (base.endsWith("/")) base = base.slice(0, -1);
   window.APP_CONFIG.API_BASE = base;
@@ -22,4 +22,4 @@ window.APP_CONFIG = Object.assign({}, window.APP_CONFIG, {
 })();
 
 // Quando publicar o backend em outro serviço, troque por algo como:
-// window.APP_CONFIG = { API_BASE: "https://SEU-PROJETO.up.railway.app/api" };
+// window.APP_CONFIG = { API_BASE: "https://SEU-PROJETO.up.railway.app" };
