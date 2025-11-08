@@ -6,7 +6,7 @@ import adminRoutes from "./routes/adminRoutes.js";
 import auditRoutes from "./routes/auditRoutes.js";
 import casesRoutes from "./routes/cases.js";
 import { seedAdminIfEnabled } from "./seed.js";
-import { registerProcessSyncCron } from "./cron.js";
+import "./cron.js";
 
 const app = express();
 
@@ -43,7 +43,6 @@ app.use("/api", auditRoutes);
 app.use("/api/cases", casesRoutes);
 
 seedAdminIfEnabled().catch(console.error);
-registerProcessSyncCron();
 
 const PORT = Number(process.env.PORT || 8080);
 app.listen(PORT, () => console.log(`API on :${PORT} (origins: ${ALLOWED_ORIGINS.join(", ")})`));

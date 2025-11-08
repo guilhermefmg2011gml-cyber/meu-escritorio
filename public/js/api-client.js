@@ -161,6 +161,18 @@ const API = {
     return this.json("/admin/users");
   },
 
+  async casesList() {
+    return this.json("/cases");
+  },
+
+  async createCase(body) {
+    return this.json("/cases", { method: "POST", body });
+  },
+
+  async triggerCaseSync() {
+    return this.json("/cases/sync/run", { method: "POST" });
+  },
+  
   async post(path, body) {
     return this.authedFetch(path, { method: "POST", body });
   },

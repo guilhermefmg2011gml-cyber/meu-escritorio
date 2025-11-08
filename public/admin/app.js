@@ -15,16 +15,16 @@ import { bindLogoutHandlers } from '../js/auth-guard.js';
 
   if (typeof bindLogoutHandlers === 'function') {
     bindLogoutHandlers();
+  }
 
   const sidebarFrame = document.querySelector('.sidebar-frame');
     if (sidebarFrame) {
-      sidebarFrame.addEventListener('load', () => {
-        const doc = sidebarFrame.contentDocument || sidebarFrame.contentWindow?.document;
-        if (doc) {
-          bindLogoutHandlers(doc);
-        }
-      });
-    }
+    sidebarFrame.addEventListener('load', () => {
+      const doc = sidebarFrame.contentDocument || sidebarFrame.contentWindow?.document;
+      if (doc) {
+        bindLogoutHandlers(doc);
+      }
+    });
   }
 
   async function loadUsersCount() {
