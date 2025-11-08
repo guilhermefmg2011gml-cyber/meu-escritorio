@@ -161,52 +161,6 @@ const API = {
     return this.json("/admin/users");
   },
 
-  async pdpjPing() {
-    const data = await this.authedFetch("/pdpj/test");
-    return data;
-  },
-
-  async listProcesses(filters = {}) {
-    const params = new URLSearchParams();
-    if (filters.q) params.set("q", filters.q);
-    if (filters.uf) params.set("uf", filters.uf);
-    if (filters.oab) params.set("oab", filters.oab);
-    const query = params.toString();
-    const data = await this.authedFetch(`/processes${query ? `?${query}` : ""}`);
-    return Array.isArray(data) ? data : [];
-  },
-
-  async createProcessManual(payload) {
-    const data = await this.authedFetch("/processes", { method: "POST", body: payload });
-    return data;
-  },
-
-  async getProcessDetails(id) {
-    if (!id) throw new Error("ID obrigatório");
-    return this.authedFetch(`/processes/${id}`);
-  },
-
-  async getProcessEvents(id) {
-    if (!id) throw new Error("ID obrigatório");
-    const data = await this.authedFetch(`/processes/${id}/events`);
-    return Array.isArray(data) ? data : [];
-  },
-
-  async importProcessesCSV(csvText) {
-    return this.authedFetch("/processes/import-csv", {
-      method: "POST",
-      headers: { "Content-Type": "text/plain; charset=utf-8" },
-      body: typeof csvText === "string" ? csvText : String(csvText ?? ""),
-    });
-  },
-
-  async syncByOAB({ oab, uf, ingerir = true } = {}) {
-    return this.authedFetch("/processes/sync-oab", {
-      method: "POST",
-      body: { oab, uf, ingerir },
-    });
-  },
-
   async post(path, body) {
     return this.authedFetch(path, { method: "POST", body });
   },
@@ -216,55 +170,6 @@ const API = {
   },
 };
 
-
-export async function datajudSearchNumero(numero) {
-  const cnj = (numero || "").trim();
-  if (!cnj) throw new Error("CNJ obrigatório");
-  return API.authedFetch(`/datajud/search/numero?numero=${encodeURIComponent(cnj)}`);
-}
-
-export async function datajudImportNumero(numero) {
-  const cnj = (numero || "").trim();
-  if (!cnj) throw new Error("CNJ obrigatório");
-  return API.authedFetch(`/datajud/${encodeURIComponent(cnj)}`);
-}
-
-export async function datajudSync(payload = {}) {
-  return API.authedFetch(`/datajud/sync`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: payload,
-  });
-}
-
-
-export async function listAliases() {
-  return API.authedFetch(`/datajud/aliases`);
-}
-
-
-export async function apiFetch(path, opts = {}) {
-  if (typeof path !== "string" || !path.trim()) {
-    throw new Error("Path obrigatório");
-  }
-
-  let target = path.trim();
-  if (/^https?:/i.test(target)) {
-    return API.authedFetch(target, opts);
-  }
-
-  if (target.startsWith("/api/")) {
-    target = target.slice(4);
-  } else if (target === "/api") {
-    target = "/";
-  }
-
-  if (!target.startsWith("/")) {
-    target = `/${target}`;
-  }
-
-  return API.authedFetch(target, opts);
-}
 
 if (typeof window !== "undefined") {
   window.API = API;
