@@ -165,6 +165,10 @@ const API = {
     return this.json("/cases");
   },
 
+  async casesPending() {
+    return this.json("/cases/pending");
+  },
+  
   async createCase(body) {
     return this.json("/cases", { method: "POST", body });
   },

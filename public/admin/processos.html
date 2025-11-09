@@ -55,7 +55,7 @@
               <input name="assunto" placeholder="Assunto" />
             </label>
             <div style="grid-column:1 / -1; display:flex; justify-content:flex-end;">
-              <button type="submit">Cadastrar processo</button>
+              <button id="btn-cadastrar-processo" type="submit">Cadastrar processo</button>
             </div>
           </form>
         </section>
@@ -66,17 +66,17 @@
               <h3>Processos cadastrados</h3>
               <p class="muted">Visualize os processos monitorados pelo escritório.</p>
             </div>
-            <button id="caseSync">Sincronizar agora</button>
+            <button id="btn-sincronizar-agora">Sincronizar agora</button>
           </div>
           <div id="casesLoading" class="loading-state hidden">Carregando processos...</div>
-          <div id="casesList" class="cases-grid"></div>
+          <div id="lista-processos" class="cases-grid"></div>
           <p id="casesEmpty" class="empty-state hidden">Nenhum processo cadastrado até o momento.</p>
         </section>
 
         <section class="card span-12">
           <h3>⚠️ Movimentações com prazo</h3>
           <p class="muted">Processos com movimentações que exigem acompanhamento imediato.</p>
-          <div id="alertsList" class="cases-grid"></div>
+          <div id="lista-prazos" class="cases-grid"></div>
           <p id="alertsEmpty" class="empty-state hidden">Nenhum prazo pendente.</p>
         </section>
       </div>
