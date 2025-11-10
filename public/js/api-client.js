@@ -177,6 +177,10 @@ const API = {
     return this.json("/cases/sync/run", { method: "POST" });
   },
   
+  async generateLegalPiece(body) {
+    return this.json("/admin/ai/gerador-pecas", { method: "POST", body });
+  },
+  
   async post(path, body) {
     return this.authedFetch(path, { method: "POST", body });
   },

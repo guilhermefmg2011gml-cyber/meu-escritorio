@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Gerador de Peças Processuais Inteligente — Moura Martins</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="./app.css" />
+  <script src="/config.js"></script>
+  <script type="module" src="/js/api-client.js"></script>
+  <script type="module" src="/js/auth-guard.js"></script>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <iframe
+        src="/admin/sidebar.html"
+        title="Menu administrativo"
+        class="sidebar-frame"
+      ></iframe>
+    </aside>
+
+    <header class="topbar">
+      <button class="btn-secondary menu" data-menu>☰</button>
+      <div class="crumb">Gerador de Peças Processuais Inteligente</div>
+      <div class="actions">
+        <button class="btn-secondary" onclick="location.href='/admin/app.html'">Área de Trabalho</button>
+        <button data-logout>Sair</button>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="grid">
+        <section class="card span-12">
+          <h3>Gerar peça processual</h3>
+          <p class="muted">Informe os dados do caso para gerar um texto-base a partir da inteligência artificial.</p>
+          <form id="generatorForm" class="case-form" autocomplete="off">
+            <label>
+              Tipo de peça
+              <select name="tipo_peca" id="tipoPeca" required></select>
+            </label>
+            <label class="span-12">
+              Resumo fático
+              <textarea id="resumoFatico" name="resumo_fatico" rows="6" required placeholder="Descreva os fatos relevantes do caso"></textarea>
+            </label>
+            <label class="span-12">
+              Pedidos (opcional)
+              <textarea id="pedidos" name="pedidos" rows="4" placeholder="Indique os pedidos pretendidos"></textarea>
+            </label>
+            <label class="span-12">
+              Documentos relevantes (separe por linha ou vírgula)
+              <textarea id="documentos" name="documentos" rows="3" placeholder="Procuração, Contrato social, Documento pessoal..."></textarea>
+            </label>
+            <label>
+              Identificador do cliente (opcional)
+              <input id="clienteId" name="cliente_id" placeholder="Código interno ou referência" />
+            </label>
+
+            <div class="span-12">
+              <h4 style="margin-top:1.5rem;">Partes envolvidas</h4>
+              <p class="muted">Adicione as partes do processo e informe o papel de cada uma.</p>
+            </div>
+
+            <div id="partesContainer" class="span-12 partes-list"></div>
+            <div class="span-12" style="display:flex; justify-content:flex-end; gap:0.5rem;">
+              <button type="button" id="adicionarParte" class="btn-secondary">Adicionar parte</button>
+              <button type="submit" id="btnGerarPeca">Gerar peça</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="card span-12 hidden" id="resultadoCard">
+          <div class="case-actions" style="align-items:flex-start;">
+            <div>
+              <h3>Resultado da geração</h3>
+              <p class="muted">Revise, edite e valide o texto antes de utilizar em um processo real.</p>
+            </div>
+            <button type="button" id="copiarTexto" class="btn-secondary">Copiar texto</button>
+          </div>
+
+          <label class="span-12">
+            Texto sugerido
+            <textarea id="textoGerado" rows="18" readonly></textarea>
+          </label>
+
+          <div class="span-12" id="jurisprudenciasContainer">
+            <h4>Jurisprudências sugeridas</h4>
+            <p class="muted">Confira as decisões sugeridas para fundamentar a peça.</p>
+            <ul id="jurisprudenciasLista" class="jurisprudencias-list"></ul>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="/admin/app.js"></script>
+  <script type="module" src="./gerador-pecas.js"></script>
+</body>
+</html>
