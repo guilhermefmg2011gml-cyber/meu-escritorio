@@ -181,6 +181,23 @@ const API = {
     return this.json("/admin/ai/gerador-pecas", { method: "POST", body });
   },
   
+  async downloadLegalPieceDocx(id) {
+    const res = await this.request(`/admin/ai/gerador-pecas/${id}/exportar`);
+    if (!res.ok) {
+      let message = `HTTP ${res.status}`;
+      try {
+        const data = await res.clone().json();
+        message = data?.message || data?.error || message;
+      } catch (_) {
+        // Ignore JSON parse errors for binary bodies
+      }
+      throw new Error(message);
+    }
+
+    const blob = await res.blob();
+    return { res, blob };
+  },
+  
   async post(path, body) {
     return this.authedFetch(path, { method: "POST", body });
   },

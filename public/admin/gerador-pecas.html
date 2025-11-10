@@ -39,11 +39,11 @@
               <select name="tipo_peca" id="tipoPeca" required></select>
             </label>
             <label class="span-12">
-              Resumo fático
+              <span class="field-title" data-field-label="resumo">Resumo fático</span>
               <textarea id="resumoFatico" name="resumo_fatico" rows="6" required placeholder="Descreva os fatos relevantes do caso"></textarea>
             </label>
             <label class="span-12">
-              Pedidos (opcional)
+              <span class="field-title" data-field-label="pedidos">Pedidos (opcional)</span>
               <textarea id="pedidos" name="pedidos" rows="4" placeholder="Indique os pedidos pretendidos"></textarea>
             </label>
             <label class="span-12">
@@ -57,7 +57,7 @@
 
             <div class="span-12">
               <h4 style="margin-top:1.5rem;">Partes envolvidas</h4>
-              <p class="muted">Adicione as partes do processo e informe o papel de cada uma.</p>
+              <p class="muted" id="partesHelpText">Adicione as partes do processo e informe o papel de cada uma.</p>
             </div>
 
             <div id="partesContainer" class="span-12 partes-list"></div>
@@ -74,7 +74,10 @@
               <h3>Resultado da geração</h3>
               <p class="muted">Revise, edite e valide o texto antes de utilizar em um processo real.</p>
             </div>
-            <button type="button" id="copiarTexto" class="btn-secondary">Copiar texto</button>
+            <div style="display:flex; gap:0.5rem;">
+              <button type="button" id="exportarDocx" class="btn-secondary hidden">Baixar .docx</button>
+              <button type="button" id="copiarTexto" class="btn-secondary">Copiar texto</button>
+            </div>
           </div>
 
           <label class="span-12">
