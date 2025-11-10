@@ -106,6 +106,11 @@ function Header(){
                 Contato
               </a>
             </li>
+            <li>
+              <a href="/nova-peca" className="transition-colors hover:text-[var(--mm-primary)]">
+                Gerador IA
+              </a>
+            </li>
             <li className="relative group">
               <button className="px-3 py-2">Mais ▾</button>
               <div className="absolute hidden group-hover:block bg-white/95 shadow-lg rounded-xl mt-2 min-w-[220px]">
@@ -157,6 +162,9 @@ function Hero(){
         <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
           <a href={waUrl} className="mm-btn mm-btn-primary">Entre em contato</a>
           <a href={mailtoLarissa} className="mm-btn mm-btn-ghost">Enviar e-mail</a>
+          <a href="/nova-peca" className="mm-btn mm-btn-ghost">
+            Gerador de Peças IA
+          </a>
         </div>
       </div>
     </section>
