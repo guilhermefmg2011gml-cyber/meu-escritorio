@@ -71,7 +71,7 @@ const TEMPLATE_CONFIG = {
       "fundamentacao_juridica",
       "pedidos_antecipatorios",
     ],
-    required: ["partes", "resumo_fatico", "pedidos"],
+    required: ["partes", "resumo_fatico"],
   },
   agravo_instrumento: {
     blocks: [
@@ -99,7 +99,7 @@ const TEMPLATE_CONFIG = {
   },
   interlocutoria: {
     blocks: ["preambulo", "fundamentacao", "pedido"],
-    required: ["resumo_fatico", "pedidos"],
+    required: ["resumo_fatico"],
   },
   manifestacao: {
     blocks: ["preambulo", "resposta_argumentos", "fundamentacao", "conclusao"],
@@ -386,7 +386,8 @@ function updateTemplateHints(tipo, pedidosLabel, partesHelp) {
 
   if (pedidosLabel) {
     const obrigatorio = config.required.includes("pedidos");
-    pedidosLabel.textContent = obrigatorio ? "Pedidos (obrigatório)" : "Pedidos (opcional)";
+    pedidosLabel.textContent =
+      "Pedidos (gerados automaticamente — utilize este campo para orientar, se desejar)";
   }
 
   if (partesHelp) {
@@ -532,12 +533,6 @@ async function init() {
     };
 
     const pedidos = pedidosInput?.value.trim();
-    if (config.required.includes("pedidos") && !pedidos) {
-      alert("Descreva os pedidos pretendidos para este tipo de peça.");
-      pedidosInput?.focus();
-      return;
-    }
-
     if (pedidos) {
       payload.pedidos = pedidos;
     }
