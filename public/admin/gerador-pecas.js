@@ -318,6 +318,50 @@ function renderJurisprudencias(list, container) {
   });
 }
 
+function renderArtigosValidados(list, container, wrapper) {
+  if (!wrapper || !container) return;
+
+  container.innerHTML = "";
+
+  if (!Array.isArray(list) || !list.length) {
+    wrapper.classList.add("hidden");
+    return;
+  }
+
+  wrapper.classList.remove("hidden");
+
+  list.forEach((item) => {
+    const li = document.createElement("li");
+
+    const titulo = document.createElement("div");
+    titulo.textContent = item.artigo || "Artigo não identificado";
+    titulo.style.fontWeight = "600";
+    li.appendChild(titulo);
+
+    const status = document.createElement("div");
+    status.classList.add("status");
+    if (item.confirmado) {
+      status.classList.add("ok");
+      status.textContent = "✔️ Referência confirmada";
+    } else {
+      status.classList.add("warn");
+      status.textContent = "⚠️ Referência não confirmada";
+    }
+    li.appendChild(status);
+
+    if (item.referencia) {
+      const link = document.createElement("a");
+      link.href = item.referencia;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = "Ver jurisprudência relacionada";
+      li.appendChild(link);
+    }
+
+    container.appendChild(li);
+  });
+}
+
 function setFormDisabled(form, disabled) {
   form.querySelectorAll("input, textarea, select, button").forEach((el) => {
     if (el.id === "copiarTexto" || el.id === "exportarDocx") return;

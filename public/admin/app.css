@@ -205,6 +205,14 @@ button, .btn{
 .jurisprudencias-list a:hover{text-decoration:underline;}
 .jurisprudencias-list p{margin:0; color:var(--muted); font-size:.9rem;}
 
+.artigos-list{list-style:none; padding:0; margin:12px 0 0; display:flex; flex-direction:column; gap:10px;}
+.artigos-list li{border:1px solid #342020; border-radius:12px; background:#120909; padding:12px; display:flex; flex-direction:column; gap:6px;}
+.artigos-list .status{font-weight:600; display:flex; align-items:center; gap:6px;}
+.artigos-list .status.ok{color:var(--ok);}
+.artigos-list .status.warn{color:var(--danger);}
+.artigos-list a{color:var(--brand); text-decoration:none; font-weight:600; font-size:.9rem;}
+.artigos-list a:hover{text-decoration:underline;}
+
 /* RESPONSIVE */
 @media (max-width: 1080px){
   .span-6{grid-column: span 12}
