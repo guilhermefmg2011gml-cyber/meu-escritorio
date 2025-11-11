@@ -9,118 +9,137 @@
   <script type="module" src="/js/auth-guard.js"></script>
   <link rel="stylesheet" href="/admin/app.css"/>
 </head>
-<body>
+<body class="workspace">
+  <div class="workspace__container">
+    <header class="workspace__header">
+      <div>
+        <p class="workspace__eyebrow">Bem-vindo(a) de volta</p>
+        <h1 class="workspace__title">Área de Trabalho</h1>
+        <p class="workspace__subtitle">Soluções jurídicas artesanais e ágeis.</p>
+      </div>
+      <button class="workspace__logout" data-logout type="button">
+        <span>Sair</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M13 3h-2a2 2 0 0 0-2 2v3h2V5h4v14h-4v-3H9v3a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z" />
+          <path d="m15 12-3-3v2H4v2h8v2l3-3Z" />
+        </svg>
+      </button>
+    </header>
 
-<div class="layout">
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <iframe
-      src="/admin/sidebar.html"
-      title="Menu administrativo"
-      class="sidebar-frame"
-    ></iframe>
-  </aside>
-
-  <!-- TOPBAR -->
-  <header class="topbar">
-    <button class="btn-secondary menu" data-menu>☰</button>
-    <div class="crumb">Área de Trabalho</div>
-    <div class="actions">
-      <span class="badge">Admin</span>
-      <button class="btn-secondary" onclick="location.href='/admin/usuarios.html'">Gerenciar usuários</button>
-      <button data-logout>Sair</button>
-    </div>
-  </header>
-
-  <!-- CONTENT -->
-  <main class="content">
-    <div class="grid">
-
-      <section class="card span-4">
-        <h3>Usuários</h3>
-        <div class="muted">Total de contas</div>
-        <div style="font-size:36px; font-weight:800; margin-top:8px" id="kpi-usuarios">—</div>
-      </section>
-
-      <section class="card span-4">
-        <h3>Eventos do sistema</h3>
-        <div class="muted">Status de auditoria</div>
-        <div style="font-size:36px; font-weight:800; margin-top:8px" id="kpi-eventos">—</div>
-      </section>
-
-      <section class="card span-4">
-        <h3>Acessos rápidos</h3>
-        <div class="muted">Atalhos do dia a dia</div>
-        <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap">
-          <a class="btn" href="/admin/agenda.html">Abrir Agenda</a>
-          <a class="btn" href="/admin/contatos.html">Ver Contatos</a>
-          <a class="btn" href="/admin/atendimentos.html">Atendimentos</a>
+    <section class="workspace__grid" aria-label="Ferramentas principais">
+      <article class="workspace-card" tabindex="0" role="button" data-tool-card data-href="/admin/agenda.html">
+        <div class="workspace-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M8 2v3"/><path d="M16 2v3"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
         </div>
-      </section>
-
-      <section class="card span-8">
-        <h3>Gerador de Peças Inteligentes</h3>
-        <div class="muted">Crie rascunhos estratégicos com base em modelos inteligentes.</div>
-        <div class="generator-status" id="generator-status">Inicializando...</div>
-        <div class="generator-actions">
-          <button class="btn" id="generator-run">Gerar peça de exemplo</button>
+        <div class="workspace-card__body">
+          <h3>Agenda</h3>
+          <p>Gerencie compromissos, prazos e audiências com rapidez.</p>
         </div>
-        <pre class="generator-preview muted" id="generator-preview">Nenhuma peça gerada até o momento.</pre>
-      </section>
+      </article>
 
-      <section class="card span-8">
-        <h3>Últimas ações (auditoria)</h3>
-        <table class="table" id="audit-table">
-          <thead><tr><th>Quando</th><th>Usuário</th><th>Ação</th><th>Alvo</th></tr></thead>
-          <tbody></tbody>
-        </table>
-         <script>
-          (async function loadAuditTable() {
-            const tbody = document.querySelector('#audit-table tbody');
-            if (!tbody || !window.API) return;
+      <article class="workspace-card" tabindex="0" role="button" data-tool-card data-href="/admin/contatos.html">
+        <div class="workspace-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Z"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+        </div>
+        <div class="workspace-card__body">
+          <h3>Contatos</h3>
+          <p>Centralize clientes, colegas e parceiros estratégicos.</p>
+        </div>
+      </article>
 
-            try {
-              const result = await window.API.auditLatest();
-              if (!result || result.res.status !== 200) {
-                console.warn('audit/latest retornou', result?.res?.status);
-                tbody.innerHTML = '';
-                return;
-              }
+      <article class="workspace-card" tabindex="0" role="button" data-tool-card data-href="/admin/atendimentos.html">
+        <div class="workspace-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M7 11a5 5 0 1 1 10 0"/><path d="M7 11h10"/><path d="M12 19a3.5 3.5 0 0 0 3.5-3.5V11"/><path d="M12 19a3.5 3.5 0 0 1-3.5-3.5V11"/></svg>
+        </div>
+        <div class="workspace-card__body">
+          <h3>Atendimentos</h3>
+          <p>Visualize o histórico e organize interações com clientes.</p>
+        </div>
+      </article>
 
-              const rows = Array.isArray(result.data) ? result.data.slice(0, 8) : [];
-              tbody.innerHTML = rows
+      <article class="workspace-card" tabindex="0" role="button" data-tool-card data-href="/admin/processos.html">
+        <div class="workspace-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M6 3v18"/><path d="M10 7h8"/><path d="M10 11h8"/><path d="M10 15h6"/></svg>
+        </div>
+        <div class="workspace-card__body">
+          <h3>Processos e Casos</h3>
+          <p>Acompanhe andamentos, tarefas e resultados por caso.</p>
+        </div>
+      </article>
 
-                .map(
-                  (r) => `
-                <tr>
-                  <td>${r.created_at || r.ts || '-'}</td>
-                  <td>${r.user_email || r.user || 'admin'}</td>
-                  <td>${r.action || '-'}</td>
-                  <td>${(r.entity || r.target || '-')}${r.entity_id ? ` #${r.entity_id}` : ''}</td>
-                </tr>`
-                )
-                .join('');
-            } catch (error) {
-              console.warn('Falha ao carregar auditoria recente', error);
-              tbody.innerHTML = '';
-            }
-          })();
-        </script>
-      </section>
+      <article class="workspace-card" tabindex="0" role="button" data-tool-card data-href="/admin/gerador-pecas.html">
+        <div class="workspace-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M18 2h-6a2 2 0 0 0-2 2v4h2V4h6v16h-6v-4h-2v4a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2Z"/><path d="M10 12H4"/><path d="m7 9-3 3 3 3"/></svg>
+        </div>
+        <div class="workspace-card__body">
+          <h3>Gerador de Peças</h3>
+          <p>Crie rascunhos estratégicos em segundos com apoio inteligente.</p>
+        </div>
+      </article>
 
-      <section class="card span-4">
-        <h3>Lembretes rápidos</h3>
-        <ul style="margin:8px 0 0 16px">
-          <li>Definir papéis de novos colaboradores</li>
-          <li>Conferir agenda da semana</li>
-          <li>Revisar atendimentos pendentes</li>
-        </ul>
-      </section>
+      <article class="workspace-card" tabindex="0" role="button" data-tool-card data-href="/admin/publicacoes.html">
+        <div class="workspace-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 2 4 6v6c0 5 4 9 8 10 4-1 8-5 8-10V6Z"/><path d="M8 10h8"/><path d="M8 14h5"/></svg>
+        </div>
+        <div class="workspace-card__body">
+          <h3>Publicações</h3>
+          <p>Monitore diários oficiais, clippings e alertas relevantes.</p>
+        </div>
+      </article>
 
-    </div>
-  </main>
-</div>
+      <article class="workspace-card" tabindex="0" role="button" data-tool-card data-href="/admin/financeiro.html">
+        <div class="workspace-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/><path d="M7 15h.01"/><path d="M17 15h2"/></svg>
+        </div>
+        <div class="workspace-card__body">
+          <h3>Financeiro</h3>
+          <p>Controle honorários, despesas e relatórios com clareza.</p>
+        </div>
+      </article>
 
-<script type="module" src="/admin/app.js"></script>
+       <article class="workspace-card" tabindex="0" role="button" data-tool-card data-href="/admin/documentos.html">
+        <div class="workspace-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+        </div>
+        <div class="workspace-card__body">
+          <h3>Documentos</h3>
+          <p>Organize petições, contratos e arquivos de forma segura.</p>
+        </div>
+      </article>
+
+      <article class="workspace-card" tabindex="0" role="button" data-tool-card data-href="/admin/usuarios.html">
+        <div class="workspace-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="workspace-card__body">
+          <h3>Usuários</h3>
+          <p>Gerencie permissões, convites e perfis da equipe.</p>
+        </div>
+      </article>
+
+      <article class="workspace-card" tabindex="0" role="button" data-tool-card data-href="/admin/auditoria.html">
+        <div class="workspace-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="m18 6 1.5-1.5"/><path d="M10 2h4"/><path d="M4.5 4.5 6 6"/><path d="M2 10v4"/><path d="m6 18-1.5 1.5"/><path d="M14 22h-4"/><path d="m18 18 1.5 1.5"/><path d="M22 10v4"/><circle cx="12" cy="12" r="5"/><path d="m13.5 10.5-1.75 2.5h3"/></svg>
+        </div>
+        <div class="workspace-card__body">
+          <h3>Auditoria</h3>
+          <p>Acompanhe eventos críticos e histórico de acessos.</p>
+        </div>
+      </article>
+
+      <article class="workspace-card workspace-card--logout" tabindex="0" role="button" data-tool-card data-action="logout">
+        <div class="workspace-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M13 21h-2a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2"/><path d="m10 15 3 3 3-3"/><path d="M13 12h8"/><path d="m16 9 3 3-3 3"/></svg>
+        </div>
+        <div class="workspace-card__body">
+          <h3>Encerrar sessão</h3>
+          <p>Desconecte-se com segurança do ambiente administrativo.</p>
+        </div>
+      </article>
+    </section>
+  </div>
+
+  <script type="module" src="/admin/app.js"></script>
 </body>
 </html>
+   

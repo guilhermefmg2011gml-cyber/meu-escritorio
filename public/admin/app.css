@@ -228,4 +228,204 @@ button, .btn{
 }
 @media (min-width: 861px){
   .topbar .menu{display:none}
+
+}
+/* --- Workspace redesign -------------------------------------------------- */
+body.workspace {
+  background: #f5f5f5;
+  color: #3b3b3b;
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  --workspace-accent: #a67c52;
+  --workspace-card: #ffffff;
+  --workspace-border: #e0e0e0;
+  --workspace-muted: #6f6f6f;
+}
+
+.workspace__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 24px 72px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.workspace__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.workspace__eyebrow {
+  margin: 0 0 6px;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--workspace-accent);
+  font-weight: 600;
+}
+
+.workspace__title {
+  margin: 0;
+  font-size: clamp(2rem, 3vw, 2.4rem);
+  font-weight: 600;
+}
+
+.workspace__subtitle {
+  margin: 6px 0 0;
+  color: var(--workspace-muted);
+  font-size: 1rem;
+}
+
+.workspace__logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--workspace-accent);
+  background: transparent;
+  color: var(--workspace-accent);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.workspace__logout svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.workspace__logout:hover,
+.workspace__logout:focus-visible {
+  background: var(--workspace-accent);
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(166, 124, 82, 0.25);
+  outline: none;
+}
+
+.workspace__grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.workspace-card {
+  background: var(--workspace-card);
+  border: 1px solid var(--workspace-border);
+  border-radius: 18px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 180px;
+  cursor: pointer;
+  box-shadow: 0 12px 28px rgba(15, 15, 15, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  position: relative;
+}
+
+.workspace-card::after {
+  content: "Abrir";
+  position: absolute;
+  inset-inline-end: 20px;
+  inset-block-end: 18px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--workspace-accent);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.workspace-card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(166, 124, 82, 0.12);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--workspace-accent);
+}
+
+.workspace-card__icon svg {
+  width: 26px;
+  height: 26px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+.workspace-card__body h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #3b3b3b;
+}
+
+.workspace-card__body p {
+  margin: 8px 0 0;
+  color: var(--workspace-muted);
+  line-height: 1.45;
+  font-size: 0.95rem;
+}
+
+.workspace-card:hover,
+.workspace-card:focus-visible {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 36px rgba(15, 15, 15, 0.08);
+  border-color: rgba(166, 124, 82, 0.4);
+  outline: none;
+}
+
+.workspace-card:hover::after,
+.workspace-card:focus-visible::after {
+  opacity: 1;
+}
+
+.workspace-card--logout {
+  background: #fff7f0;
+  border-color: rgba(166, 124, 82, 0.4);
+}
+
+.workspace-card--logout:hover,
+.workspace-card--logout:focus-visible {
+  background: #fcefe3;
+}
+
+@media (max-width: 768px) {
+  .workspace__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .workspace__logout {
+    align-self: stretch;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .workspace__container {
+    padding-inline: 18px;
+    padding-block-start: 36px;
+  }
+
+  .workspace-card {
+    min-height: 0;
+    padding: 20px;
+  }
 }
