@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
+import { API_BASE, gerarPeca as gerarPecaApi } from "../services/api";
 
 const DEFAULT_PARTE = { nome: "", papel: "autor" };
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") ?? "";
 
 function createEmptyParte() {
   return { ...DEFAULT_PARTE };
@@ -67,19 +67,7 @@ export default function NovaPeca() {
         payload.processo_id = processoId.trim();
       }
 
-      const response = await fetch(`${API_BASE_URL}/peca/gerar`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const data = await response.json().catch(() => ({}));
-        const message = data?.message || data?.error || "Falha ao gerar peça";
-        throw new Error(message);
-      }
-
-      const data = await response.json();
+      const data = await gerarPecaApi(payload);
       setResposta(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro inesperado");
@@ -344,7 +332,7 @@ export default function NovaPeca() {
 
               <div className="flex flex-wrap items-center gap-3">
                 <a
-                  href={`${API_BASE_URL}/peca/exportar/${resposta.id}`}
+                  href={`${API_BASE}/peca/exportar/${resposta.id}`}
                   className="mm-btn mm-btn-primary"
                   target="_blank"
                   rel="noreferrer"

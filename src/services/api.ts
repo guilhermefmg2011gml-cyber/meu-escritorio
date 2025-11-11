@@ -1,9 +1,9 @@
 // @ts-nocheck
 
-const DEFAULT_BASE = (import.meta.env.VITE_API_BASE || 'http://localhost:3000').replace(/\/+$/, '')
+export const API_BASE = (import.meta.env.VITE_API_BASE || 'http://localhost:3000').replace(/\/+$/, '')
 
 async function postJSON(path: string, body: unknown) {
-  const url = `${DEFAULT_BASE}${path}`
+  const url = `${API_BASE}${path}`
   const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -27,7 +27,7 @@ async function getJSON(path: string, params: Record<string, string | undefined>)
     }
   })
   const query = search.toString()
-  const url = `${DEFAULT_BASE}${path}${query ? `?${query}` : ''}`
+  const url = `${API_BASE}${path}${query ? `?${query}` : ''}`
   const response = await fetch(url)
   if (!response.ok) {
     const data = await response.json().catch(() => ({}))
@@ -35,6 +35,10 @@ async function getJSON(path: string, params: Record<string, string | undefined>)
     throw new Error(message)
   }
   return response.json()
+}
+
+export async function gerarPeca(body: Record<string, unknown>) {
+  return postJSON('/peca/gerar', body)
 }
 
 export async function refinarPeca({
