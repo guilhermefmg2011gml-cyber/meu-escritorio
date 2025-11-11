@@ -421,6 +421,7 @@ async function init() {
   const pedidosInput = document.getElementById("pedidos");
   const documentosInput = document.getElementById("documentos");
   const clienteInput = document.getElementById("clienteId");
+  const processoInput = document.getElementById("processoId");
   const gerarBtn = document.getElementById("btnGerarPeca");
   const resultadoCard = document.getElementById("resultadoCard");
   const textoGerado = document.getElementById("textoGerado");
@@ -544,6 +545,11 @@ async function init() {
     const clienteId = clienteInput?.value.trim();
     if (clienteId) {
       payload.cliente_id = clienteId;
+    }
+
+    const processoId = processoInput?.value.trim();
+    if (processoId) {
+      payload.processo_id = processoId;
     }
 
     try {

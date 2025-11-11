@@ -12,6 +12,8 @@ export default function NovaPeca() {
   const [resumo, setResumo] = useState("");
   const [partes, setPartes] = useState([createEmptyParte()]);
   const [pedidos, setPedidos] = useState("");
+  const [clienteId, setClienteId] = useState("");
+  const [processoId, setProcessoId] = useState("");
   const [resposta, setResposta] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -55,6 +57,14 @@ export default function NovaPeca() {
 
       if (pedidos.trim()) {
         payload.pedidos = pedidos.trim();
+      }
+
+      if (clienteId.trim()) {
+        payload.cliente_id = clienteId.trim();
+      }
+
+      if (processoId.trim()) {
+        payload.processo_id = processoId.trim();
       }
 
       const response = await fetch(`${API_BASE_URL}/peca/gerar`, {
@@ -132,22 +142,47 @@ export default function NovaPeca() {
                 </select>
               </label>
 
-              <label className="flex flex-col gap-2 text-sm font-medium">
-                Orientações sobre pedidos (opcional)
-                <textarea
-                  value={pedidos}
-                  onChange={(event) => setPedidos(event.target.value)}
-                  rows={3}
-                  className="min-h-[120px] rounded-lg border border-[color:rgba(44,13,13,0.15)] px-3 py-2 text-base focus:border-[var(--mm-primary)] focus:outline-none"
-                  placeholder="Diretrizes específicas sobre pedidos ou cautelas que a IA deve considerar."
-                />
-              </label>
-            </div>
 
             <label className="flex flex-col gap-2 text-sm font-medium">
-              Resumo fático
+              Orientações sobre pedidos (opcional)
               <textarea
-                value={resumo}
+                value={pedidos}
+                onChange={(event) => setPedidos(event.target.value)}
+                rows={3}
+                className="min-h-[120px] rounded-lg border border-[color:rgba(44,13,13,0.15)] px-3 py-2 text-base focus:border-[var(--mm-primary)] focus:outline-none"
+                placeholder="Diretrizes específicas sobre pedidos ou cautelas que a IA deve considerar."
+              />
+            </label>
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-2">
+            <label className="flex flex-col gap-2 text-sm font-medium">
+              Identificador do cliente (opcional)
+              <input
+                type="text"
+                value={clienteId}
+                onChange={(event) => setClienteId(event.target.value)}
+                className="rounded-lg border border-[color:rgba(44,13,13,0.15)] px-3 py-2 text-base focus:border-[var(--mm-primary)] focus:outline-none"
+                placeholder="Código interno ou referência do cliente"
+              />
+            </label>
+
+            <label className="flex flex-col gap-2 text-sm font-medium">
+              Identificador do processo (opcional)
+              <input
+                type="text"
+                value={processoId}
+                onChange={(event) => setProcessoId(event.target.value)}
+                className="rounded-lg border border-[color:rgba(44,13,13,0.15)] px-3 py-2 text-base focus:border-[var(--mm-primary)] focus:outline-none"
+                placeholder="Número ou referência interna do processo"
+              />
+            </label>
+          </div>
+
+          <label className="flex flex-col gap-2 text-sm font-medium">
+            Resumo fático
+            <textarea
+              value={resumo}
                 onChange={(event) => setResumo(event.target.value)}
                 rows={8}
                 className="min-h-[180px] rounded-lg border border-[color:rgba(44,13,13,0.15)] px-3 py-2 text-base focus:border-[var(--mm-primary)] focus:outline-none"
