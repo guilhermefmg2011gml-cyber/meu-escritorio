@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { refinarPeca } from '../services/api'
 
 export function RefinarPeca() {
@@ -10,8 +10,31 @@ export function RefinarPeca() {
   const [loading, setLoading] = useState(false)
   const [erro, setErro] = useState('')
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const storedCliente = window.localStorage.getItem('cliente_id') || ''
+    const storedProcesso = window.localStorage.getItem('processo_id') || ''
+    setClienteId(storedCliente)
+    setProcessoId(storedProcesso)
+  }, [])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const value = clienteId.trim()
+    if (value) window.localStorage.setItem('cliente_id', value)
+    else window.localStorage.removeItem('cliente_id')
+  }, [clienteId])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const value = processoId.trim()
+    if (value) window.localStorage.setItem('processo_id', value)
+    else window.localStorage.removeItem('processo_id')
+  }, [processoId])
+
   const handleRefinar = async () => {
-    if (!texto.trim()) {
+    const textoTrimmed = texto.trim()
+    if (!textoTrimmed) {
       setErro('Informe o texto da petição para refinamento.')
       return
     }
@@ -20,7 +43,11 @@ export function RefinarPeca() {
     setErro('')
     setResultado('')
     try {
-      const resposta = await refinarPeca({ texto, clienteId: clienteId.trim() || undefined, processoId: processoId.trim() || undefined })
+      const resposta = await refinarPeca({
+        texto: textoTrimmed,
+        clienteId: clienteId.trim() || undefined,
+        processoId: processoId.trim() || undefined,
+      })
       setResultado(resposta)
     } catch (error) {
       setErro(error instanceof Error ? error.message : 'Não foi possível refinar o texto.')

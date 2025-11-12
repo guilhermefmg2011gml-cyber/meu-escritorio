@@ -73,3 +73,29 @@ export async function buscarMemoria({
   })
   return (data?.resultados as string[]) || []
 }
+
+export async function listarMemoriaPorCliente(clienteId: string, limit = 20) {
+  if (!clienteId?.trim()) return []
+  const url = `${API_BASE}/peca/memoria/cliente/${encodeURIComponent(clienteId.trim())}?limit=${Math.max(1, limit)}`
+  const response = await fetch(url)
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}))
+    const message = (data && (data.error || data.message)) || `Erro HTTP ${response.status}`
+    throw new Error(message)
+  }
+  const data = await response.json()
+  return (data?.resultados as any[]) || []
+}
+
+export async function listarMemoriaPorProcesso(processoId: string, limit = 20) {
+  if (!processoId?.trim()) return []
+  const url = `${API_BASE}/peca/memoria/processo/${encodeURIComponent(processoId.trim())}?limit=${Math.max(1, limit)}`
+  const response = await fetch(url)
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}))
+    const message = (data && (data.error || data.message)) || `Erro HTTP ${response.status}`
+    throw new Error(message)
+  }
+  const data = await response.json()
+  return (data?.resultados as any[]) || []
+}

@@ -106,16 +106,6 @@ function Header(){
                 Contato
               </a>
             </li>
-            <li>
-              <a href="/nova-peca" className="transition-colors hover:text-[var(--mm-primary)]">
-                Gerador IA
-              </a>
-            </li>
-             <li>
-              <a href="/refinar-peca" className="transition-colors hover:text-[var(--mm-primary)]">
-                Refinar IA
-              </a>
-            </li>
             <li className="relative group">
               <button className="px-3 py-2">Mais ▾</button>
               <div className="absolute hidden group-hover:block bg-white/95 shadow-lg rounded-xl mt-2 min-w-[220px]">
