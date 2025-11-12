@@ -32,7 +32,12 @@ DOCS_DIR.mkdir(parents=True, exist_ok=True)
 client_oa: Optional[OpenAI] = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
 
 # ============== CHROMA INIT ==============
-chroma = chromadb.Client(Settings(persist_directory=CHROMA_DIR, anonymized_telemetry=False))
+chroma = chromadb.Client(
+    Settings(
+        persist_directory=CHROMA_DIR,
+        anonymized_telemetry=False,  # <— importantíssimo!
+    )
+)
 
 
 class OpenAIEmbeddingFn:
