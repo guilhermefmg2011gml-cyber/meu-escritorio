@@ -1,0 +1,31 @@
+# ===========================================================
+# MOURA MARTINS ADVOGADOS - BACKEND JURÍDICO INTELIGENTE
+# Flask + OpenAI GPT-5 + Tavily + ChromaDB + DOCX + PDF + Memória
+# ===========================================================
+
+# Servidor e API
+flask==3.0.3
+flask-cors==4.0.0
+flask-jwt-extended==4.6.0
+pydantic==2.8.2
+python-dotenv==1.0.1
+
+# IA e OpenAI
+openai==1.42.0       # suporte completo ao GPT-5 Turbo
+tavily-python==0.3.3  # motor de busca jurisprudencial
+chromadb==0.5.11      # base vetorial persistente (RAG jurídico)
+
+# Manipulação de documentos
+python-docx==1.1.0
+PyPDF2==3.0.1
+
+# Banco de dados e utilitários
+sqlite-utils==3.36
+requests==2.32.3
+
+# Extras úteis
+pytz==2024.1
+uuid==1.30
+
+# Modo dev (opcional)
+gunicorn==23.0.0     # para deploy no Railway/Render

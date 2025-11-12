@@ -1,0 +1,113 @@
+# ===========================================================
+# MOURA MARTINS ADVOGADOS - .gitignore
+# Protege dados sensíveis, caches e dependências
+# ===========================================================
+
+# -----------------------------------------------------------
+# 🔑 Ambiente e configurações
+# -----------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+# VSCode / IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+nohup.out
+
+# -----------------------------------------------------------
+# 🧠 Ambiente virtual Python
+# -----------------------------------------------------------
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+*.egg
+
+# -----------------------------------------------------------
+# ⚙️ Dependências Node (frontend)
+# -----------------------------------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+dist/
+build/
+
+# -----------------------------------------------------------
+# 📦 Storage local (dados, uploads e cache vetorial)
+# -----------------------------------------------------------
+storage/chroma/
+storage/uploads/
+storage/docs/
+storage/tmp/
+storage/ingest/
+memoria.sqlite3
+
+# -----------------------------------------------------------
+# 🧾 Geração de documentos
+# -----------------------------------------------------------
+*.docx
+*.pdf
+*.rtf
+*.odt
+*.zip
+*.bak
+*.tmp
+
+# -----------------------------------------------------------
+# 🧠 Dados de indexação e aprendizado
+# -----------------------------------------------------------
+*.faiss
+*.bin
+*.pkl
+*.npy
+
+# -----------------------------------------------------------
+# 🧪 Ambientes temporários e testes
+# -----------------------------------------------------------
+__tests__/
+pytest_cache/
+.tox/
+coverage/
+htmlcov/
+.cache/
+tmp/
+temp/
+*.db
+
+# -----------------------------------------------------------
+# 🚀 Deploy / CI
+# -----------------------------------------------------------
+*.tar
+*.gz
+*.tgz
+*.7z
+*.rar
+*.bak
+*.old
+*.swp
+*.swo
+
+# -----------------------------------------------------------
+# 🌐 Frontend específico (Vite / React)
+# -----------------------------------------------------------
+dist/
+public/assets/
+*.map
+.cache/
+out/
