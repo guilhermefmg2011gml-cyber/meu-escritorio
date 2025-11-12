@@ -1,598 +1,568 @@
 import { ensureAuthOrRedirect, bindLogoutHandlers } from "../js/auth-guard.js";
 
-const TIPOS_PECA = [
-  "peticao_inicial",
-  "contestacao",
-  "replica",
-  "agravo_instrumento",
-  "pedido_saneamento",
-  "producao_provas",
-  "interlocutoria",
-  "manifestacao",
-  "quesitos",
-  "memoriais",
-  "apelacao",
-  "tutela_urgencia",
-];
+await ensureAuthOrRedirect();
+bindLogoutHandlers(document);
 
-const TIPO_LABEL = {
+const API = window.API;
+const chatWin = document.getElementById("chat-window");
+const inputEl = document.getElementById("input");
+const btnEnviar = document.getElementById("btn-enviar");
+const btnRefinar = document.getElementById("btn-refinar");
+const btnNovoChat = document.getElementById("btn-novo-chat");
+const btnHistorico = document.getElementById("btn-historico");
+const btnExportar = document.getElementById("btn-exportar");
+const btnDownload = document.getElementById("btn-download");
+const fileInput = document.getElementById("file");
+const chips = document.getElementById("chips");
+const toast = document.getElementById("toast");
+
+const tipoPecaEl = document.getElementById("tipoPeca");
+const clienteIdEl = document.getElementById("clienteId");
+const processoIdEl = document.getElementById("processoId");
+const docsEl = document.getElementById("docs");
+
+const estado = {
+  etapa: 0,
+  dados: {
+    tipo: tipoPecaEl?.value || "peticao_inicial",
+    tipoTexto: "",
+    resumo: "",
+    pedidos: "",
+    documentos: "",
+    parte: "",
+  },
+  historico: [],
+  ultimaPeca: null,
+  ultimaPecaId: null,
+  anexos: [],
+};
+
+const tipoLabel = {
   peticao_inicial: "Petição inicial",
   contestacao: "Contestação",
   replica: "Réplica",
-  agravo_instrumento: "Agravo de instrumento",
-  pedido_saneamento: "Pedido de saneamento",
-  producao_provas: "Produção de provas",
-  interlocutoria: "Interlocutória",
-  manifestacao: "Manifestação",
-  quesitos: "Quesitos",
-  memoriais: "Memoriais",
+  agravo_instrumento: "Agravo",
   apelacao: "Apelação",
-  tutela_urgencia: "Tutela de urgência",
-};
+   memoriais: "Memoriais",
+  manifestacao: "Manifestação",
+  recurso_especial: "Recurso Especial",
+  };
 
-const TEMPLATE_CONFIG = {
-  peticao_inicial: {
-    blocks: [
-      "preambulo",
-      "dos_fatos",
-      "fundamentacao_juridica",
-      "jurisprudencia",
-      "dos_pedidos",
-      "valor_da_causa",
-    ],
-    required: ["partes", "resumo_fatico"],
-  },
-  contestacao: {
-    blocks: [
-      "preambulo",
-      "preliminares",
-      "impugnacao_aos_fatos",
-      "fundamentacao_juridica",
-      "provas",
-      "pedidos_finais",
-    ],
-    required: ["partes", "resumo_fatico"],
-  },
-  replica: {
-    blocks: [
-      "preambulo",
-      "impugnacao_aos_argumentos",
-      "reforco_das_teses",
-      "jurisprudencia",
-      "pedidos",
-    ],
-    required: ["partes", "resumo_fatico"],
-  },
-  tutela_urgencia: {
-    blocks: [
-      "preambulo",
-      "fumus_boni_iuris",
-      "periculum_in_mora",
-      "fundamentacao_juridica",
-      "pedidos_antecipatorios",
-    ],
-    required: ["partes", "resumo_fatico"],
-  },
-  agravo_instrumento: {
-    blocks: [
-      "preambulo",
-      "exposicao_dos_fatos",
-      "fundamentacao_juridica",
-      "requerimentos",
-      "documentos_obrigatorios",
-    ],
-    required: ["partes", "resumo_fatico"],
-  },
-  pedido_saneamento: {
-    blocks: [
-      "preambulo",
-      "pontos_controvertidos",
-      "medidas_propostas",
-      "fundamentacao",
-      "pedidos",
-    ],
-    required: ["partes", "resumo_fatico"],
-  },
-  producao_provas: {
-    blocks: ["preambulo", "justificativa", "tipos_provas", "fundamentacao", "pedidos"],
-    required: ["resumo_fatico"],
-  },
-  interlocutoria: {
-    blocks: ["preambulo", "fundamentacao", "pedido"],
-    required: ["resumo_fatico"],
-  },
-  manifestacao: {
-    blocks: ["preambulo", "resposta_argumentos", "fundamentacao", "conclusao"],
-    required: ["resumo_fatico"],
-  },
-  quesitos: {
-    blocks: ["introducao", "perguntas", "fundamento_tecnico"],
-    required: ["resumo_fatico"],
-  },
-  memoriais: {
-    blocks: [
-      "preambulo",
-      "resumo_dos_fatos",
-      "teses_defendidas",
-      "jurisprudencia_aplicavel",
-      "conclusao",
-    ],
-    required: ["resumo_fatico"],
-  },
-  apelacao: {
-    blocks: [
-      "preambulo",
-      "resumo_da_decisao",
-      "fundamentacao",
-      "reforma_pleiteada",
-      "pedidos",
-    ],
-    required: ["resumo_fatico"],
-  },
-};
-
-const PAPEL_OPTIONS = [
-  { value: "autor", label: "Autor(a)" },
-  { value: "reu", label: "Réu/Ré" },
-  { value: "terceiro", label: "Terceiro" },
-];
-
-let partesObrigatorias = true;
-let currentPieceId = null;
-
-function getTemplateConfig(tipo) {
-  return TEMPLATE_CONFIG[tipo] || { blocks: [], required: ["partes", "resumo_fatico"] };
+function showToast(message, ok = false) {
+  if (!toast) return;
+  toast.textContent = message;
+  toast.style.background = ok ? "var(--ok)" : "#1a1a1a";
+  toast.classList.remove("hidden");
+  window.clearTimeout(showToast._timeout);
+  showToast._timeout = window.setTimeout(() => toast.classList.add("hidden"), 2600);
 }
 
-const REQUIRED_FIELD_LABEL = {
-  partes: "partes",
-  resumoFatico: "resumo fático",
-  pedidos: "pedidos",
-};
-
-function createSelectOption(value, label) {
-  const option = document.createElement("option");
-  option.value = value;
-  option.textContent = label;
-  return option;
+function addMsg(text, role = "bot") {
+  if (!chatWin) return null;
+  const el = document.createElement("div");
+  el.className = `msg ${role}`;
+  el.innerHTML = text.replace(/\n/g, "<br/>");
+  chatWin.appendChild(el);
+  chatWin.scrollTop = chatWin.scrollHeight;
+  return el;
 }
 
-function populateTipoSelect(select) {
-  select.innerHTML = "";
-  TIPOS_PECA.forEach((tipo) => {
-    const option = createSelectOption(tipo, TIPO_LABEL[tipo] || tipo);
-    select.appendChild(option);
-  });
+function addTyping() {
+  if (!chatWin) return null;
+  const el = document.createElement("div");
+  el.className = "msg bot";
+  el.innerHTML = '<div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+  chatWin.appendChild(el);
+  chatWin.scrollTop = chatWin.scrollHeight;
+  return el;
 }
 
-function updateParteTitles(container) {
-  container.querySelectorAll(".parte-item").forEach((item, index) => {
-    const title = item.querySelector(".parte-item-title");
-    if (title) {
-      title.textContent = `Parte ${index + 1}`;
+function removeEl(el) {
+  if (el && typeof el.remove === "function") {
+    el.remove();
+  }
+}
+
+function normalizarTipo(texto) {
+  if (!texto) return null;
+  const slug = texto
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const entradas = Object.entries(tipoLabel);
+  for (const [value, label] of entradas) {
+    const base = `${value} ${label}`
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z\s]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    if (base.includes(slug) || slug.includes(base) || slug === label.toLowerCase()) {
+      return value;
     }
-  });
+  }
+  return null;
 }
 
-function createParteItem(container, initialData = {}) {
-  const wrapper = document.createElement("div");
-  wrapper.className = "parte-item";
-
-  const header = document.createElement("div");
-  header.className = "parte-item-header";
-
-  const title = document.createElement("h5");
-  title.className = "parte-item-title";
-  title.textContent = "Parte";
-
-  const removeButton = document.createElement("button");
-  removeButton.type = "button";
-  removeButton.className = "linklike parte-remove";
-  removeButton.textContent = "Remover";
-  removeButton.addEventListener("click", () => {
-    const totalItens = container.querySelectorAll(".parte-item").length;
-    if (partesObrigatorias && totalItens <= 1) {
-      alert("É necessário manter ao menos uma parte cadastrada.");
-      return;
-    }
-    wrapper.remove();
-    updateParteTitles(container);
-  });
-
-  header.appendChild(title);
-  header.appendChild(removeButton);
-
-  const fields = document.createElement("div");
-  fields.className = "parte-item-fields";
-
-  const nomeLabel = document.createElement("label");
-  nomeLabel.textContent = "Nome completo";
-  const nomeInput = document.createElement("input");
-  nomeInput.name = "nome";
-  nomeInput.placeholder = "Nome da parte";
-  nomeInput.required = true;
-  nomeInput.value = initialData.nome || "";
-  nomeLabel.appendChild(nomeInput);
-
-  const papelLabel = document.createElement("label");
-  papelLabel.textContent = "Papel";
-  const papelSelect = document.createElement("select");
-  papelSelect.name = "papel";
-  papelSelect.required = true;
-  PAPEL_OPTIONS.forEach((option) => {
-    papelSelect.appendChild(createSelectOption(option.value, option.label));
-  });
-  papelSelect.value = initialData.papel || PAPEL_OPTIONS[0].value;
-  papelLabel.appendChild(papelSelect);
-
-  const qualLabel = document.createElement("label");
-  qualLabel.textContent = "Qualificação (opcional)";
-  const qualTextarea = document.createElement("textarea");
-  qualTextarea.name = "qualificacao";
-  qualTextarea.placeholder = "Dados de qualificação: estado civil, profissão, CPF/CNPJ, endereço...";
-  qualTextarea.rows = 3;
-  qualTextarea.value = initialData.qualificacao || "";
-  qualLabel.style.gridColumn = "1 / -1";
-  qualLabel.appendChild(qualTextarea);
-
-  fields.appendChild(nomeLabel);
-  fields.appendChild(papelLabel);
-  fields.appendChild(qualLabel);
-
-  wrapper.appendChild(header);
-  wrapper.appendChild(fields);
-
-  return wrapper;
-}
-
-function collectPartes(container) {
+function getPartesLista() {
   const partes = [];
-  container.querySelectorAll(".parte-item").forEach((item) => {
-    const nome = item.querySelector('input[name="nome"]').value.trim();
-    const papel = item.querySelector('select[name="papel"]').value;
-    const qualificacao = item.querySelector('textarea[name="qualificacao"]').value.trim();
-
-    if (!nome) return;
-
-    const parte = { nome, papel };
-    if (qualificacao) {
-      parte.qualificacao = qualificacao;
-    }
-    partes.push(parte);
-  });
+  const nome = estado.dados.parte?.trim();
+  if (nome) {
+    partes.push({ nome, papel: "autor" });
+  }
   return partes;
 }
 
-function renderJurisprudencias(list, container) {
-  container.innerHTML = "";
-  if (!Array.isArray(list) || !list.length) {
-    const empty = document.createElement("li");
-    empty.textContent = "Nenhuma jurisprudência sugerida no momento.";
-    container.appendChild(empty);
-    return;
+  function getPartesLista() {
+  const partes = [];
+  const nome = estado.dados.parte?.trim();
+  if (nome) {
+    partes.push({ nome, papel: "autor" });
   }
-
-  list.forEach((item) => {
-    const li = document.createElement("li");
-    if (item.titulo) {
-      if (item.url) {
-        const link = document.createElement("a");
-        link.href = item.url;
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
-        link.textContent = item.titulo;
-        li.appendChild(link);
-      } else {
-        const title = document.createElement("strong");
-        title.textContent = item.titulo;
-        li.appendChild(title);
-      }
-    }
-
-    if (item.resumo) {
-      const p = document.createElement("p");
-      p.textContent = item.resumo;
-      li.appendChild(p);
-    }
-
-    if (item.publicadoEm) {
-      const date = new Date(item.publicadoEm);
-      if (!Number.isNaN(date.getTime())) {
-        const small = document.createElement("small");
-        small.textContent = `Publicado em ${date.toLocaleDateString("pt-BR")}`;
-        small.style.color = "var(--muted)";
-        li.appendChild(small);
-      }
-    }
-
-    if (item.url && !item.titulo) {
-      const link = document.createElement("a");
-      link.href = item.url;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      link.textContent = "Acessar jurisprudência";
-      li.appendChild(link);
-    }
-
-    container.appendChild(li);
-  });
+  return partes;
 }
 
-function renderArtigosValidados(list, container, wrapper) {
-  if (!wrapper || !container) return;
-
-  container.innerHTML = "";
-
-  if (!Array.isArray(list) || !list.length) {
-    wrapper.classList.add("hidden");
-    return;
-  }
-
-  wrapper.classList.remove("hidden");
-
-  list.forEach((item) => {
-    const li = document.createElement("li");
-
-    const titulo = document.createElement("div");
-    titulo.textContent = item.artigo || "Artigo não identificado";
-    titulo.style.fontWeight = "600";
-    li.appendChild(titulo);
-
-    const status = document.createElement("div");
-    status.classList.add("status");
-    if (item.confirmado) {
-      status.classList.add("ok");
-      status.textContent = "✔️ Referência confirmada";
-    } else {
-      status.classList.add("warn");
-      status.textContent = "⚠️ Referência não confirmada";
-    }
-    li.appendChild(status);
-
-    if (item.referencia) {
-      const link = document.createElement("a");
-      link.href = item.referencia;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      link.textContent = "Ver jurisprudência relacionada";
-      li.appendChild(link);
-    }
-
-    container.appendChild(li);
-  });
-}
-
-function setFormDisabled(form, disabled) {
-  form.querySelectorAll("input, textarea, select, button").forEach((el) => {
-    if (el.id === "copiarTexto" || el.id === "exportarDocx") return;
-    el.disabled = disabled;
-  });
-}
-
-function updateExportButton(button) {
-  if (!button) return;
-  if (currentPieceId) {
-    button.classList.remove("hidden");
-    button.disabled = false;
-  } else {
-    button.classList.add("hidden");
-    button.disabled = true;
-  }
-}
-
-function updateTemplateHints(tipo, pedidosLabel, partesHelp) {
-  const config = getTemplateConfig(tipo);
-  partesObrigatorias = config.required.includes("partes");
-
-  if (pedidosLabel) {
-    const obrigatorio = config.required.includes("pedidos");
-    pedidosLabel.textContent =
-      "Pedidos (gerados automaticamente — utilize este campo para orientar, se desejar)";
-  }
-
-  if (partesHelp) {
-    partesHelp.textContent = partesObrigatorias
-      ? "Adicione as partes do processo e informe o papel de cada uma."
-      : "Informe as partes quando necessário; este tipo de peça permite geração sem partes obrigatórias.";
-  }
-}
-
-async function init() {
-  const user = await ensureAuthOrRedirect();
-  if (!user) return;
-
-  bindLogoutHandlers();
-
-  const sidebarFrame = document.querySelector(".sidebar-frame");
-  if (sidebarFrame) {
-    sidebarFrame.addEventListener("load", () => {
-      const doc = sidebarFrame.contentDocument || sidebarFrame.contentWindow?.document;
-      if (doc) {
-        bindLogoutHandlers(doc);
-      }
-    });
-  }
-
-  const form = document.getElementById("generatorForm");
-  const tipoSelect = document.getElementById("tipoPeca");
-  const partesContainer = document.getElementById("partesContainer");
-  const addParteBtn = document.getElementById("adicionarParte");
-  const resumoInput = document.getElementById("resumoFatico");
-  const pedidosInput = document.getElementById("pedidos");
-  const documentosInput = document.getElementById("documentos");
-  const clienteInput = document.getElementById("clienteId");
-  const processoInput = document.getElementById("processoId");
-  const gerarBtn = document.getElementById("btnGerarPeca");
-  const resultadoCard = document.getElementById("resultadoCard");
-  const textoGerado = document.getElementById("textoGerado");
-  const jurisprudenciasLista = document.getElementById("jurisprudenciasLista");
-  const copiarBtn = document.getElementById("copiarTexto");
-  const exportarBtn = document.getElementById("exportarDocx");
-  const pedidosLabel = document.querySelector('[data-field-label="pedidos"]');
-  const partesHelp = document.getElementById("partesHelpText");
-
-  if (!form || !tipoSelect || !partesContainer || !gerarBtn || !textoGerado || !jurisprudenciasLista) {
-    console.error("[gerador] elementos obrigatórios não encontrados");
-    return;
-  }
-
-  populateTipoSelect(tipoSelect);
-  updateTemplateHints(tipoSelect.value, pedidosLabel, partesHelp);
-  updateExportButton(exportarBtn);
-
-  const addParte = (initialData = {}) => {
-    const item = createParteItem(partesContainer, initialData);
-    partesContainer.appendChild(item);
-    updateParteTitles(partesContainer);
+  function getContexto() {
+  return {
+    tipoPeca: tipoPecaEl?.value || estado.dados.tipo || "peticao_inicial",
+    clienteId: clienteIdEl?.value.trim() || null,
+    processoId: processoIdEl?.value.trim() || null,
+    documentos: getDocumentosLista(),
+    anexos: estado.anexos,
   };
+}
 
-  addParte();
-
-  addParteBtn?.addEventListener("click", () => addParte());
-
-  tipoSelect.addEventListener("change", () => {
-    updateTemplateHints(tipoSelect.value, pedidosLabel, partesHelp);
-  });
-
-  copiarBtn?.addEventListener("click", async () => {
-    if (!textoGerado.value) {
-      return;
-    }
-    try {
-      await navigator.clipboard.writeText(textoGerado.value);
-      const original = copiarBtn.textContent;
-      copiarBtn.textContent = "Copiado!";
-      setTimeout(() => {
-        copiarBtn.textContent = original;
-      }, 1500);
-    } catch (error) {
-      console.warn("[gerador] não foi possível copiar", error);
-      alert("Não foi possível copiar o texto automaticamente. Copie manualmente.");
-    }
-  });
-
-  exportarBtn?.addEventListener("click", async () => {
-    if (!currentPieceId) return;
-
-    const originalText = exportarBtn.textContent;
-    try {
-      exportarBtn.disabled = true;
-      exportarBtn.textContent = "Gerando .docx...";
-      const response = await window.API?.downloadLegalPieceDocx(currentPieceId);
-      if (!response || !response.res || !response.res.ok) {
-        const message = response?.res ? `Falha ao exportar (HTTP ${response.res.status})` : "Falha ao exportar";
-        throw new Error(message);
-      }
-
-      const blob = response.blob;
-      const downloadUrl = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = downloadUrl;
-      link.download = `peca_${currentPieceId}.docx`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(downloadUrl);
-    } catch (error) {
-      console.error("[gerador] falha ao exportar", error);
-      const message = error instanceof Error ? error.message : "Não foi possível exportar a peça.";
-      alert(message);
-    } finally {
-      exportarBtn.textContent = originalText;
-      exportarBtn.disabled = !currentPieceId;
-    }
-  });
-
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const partes = collectPartes(partesContainer);
-    const config = getTemplateConfig(tipoSelect.value);
-
-    if (config.required.includes("partes") && !partes.length) {
-      alert("Informe ao menos uma parte com nome válido.");
-      return;
-    }
-
-    const resumo = resumoInput?.value.trim() || "";
-    if (config.required.includes("resumo_fatico") && !resumo) {
-      alert("O resumo fático é obrigatório para este tipo de peça.");
-      resumoInput?.focus();
-      return;
-    }
-
-    const documentosRaw = documentosInput?.value || "";
-    const documentosList = documentosRaw
-      .split(/\r?\n|,/)
-      .map((item) => item.trim())
-      .filter(Boolean);
-
+  function storageKey() {
+  const contexto = getContexto();
+  return `mm_gerador_hist_${contexto.clienteId || "anon"}_${contexto.processoId || "semproc"}`;
+}
+  function saveHistory() {
+  try {
     const payload = {
-      tipo_peca: tipoSelect.value,
-      resumo_fatico: resumo,
-      partes,
+      historico: estado.historico,
+      dados: estado.dados,
+      etapa: estado.etapa,
+      ultimaPeca: estado.ultimaPeca,
+      ultimaPecaId: estado.ultimaPecaId,
+    };
+    localStorage.setItem(storageKey(), JSON.stringify(payload));
+  } catch (error) {
+    console.warn("[gerador] não foi possível salvar histórico", error);
+  }
+}
+  function renderHistorico() {
+  if (!chatWin) return;
+  chatWin.innerHTML = "";
+  if (!estado.historico.length) {
+    addMsg(
+      '👋 Olá! Vamos gerar sua peça <strong>passo a passo</strong>. Qual o <em>tipo de peça</em> você precisa?\n<small>Dica: você pode alterar o tipo na lateral e anexar PDFs.</small>'
+    );
+    return;
+  }
+  estado.historico.forEach((msg) => addMsg(msg.content, msg.role));
+}
+
+  function loadHistory() {
+  try {
+    const stored = localStorage.getItem(storageKey());
+    if (!stored) return;
+    const data = JSON.parse(stored);
+    if (Array.isArray(data?.historico)) {
+      estado.historico = data.historico;
+    }
+    if (data?.dados) {
+      estado.dados = { ...estado.dados, ...data.dados };
+      if (estado.dados.tipo && tipoPecaEl) {
+        tipoPecaEl.value = estado.dados.tipo;
+      }
+      if (estado.dados.documentos && docsEl) {
+        docsEl.value = estado.dados.documentos;
+      }
+    }
+    if (typeof data?.etapa === "number") {
+      estado.etapa = data.etapa;
+    }
+    estado.ultimaPeca = data?.ultimaPeca || null;
+    estado.ultimaPecaId = data?.ultimaPecaId || null;
+    btnDownload.disabled = !estado.ultimaPecaId;
+  } catch (error) {
+    console.warn("[gerador] não foi possível carregar histórico", error);
+  } finally {
+    renderHistorico();
+  }
+}
+
+function pushHistorico(content, role) {
+  estado.historico.push({ content, role });
+  saveHistory();
+}
+
+function proximaEtapaMensagem() {
+  switch (estado.etapa) {
+    case 0:
+      addMsg("Perfeito. Agora descreva brevemente os fatos relevantes do caso.");
+      break;
+    case 1:
+      addMsg("Entendido. Quais são os pedidos principais que deseja incluir?");
+      break;
+    case 2:
+      addMsg("Certo. Liste os documentos relevantes (procuração, contrato, etc.).");
+      break;
+    case 3:
+      addMsg("Ótimo. Quem é a parte principal ou cliente? Informe o nome, por favor.");
+      break;
+    case 4:
+      addMsg("Tudo pronto! Gerando a peça com base nas informações fornecidas...");
+      break;
+    default:
+      addMsg("Se quiser refinar, descreva como devo ajustar ou inicie um novo chat.");
+  }
+}
+
+function resetEtapas() {
+  estado.etapa = 0;
+  estado.dados = {
+    tipo: tipoPecaEl?.value || "peticao_inicial",
+    tipoTexto: "",
+    resumo: "",
+    pedidos: "",
+    documentos: "",
+    parte: "",
+  };
+}
+
+async function gerarPeca() {
+  const typing = addTyping();
+  btnEnviar.disabled = true;
+  btnRefinar.disabled = true;
+
+try {
+    const contexto = getContexto();
+    const payload = {
+      tipo_peca: contexto.tipoPeca,
+      resumo_fatico: estado.dados.resumo || "",
+      pedidos: estado.dados.pedidos || undefined,
+      documentos: contexto.documentos.length ? contexto.documentos : undefined,
+      cliente_id: contexto.clienteId || undefined,
+      processo_id: contexto.processoId || undefined,
+      partes: getPartesLista(),
     };
 
-    const pedidos = pedidosInput?.value.trim();
-    if (pedidos) {
-      payload.pedidos = pedidos;
+    const result = await API?.generateLegalPiece(payload);
+    if (!result || !result.res) {
+      throw new Error("Não foi possível conectar à API");
     }
 
-    if (documentosList.length) {
-      payload.documentos = documentosList;
-    }
-
-    const clienteId = clienteInput?.value.trim();
-    if (clienteId) {
-      payload.cliente_id = clienteId;
-    }
-
-    const processoId = processoInput?.value.trim();
-    if (processoId) {
-      payload.processo_id = processoId;
-    }
-
-    try {
-      setFormDisabled(form, true);
-      gerarBtn.textContent = "Gerando...";
-      gerarBtn.disabled = true;
-      currentPieceId = null;
-      updateExportButton(exportarBtn);
-
-      const result = await window.API?.generateLegalPiece(payload);
-      if (!result || !result.res || result.res.status !== 200) {
-        if (result?.res?.status === 422) {
-          const campos = Array.isArray(result.data?.campos)
-            ? result.data.campos
-                .map((campo) => REQUIRED_FIELD_LABEL[campo] || campo)
-                .join(", ")
-            : "";
-          const message = result.data?.message || "Preencha todos os campos obrigatórios.";
-          alert(campos ? `${message}\nCampos pendentes: ${campos}` : message);
-          return;
-        }
-        const message = result?.data?.message || result?.data?.error || "Falha ao gerar peça.";
-        throw new Error(message);
+    if (!result.res.ok) {
+      if (result.res.status === 422) {
+        const campos = Array.isArray(result.data?.campos) ? result.data.campos.join(", ") : "";
+        const msg = result.data?.message || "Preencha todos os campos obrigatórios.";
+        throw new Error(campos ? `${msg}\nCampos pendentes: ${campos}` : msg);
       }
+      const message = result.data?.message || result.data?.error || `Falha ao gerar peça (HTTP ${result.res.status})`;
+      throw new Error(message);
+    }
 
-      const data = result.data;
-      textoGerado.value = data?.textoGerado || "";
-      renderJurisprudencias(data?.jurisprudenciasSugeridas, jurisprudenciasLista);
-      resultadoCard?.classList.remove("hidden");
-      resultadoCard?.scrollIntoView({ behavior: "smooth", block: "start" });
-      currentPieceId = data?.id || null;
-      updateExportButton(exportarBtn);
-    } catch (error) {
-      console.error("[gerador] falha na geração", error);
-      const message = error instanceof Error ? error.message : "Não foi possível gerar a peça.";
-      alert(message);
-    } finally {
-      setFormDisabled(form, false);
-      gerarBtn.textContent = "Gerar peça";
-      gerarBtn.disabled = false;
-      updateExportButton(exportarBtn);
+    const data = result.data || {};
+    const texto = data.textoGerado || "Peça gerada, revise o conteúdo.";
+    estado.ultimaPeca = texto;
+    estado.ultimaPecaId = data.id || null;
+    estado.etapa = 5;
+    btnDownload.disabled = !estado.ultimaPecaId;
+
+    const tipoTexto = tipoLabel[contexto.tipoPeca] || contexto.tipoPeca;
+    const detalhes = [
+      `✅ Peça "${tipoTexto}" gerada com sucesso!`,
+      estado.dados.resumo ? `• Fatos: ${estado.dados.resumo}` : null,
+      estado.dados.pedidos ? `• Pedidos: ${estado.dados.pedidos}` : null,
+      contexto.documentos.length ? `• Documentos: ${contexto.documentos.join(", ")}` : null,
+      estado.dados.parte ? `• Parte principal: ${estado.dados.parte}` : null,
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    pushHistorico(detalhes, "bot");
+    pushHistorico(texto, "bot");
+
+    removeEl(typing);
+    addMsg(detalhes, "bot");
+    addMsg(texto, "bot");
+
+    if (Array.isArray(data.jurisprudenciasSugeridas) && data.jurisprudenciasSugeridas.length) {
+      const lista = data.jurisprudenciasSugeridas
+        .map((item, index) => `${index + 1}. ${item.titulo || item.resumo || "Jurisprudência sugerida"}${item.url ? ` — ${item.url}` : ""}`)
+        .join("\n");
+      pushHistorico(lista, "bot");
+      addMsg(`📚 Jurisprudências sugeridas:\n${lista}`, "bot");
+    }
+
+    showToast("Peça gerada", true);
+    saveHistory();
+  } catch (error) {
+    removeEl(typing);
+    const message = error instanceof Error ? error.message : "Erro inesperado ao gerar a peça.";
+    addMsg(`❌ ${message}`, "bot");
+    pushHistorico(`❌ ${message}`, "bot");
+    showToast(message, false);
+    estado.etapa = 4; // permite tentar novamente
+  } finally {
+    btnEnviar.disabled = false;
+    btnRefinar.disabled = false;
+  }
+}
+
+async function refinarMensagem() {
+  const instrucao = inputEl?.value.trim();
+  if (!instrucao) {
+    showToast("Descreva como deseja refinar", false);
+    return;
+  }
+
+  if (!estado.ultimaPeca) {
+    showToast("Gere uma peça antes de refinar", false);
+    return;
+  }
+
+  addMsg(`Refinar: ${instrucao}`, "user");
+  pushHistorico(`Refinar: ${instrucao}`, "user");
+  inputEl.value = "";
+  const typing = addTyping();
+  btnEnviar.disabled = true;
+  btnRefinar.disabled = true;
+    try {
+    const contexto = getContexto();
+    const payload = {
+      tipo_peca: contexto.tipoPeca,
+      topico: "Peça integral",
+      conteudo_atual: estado.ultimaPeca,
+      novas_informacoes: instrucao,
+      cliente_id: contexto.clienteId || undefined,
+      processo_id: contexto.processoId || undefined,
+      partes: getPartesLista(),
+    };
+
+     const data = await API?.post("/admin/ai/gerador-pecas/aprimorar-topico", payload);
+    if (!data) {
+      throw new Error("Refino indisponível no momento");
+    }
+
+    const texto = data.textoReescrito || data.texto || "Refino aplicado.";
+    estado.ultimaPeca = texto;
+    addMsg(texto, "bot");
+    pushHistorico(texto, "bot");
+    showToast("Refino aplicado", true);
+    saveHistory();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Falha ao refinar.";
+    addMsg(`❌ ${message}`, "bot");
+    pushHistorico(`❌ ${message}`, "bot");
+    showToast(message, false);
+  } finally {
+    removeEl(typing);
+    btnEnviar.disabled = false;
+    btnRefinar.disabled = false;
+  }
+}
+
+function registrarMensagemUsuario(texto) {
+  addMsg(texto, "user");
+  pushHistorico(texto, "user");
+}
+
+async function enviarMensagem() {
+  const texto = inputEl?.value.trim();
+  if (!texto) return;
+  inputEl.value = "";
+  registrarMensagemUsuario(texto);
+
+  if (estado.etapa === 0) {
+    const tipo = normalizarTipo(texto);
+    if (tipo && tipoPecaEl) {
+      tipoPecaEl.value = tipo;
+      estado.dados.tipo = tipo;
+    }
+    estado.dados.tipoTexto = texto;
+    estado.etapa = 1;
+    proximaEtapaMensagem();
+    pushHistorico("Perfeito. Agora descreva brevemente os fatos relevantes do caso.", "bot");
+    return;
+  }
+  if (estado.etapa === 1) {
+    estado.dados.resumo = texto;
+    estado.etapa = 2;
+    proximaEtapaMensagem();
+    pushHistorico("Entendido. Quais são os pedidos principais que deseja incluir?", "bot");
+    return;
+
+  }
+
+  if (estado.etapa === 2) {
+    estado.dados.pedidos = texto;
+    estado.etapa = 3;
+    proximaEtapaMensagem();
+    pushHistorico("Certo. Liste os documentos relevantes (procuração, contrato, etc.).", "bot");
+    return;
+  }
+  if (estado.etapa === 3) {
+    estado.dados.documentos = texto;
+    if (docsEl && !docsEl.value) {
+      docsEl.value = texto;
+    }
+    estado.etapa = 4;
+    proximaEtapaMensagem();
+    pushHistorico("Ótimo. Quem é a parte principal ou cliente? Informe o nome, por favor.", "bot");
+    return;
+
+  }
+
+  if (estado.etapa === 4) {
+    estado.dados.parte = texto;
+    await gerarPeca();
+    return;
+  }
+
+  // Após geração, mensagens adicionais são tratadas como observações
+  const aviso =
+    "Mensagem registrada. Utilize o botão Refinar para ajustar ou inicie um novo chat para recomeçar.";
+  addMsg(aviso, "bot");
+  pushHistorico(aviso, "bot");
+}
+
+  function resetarChat() {
+  estado.historico = [];
+  estado.ultimaPeca = null;
+  estado.ultimaPecaId = null;
+  btnDownload.disabled = true;
+  resetEtapas();
+  saveHistory();
+  renderHistorico();
+  showToast("Novo chat iniciado", true);
+}
+
+async function baixarDocx() {
+  if (!estado.ultimaPecaId) return;
+  try {
+    btnDownload.disabled = true;
+    btnDownload.textContent = "Gerando .docx...";
+    const response = await API?.downloadLegalPieceDocx(estado.ultimaPecaId);
+    if (!response) {
+      throw new Error("Download indisponível");
+    }
+    const blob = response.blob;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `peca_${estado.ultimaPecaId}.docx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast("Arquivo gerado", true);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Falha ao gerar arquivo.";
+    showToast(message, false);
+  } finally {
+    btnDownload.textContent = "Baixar .docx";
+    btnDownload.disabled = !estado.ultimaPecaId;
+  }
+}
+
+function exportarConversa() {
+  const texto = estado.historico
+    .map((item) => `${item.role === "user" ? "Usuário" : "Assistente"}: ${item.content}`)
+    .join("\n\n");
+  const blob = new Blob([texto], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `conversa_${Date.now()}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast("Conversa exportada", true);
+}
+
+function registrarUploadLocal(files) {
+  const lista = Array.from(files || []);
+  if (!lista.length) return;
+  lista.forEach((file) => {
+    estado.anexos.push({
+      name: file.name,
+      size: file.size,
+      lastModified: file.lastModified,
+    });
+  });
+  const nomes = lista.map((file) => file.name).join(", ");
+  addMsg(`📎 Anexos adicionados: ${nomes}`, "bot");
+  pushHistorico(`📎 Anexos adicionados: ${nomes}`, "bot");
+  saveHistory();
+}
+
+if (btnEnviar) {
+  btnEnviar.addEventListener("click", enviarMensagem);
+}
+
+if (btnEnviar) {
+  btnEnviar.addEventListener("click", enviarMensagem);
+}
+
+if (btnNovoChat) {
+  btnNovoChat.addEventListener("click", resetarChat);
+}
+
+if (btnExportar) {
+  btnExportar.addEventListener("click", exportarConversa);
+}
+
+if (btnDownload) {
+  btnDownload.addEventListener("click", baixarDocx);
+}
+
+if (btnHistorico) {
+  btnHistorico.addEventListener("click", () => {
+    loadHistory();
+    showToast("Histórico local carregado", true);
+  });
+}
+
+
+if (fileInput) {
+  fileInput.addEventListener("change", (event) => {
+    registrarUploadLocal(event.target.files);
+    fileInput.value = "";
+  });
+}
+
+if (chips) {
+  chips.addEventListener("click", (event) => {
+    const chip = event.target.closest(".chip");
+    if (!chip || !inputEl) return;
+    const insert = chip.dataset.insert || chip.textContent || "";
+    const existing = inputEl.value;
+    inputEl.value = existing ? `${existing}\n${insert}` : insert;
+    inputEl.focus();
+  });
+}
+
+if (inputEl) {
+  inputEl.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      enviarMensagem();
     }
   });
 }
 
-init().catch((error) => console.error("[gerador] erro inesperado", error));
+if (tipoPecaEl) {
+  tipoPecaEl.addEventListener("change", () => {
+    estado.dados.tipo = tipoPecaEl.value;
+    saveHistory();
+  });
+}
+
+loadHistory();

@@ -1,116 +1,473 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <title>Gerador de Peças Processuais Inteligente — Moura Martins</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="./app.css" />
+  <title>Gerador de Peças Processuais Inteligente — Moura Martins</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="/config.js"></script>
   <script type="module" src="/js/api-client.js"></script>
-  <script type="module" src="/js/auth-guard.js"></script>
+  <style>
+    :root {
+      --bg-linho: #f6f2ec;
+      --card: #fffdf8;
+      --areia: #f4ede4;
+      --marrom: #3c2b1f;
+      --marrom-2: #4b3a2a;
+      --rose: #cbb59b;
+      --borda: #e6d9c7;
+      --destaque: #a58667;
+      --ok: #2e7d32;
+      --err: #b00020;
+      --radius-xl: 18px;
+      --radius-lg: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg-linho);
+      color: var(--marrom);
+      font: 15px/1.5 "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .topbar {
+      max-width: 1100px;
+      margin: 24px auto 8px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-weight: 800;
+      font-size: 26px;
+      letter-spacing: 0.2px;
+    }
+
+    .crumbs {
+      font-size: 13px;
+      color: #6d5a45;
+    }
+
+    .pill {
+      border: 1px solid var(--borda);
+      background: var(--card);
+      padding: 8px 12px;
+      border-radius: 999px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .pill .btn-ghost {
+      text-decoration: none;
+    }
+
+    .tag {
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--areia);
+      color: var(--marrom-2);
+      border: 1px solid var(--borda);
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto 40px;
+      padding: 0 16px;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 20px;
+    }
+
+    .sidebar {
+      background: var(--card);
+      border: 1px solid var(--borda);
+      border-radius: var(--radius-xl);
+      padding: 16px;
+      position: sticky;
+      top: 16px;
+      height: fit-content;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .side-title {
+      margin: 0 0 8px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .side-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    label {
+      font-size: 12px;
+      color: #6d5a45;
+    }
+
+    select,
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--borda);
+      background: var(--areia);
+      color: var(--marrom-2);
+      outline: none;
+      font-family: inherit;
+    }
+
+    textarea {
+      min-height: 76px;
+      resize: vertical;
+    }
+
+    .muted {
+      font-size: 12px;
+      color: #7f6a54;
+    }
+
+    .btn,
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      border-radius: 12px;
+      padding: 10px 14px;
+      border: 1px solid var(--borda);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .btn {
+      background: var(--rose);
+      color: #fff;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-ghost {
+      background: var(--card);
+      color: var(--marrom-2);
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .row > * {
+      flex: 1 1 120px;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--borda);
+      margin: 12px 0;
+    }
+
+    .chat {
+      background: var(--card);
+      border: 1px solid var(--borda);
+      border-radius: var(--radius-xl);
+      display: flex;
+      flex-direction: column;
+      height: 78vh;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    }
+
+    .chat-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--borda);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .chat-header .title {
+      font-weight: 700;
+    }
+
+    .chat-window {
+      padding: 18px;
+      overflow: auto;
+      flex: 1;
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23fffdf8"/><path d="M0 50 Q 50 40 100 50" stroke="%23efe6da" stroke-width="0.6" fill="none"/></svg>');
+    }
+
+    .msg {
+      max-width: 78%;
+      padding: 12px 14px;
+      margin: 8px 0;
+      border-radius: 14px;
+      border: 1px solid var(--borda);
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .msg.bot {
+      background: var(--areia);
+      color: var(--marrom-2);
+      border-top-left-radius: 6px;
+    }
+
+    .msg.user {
+      background: var(--rose);
+      color: #fff;
+      border-top-right-radius: 6px;
+      margin-left: auto;
+    }
+
+    .msg small {
+      display: block;
+      margin-top: 6px;
+      font-size: 11px;
+      opacity: 0.8;
+    }
+
+    .typing {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin: 8px 0 0;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #9a8a77;
+      animation: blink 1.4s infinite;
+    }
+
+    .dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes blink {
+      0%,
+      80%,
+      100% {
+        opacity: 0.2;
+      }
+
+      40% {
+        opacity: 1;
+      }
+    }
+
+    .chat-input {
+      border-top: 1px solid var(--borda);
+      padding: 10px;
+      background: #fdfbf7;
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .chat-input textarea {
+      flex: 1;
+      min-height: 42px;
+      max-height: 160px;
+      padding: 12px;
+      border-radius: 12px;
+      background: var(--areia);
+      border: 1px solid var(--borda);
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 8px 12px;
+      border-top: 1px dashed var(--borda);
+      background: #fff;
+    }
+
+    .chip {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--areia);
+      border: 1px solid var(--borda);
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .chip:hover {
+      background: #efe6da;
+    }
+
+    .toast {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: #1a1a1a;
+      color: #fff;
+      opacity: 0.96;
+      z-index: 50;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 980px) {
+      .wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .chat {
+        height: auto;
+        min-height: 70vh;
+      }
+
+      .sidebar {
+        position: static;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="layout">
-    <aside class="sidebar">
-      <iframe
-        src="/admin/sidebar.html"
-        title="Menu administrativo"
-        class="sidebar-frame"
-      ></iframe>
-    </aside>
-
-    <header class="topbar">
-      <button class="btn-secondary menu" data-menu>☰</button>
-      <div class="crumb">Gerador de Peças Processuais Inteligente</div>
-      <div class="actions">
-        <button class="btn-secondary" onclick="location.href='/admin/app.html'">Área de Trabalho</button>
-        <button data-logout>Sair</button>
-      </div>
-    </header>
-
-    <main class="content">
-      <div class="grid">
-        <section class="card span-12">
-          <h3>Gerar peça processual</h3>
-          <p class="muted">Informe os dados do caso para gerar um texto-base a partir da inteligência artificial.</p>
-          <form id="generatorForm" class="case-form" autocomplete="off">
-            <label>
-              Tipo de peça
-              <select name="tipo_peca" id="tipoPeca" required></select>
-            </label>
-            <label class="span-12">
-              <span class="field-title" data-field-label="resumo">Resumo fático</span>
-              <textarea id="resumoFatico" name="resumo_fatico" rows="6" required placeholder="Descreva os fatos relevantes do caso"></textarea>
-            </label>
-            <label class="span-12">
-              <span class="field-title" data-field-label="pedidos">Pedidos (orientações opcionais — geração automática)</span>
-              <textarea
-                id="pedidos"
-                name="pedidos"
-                rows="4"
-                placeholder="Descreva orientações específicas para os pedidos, se houver"
-              ></textarea>
-            </label>
-            <label class="span-12">
-              Documentos relevantes (separe por linha ou vírgula)
-              <textarea id="documentos" name="documentos" rows="3" placeholder="Procuração, Contrato social, Documento pessoal..."></textarea>
-            </label>
-            <label>
-              Identificador do cliente (opcional)
-              <input id="clienteId" name="cliente_id" placeholder="Código interno ou referência" />
-            </label>
-            <label>
-              Identificador do processo (opcional)
-              <input id="processoId" name="processo_id" placeholder="Número ou referência interna" />
-            </label>
-
-            <div class="span-12">
-              <h4 style="margin-top:1.5rem;">Partes envolvidas</h4>
-              <p class="muted" id="partesHelpText">Adicione as partes do processo e informe o papel de cada uma.</p>
-            </div>
-
-            <div id="partesContainer" class="span-12 partes-list"></div>
-            <div class="span-12" style="display:flex; justify-content:flex-end; gap:0.5rem;">
-              <button type="button" id="adicionarParte" class="btn-secondary">Adicionar parte</button>
-              <button type="submit" id="btnGerarPeca">Gerar peça</button>
-            </div>
-          </form>
-        </section>
-
-        <section class="card span-12 hidden" id="resultadoCard">
-          <div class="case-actions" style="align-items:flex-start;">
-            <div>
-              <h3>Resultado da geração</h3>
-              <p class="muted">Revise, edite e valide o texto antes de utilizar em um processo real.</p>
-            </div>
-            <div style="display:flex; gap:0.5rem;">
-              <button type="button" id="exportarDocx" class="btn-secondary hidden">Baixar .docx</button>
-              <button type="button" id="copiarTexto" class="btn-secondary">Copiar texto</button>
-            </div>
-          </div>
-
-          <label class="span-12">
-            Texto sugerido
-            <textarea id="textoGerado" rows="18" readonly></textarea>
-          </label>
-
-          <div class="span-12 hidden" id="artigosContainer">
-            <h4>Verificação de artigos citados</h4>
-            <p class="muted">Validação automática das referências legislativas citadas na peça.</p>
-            <ul id="artigosLista" class="artigos-list"></ul>
-          </div>
-
-          <div class="span-12" id="jurisprudenciasContainer">
-            <h4>Jurisprudências sugeridas</h4>
-            <p class="muted">Confira as decisões sugeridas para fundamentar a peça.</p>
-            <ul id="jurisprudenciasLista" class="jurisprudencias-list"></ul>
-          </div>
-        </section>
-      </div>
-    </main>
+  <div class="topbar">
+    <div>
+      <div class="crumbs">Moura Martins ▸ Ferramentas ▸ <strong>Gerador de Peças</strong></div>
+      <h1>Gerador de Peças Processuais Inteligente</h1>
+    </div>
+    <div class="pill">
+      <span class="tag">Beta</span>
+      <a class="btn-ghost" href="/admin/app.html">Área de Trabalho</a>
+      <button class="btn-ghost" data-logout type="button">Sair</button>
+    </div>
   </div>
 
-  <script type="module" src="/admin/app.js"></script>
+  <div class="wrap">
+    <p class="side-title">Contexto da conversa</p>
+      <div class="side-group">
+        <label for="tipoPeca">Tipo de peça</label>
+        <select id="tipoPeca">
+          <option value="peticao_inicial">Petição inicial</option>
+          <option value="contestacao">Contestação</option>
+          <option value="replica">Réplica</option>
+          <option value="agravo_instrumento">Agravo</option>
+          <option value="apelacao">Apelação</option>
+          <option value="memoriais">Memoriais</option>
+          <option value="manifestacao">Manifestação</option>
+          <option value="recurso_especial">Recurso Especial</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="clienteId">Cliente ID (opcional)</label>
+          <input id="clienteId" type="text" placeholder="ex.: cli_123" />
+        </div>
+        <div>
+          <label for="processoId">Processo ID (opcional)</label>
+          <input id="processoId" type="text" placeholder="ex.: proc_456" />
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="side-group">
+        <label for="docs">Documentos (separe por vírgula)</label>
+        <textarea id="docs" placeholder="Procuração, Contrato social, RG/CPF, Comprovantes..."></textarea>
+        <small class="muted">Dica: você também pode anexar arquivos na conversa.</small>
+      </div>
+
+      <div class="row">
+        <button class="btn-ghost" id="btn-novo-chat" title="Limpa somente a área de chat" type="button">Novo chat</button>
+        <button class="btn-ghost" id="btn-historico" type="button">Ver histórico</button>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <label for="file" class="btn-ghost" style="cursor:pointer; margin:0; align-items:center; display:inline-flex; gap:6px;">
+          📎 Anexar arquivo
+          <input id="file" type="file" class="hidden" multiple />
+        </label>
+        <button class="btn-ghost" id="btn-exportar" type="button">Exportar texto</button>
+      </div>
+      <button class="btn" id="btn-download" type="button" disabled>Baixar .docx</button>
+    </aside>
+
+    <section class="chat" aria-live="polite">
+      <header class="chat-header">
+        <div class="title">Assistente Jurídico</div>
+        <div class="muted">Interativo • guarda contexto por cliente/processo</div>
+      </header>
+
+      <div id="chat-window" class="chat-window">
+        <div class="msg bot">
+          👋 Olá! Vamos gerar sua peça <strong>passo a passo</strong>. Qual o <em>tipo de peça</em> você precisa?
+          <small>Dica: você pode alterar o tipo na lateral e anexar PDFs.</small>
+        </div>
+      </div>
+    <div class="chips" id="chips">
+        <div class="chip" data-insert="Pedidos: tutela de urgência para..."><span>Modelo de pedidos</span></div>
+        <div class="chip" data-insert="Teses: ilegitimidade passiva; ausência de nexo causal; excesso de execução."><span>Teses comuns</span></div>
+        <div class="chip" data-insert="Fundamentação: art. 300 do CPC (tutela de urgência), art. 373, I/II do CPC (ônus da prova)."><span>Fundamentação</span></div>
+        <div class="chip" data-insert="Refinar: deixe a linguagem mais objetiva e mantenha a urbanidade forense."><span>Refinar estilo</span></div>
+      </div>
+
+      <div class="chat-input">
+        <textarea id="input" placeholder="Escreva sua mensagem... (Shift+Enter = nova linha)"></textarea>
+        <div class="actions">
+          <button class="btn-ghost" id="btn-refinar" title="Refinar a última peça" type="button">Refinar</button>
+          <button class="btn" id="btn-enviar" type="button">Enviar</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
   <script type="module" src="./gerador-pecas.js"></script>
 </body>
 </html>

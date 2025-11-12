@@ -188,7 +188,7 @@ const API = {
       try {
         const data = await res.clone().json();
         message = data?.message || data?.error || message;
-      } catch (_) {
+      } catch {
         // Ignore JSON parse errors for binary bodies
       }
       throw new Error(message);
