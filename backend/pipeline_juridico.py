@@ -3,13 +3,15 @@
 # GPT-5 + ChromaDB (RAG) + Tavily + DOCX Formatter
 # ===========================================================
 import os
+os.environ["ANONYMIZED_TELEMETRY"] = "false"
+os.environ["CHROMA_TELEMETRY_ENABLED"] = "false"
 import uuid
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 
-import chromadb
 from chromadb.config import Settings
+import chromadb
 from openai import OpenAI
 from docx import Document
 from docx.shared import Pt
@@ -29,13 +31,23 @@ DOCS_DIR = STORAGE_DIR / "docs"
 DOCS_DIR.mkdir(parents=True, exist_ok=True)
 
 # ============== CLIENTES ==============
-client_oa: Optional[OpenAI] = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
+if OPENAI_API_KEY:
+    try:
+        client_oa: Optional[OpenAI] = OpenAI(api_key=OPENAI_API_KEY)
+    except TypeError:
+        import openai
+
+        openai.api_key = OPENAI_API_KEY
+        client_oa = openai
+else:
+    client_oa = None
 
 # ============== CHROMA INIT ==============
 chroma = chromadb.Client(
     Settings(
         persist_directory=CHROMA_DIR,
-        anonymized_telemetry=False,  # <— importantíssimo!
+        anonymized_telemetry=False,
+        allow_reset=True,
     )
 )
 
