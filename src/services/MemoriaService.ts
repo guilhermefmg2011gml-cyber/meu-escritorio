@@ -1,3 +1,4 @@
+/// <reference path="../types/chromadb.d.ts" />
 import { ChromaClient } from 'chromadb'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -42,7 +43,9 @@ export class MemoriaService {
     })
   }
 
-  static async buscar({ consulta, vetor, clienteId, processoId, topK = 5 }: BuscarMemoriaInput) {
+  static async buscar({ consulta, vetor, clienteId, processoId, topK = 5 }: BuscarMemoriaInput): Promise<
+    Array<{ texto: string; distancia?: number; metadados?: Record<string, unknown> }>
+  > {
     if (!consulta?.trim() || !Array.isArray(vetor) || !vetor.length) {
       return []
     }
@@ -63,10 +66,10 @@ export class MemoriaService {
     const distancias = resultado.distances?.[0] ?? []
     const metadados = resultado.metadatas?.[0] ?? []
 
-    return documentos.map((texto, index) => ({
-      texto,
+    return documentos.map((documento: string, index: number) => ({
+      texto: documento,
       distancia: distancias[index],
-      metadados: metadados[index],
+      metadados: metadados[index] as Record<string, unknown> | undefined,
     }));
   }
 }
