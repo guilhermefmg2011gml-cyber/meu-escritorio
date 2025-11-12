@@ -35,7 +35,40 @@ DB_PATH = APP_DIR / "memoria.sqlite3"
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-5-turbo")
 PORT = int(os.getenv("PORT", "5000"))
 
-app = Flask(__name__)
+# Caminhos do projeto
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.abspath(os.path.join(BASE_DIR, ".."))
+DIST_DIR = os.path.join(ROOT_DIR, "dist")
+ADMIN_DIR = os.path.join(ROOT_DIR, "public", "admin")
+
+app = Flask(
+    __name__,
+    static_folder=DIST_DIR,
+    static_url_path="/"
+)
+
+
+# --- Rotas do site institucional (frontend React) ---
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def serve_front(path):
+    if path != "" and os.path.exists(os.path.join(DIST_DIR, path)):
+        return send_from_directory(DIST_DIR, path)
+    else:
+        return send_from_directory(DIST_DIR, "index.html")
+
+
+# --- Rotas do painel administrativo ---
+@app.route("/admin/<path:filename>")
+def serve_admin(filename):
+    return send_from_directory(ADMIN_DIR, filename)
+
+
+# --- Exemplo de rota da API ---
+@app.route("/api/health")
+def health():
+    return jsonify({"status": "ok", "service": "Moura Martins Backend"})
+
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # ===========================================================
